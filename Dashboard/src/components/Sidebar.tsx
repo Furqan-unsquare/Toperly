@@ -43,7 +43,7 @@ export const Sidebar = ({ user, logout }: SidebarProps) => {
 
   const handleLogout = () => {
     logout();
-    navigate("/auth");
+    navigate("/auth/login");
   };
 
   const getInitials = (name: string) => {
