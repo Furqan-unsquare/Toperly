@@ -32,7 +32,7 @@ const EnrolledStudents = () => {
 
         // Simulating your existing API call structure
         const res = await axios.post(
-          "http://localhost:5000/api/students/get-mystudents",
+          "http://192.168.1.29:5000/api/students/get-mystudents",
           {},
           {
             headers: { Authorization: `Bearer ${token}` },

@@ -51,7 +51,7 @@ const EnrolledCourses = () => {
   const [selectedLevel, setSelectedLevel] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
 
-  const API_BASE = "http://localhost:5000/api";
+  const API_BASE = "http://192.168.1.29:5000/api";
 
   useEffect(() => {
     if (user?.role === "student") {
@@ -241,7 +241,7 @@ const EnrolledCourses = () => {
         </div>
 
         {/* Quick Stats */}
-        <div className="hidden md:flex items-center gap-6 text-sm">
+        {/* <div className="hidden md:flex items-center gap-6 text-sm">
           <div className="flex items-center gap-2">
             <TrendingUp size={16} className="text-blue-600" />
             <span className="font-medium">Learning Progress</span>
@@ -250,7 +250,7 @@ const EnrolledCourses = () => {
             <Award size={16} className="text-green-600" />
             <span className="font-medium">Certificates</span>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Search and Filters */}

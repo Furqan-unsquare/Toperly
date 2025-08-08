@@ -54,23 +54,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use("/temp", express.static(path.join(__dirname, "public/temp")));
 const allowedOrigins = [
-  "http://localhost:8080",
-  "http://localhost:8081",
+  "http://192.168.1.29:8080",
+  "http://192.168.1.29:8081",
   "https://toperly-unsquare.netlify.app",
   "https://toperly-dashboard-unsquare.netlify.app",
 ];
 
 app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
+  cors("*")
 );
 
 // Middleware
@@ -98,7 +89,7 @@ app.post("/api/payment/create-order", async (req, res) => {
       courseName,
       userEmail,
     } = req.body;
-    
+
     if (!amount || !courseId || !courseName || !userEmail) {
       return res.status(400).json({
         success: false,
@@ -106,7 +97,7 @@ app.post("/api/payment/create-order", async (req, res) => {
           "Missing required fields: amount, courseId, courseName, userEmail",
       });
     }
-    
+
     // Safe receipt generation - guaranteed under 40 chars
     const generateSafeReceipt = (courseId) => {
       const timestamp = Date.now().toString(36); // Base36 for shorter string
@@ -348,7 +339,7 @@ app.post("/api/webhook/razorpay", (req, res) => {
 // Middleware to validate AccessKey
 const validateAccessKey = (req, res, next) => {
   const accessKey = req.headers["accesskey"];
-  if (accessKey !== "249dd0e1-444c-432f-91e55d5ef213-b7bd-49e3") {
+  if (accessKey !== "91af975e-1e11-49ae-86c54773bb01-70be-4cb3") {
     return res.status(401).json({ error: "Invalid AccessKey" });
   }
   next();
@@ -357,8 +348,8 @@ const validateAccessKey = (req, res, next) => {
 // Function to fetch live data from Bunny Storage API
 const fetchBunnyStorageData = () => {
   return new Promise((resolve, reject) => {
-    const storageZoneName = "unsquare-toperly"; // Replace with your storage zone name
-    const accessKey = "249dd0e1-444c-432f-91e55d5ef213-b7bd-49e3"; // Match with validateAccessKey
+    const storageZoneName = "unsquare-toperly2"; // Replace with your storage zone name
+    const accessKey = "850ff193-b428-41d8-b3d319bc0f3f-abb6-4e95"; // Match with validateAccessKey
     const path = "images"; // Folder path
     const url = `https://storage.bunnycdn.com/${storageZoneName}/${path}/`;
 
@@ -368,7 +359,7 @@ const fetchBunnyStorageData = () => {
         {
           headers: {
             AccessKey: accessKey,
-            accept: "application/json",
+            accept: "*/*",
           },
         },
         (resp) => {
@@ -491,7 +482,7 @@ async function start() {
   try {
     await connectDB();
     app.listen(PORT, () => {
-      console.log(`Server is listening on http://localhost:${PORT}`);
+      console.log(`Server is listening on http://192.168.1.29:${PORT}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error.message);

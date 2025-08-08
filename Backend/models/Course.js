@@ -44,6 +44,10 @@ const courseSchema = new mongoose.Schema({
   enum: ['pending', 'approved', 'rejected'],
   default: 'pending',
 },
+courseIncludes: [{
+  type: String,
+  trim: true
+}],
   rating: { type: Number, default: 0, min: 0, max: 5 },
   totalReviews: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },

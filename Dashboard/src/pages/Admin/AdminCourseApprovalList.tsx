@@ -19,7 +19,7 @@ const AdminCourseApprovalList = () => {
 
   const fetchCourses = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/courses", {
+      const res = await fetch("http://192.168.1.29:5000/api/courses", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -39,7 +39,7 @@ const AdminCourseApprovalList = () => {
   const updateCourseStatus = async (courseId, newStatus) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/courses/${courseId}/status`,
+        `http://192.168.1.29:5000/api/courses/${courseId}/status`,
         {
           method: "PUT",
           headers: {
@@ -178,7 +178,7 @@ const AdminCourseApprovalList = () => {
               <div className="flex flex-col lg:flex-row">
                 <div className="lg:w-80 lg:flex-shrink-0">
                   <img
-                    src={course.thumbnail?.url}
+                    src={"/Machine_learning.png"}
                     alt={course.title}
                     className="w-full h-48 lg:h-full object-cover rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none"
                   />

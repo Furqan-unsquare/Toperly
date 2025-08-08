@@ -35,7 +35,7 @@ export const StudentDashboard = () => {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const navigate = useNavigate();
   useEffect(() => {
-    fetch("http://localhost:5000/api/auth/me", {
+    fetch("http://192.168.1.29:5000/api/auth/me", {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -196,7 +196,7 @@ export const StudentDashboard = () => {
             <button
               className="w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-800 active:bg-gray-700 transition-all duration-200 font-medium text-sm transform hover:scale-[1.02] active:scale-[0.98] px-4"
               onClick={() => {
-                navigate("/profile-settings");
+                navigate("/user-profile");
               }}
             >
               Edit Profile

@@ -153,7 +153,7 @@ const AdminRealTimeAnalytics = () => {
       setLoading(true);
       setError(null);
 
-      const res = await fetch("http://localhost:5000/api", {
+      const res = await fetch("http://192.168.1.29:5000/api", {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,

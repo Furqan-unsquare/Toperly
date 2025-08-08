@@ -13,10 +13,17 @@ export const createUrl = asyncWrapper(async (req, res, next) => {
     throw new ApiError(400, "URL is required");
   }
   const shortId = nanoid(5);
-  const shortedUrl = `http://localhost:${process.env.PORT || 5000}/api/${shortId}`;
-  
+  const shortedUrl = `http://192.168.1.29:${
+    process.env.PORT || 5000
+  }/api/${shortId}`;
+
   // Create URL document for MongoDB
-  const urlObj = new Url({ shortId, redirectUrl: url, user: req.user._id, shortedUrl });
+  const urlObj = new Url({
+    shortId,
+    redirectUrl: url,
+    user: req.user._id,
+    shortedUrl,
+  });
   await urlObj.save();
   console.log("URL saved to MongoDB:", urlObj);
 
@@ -38,11 +45,13 @@ export const createUrl = asyncWrapper(async (req, res, next) => {
     filename: `url-${shortId}.json`,
     originalname: `url-${shortId}.json`,
   };
-console.log("Prepared file for Bunny upload:", file);
+  console.log("Prepared file for Bunny upload:", file);
 
   const uploadResult = await uploadFileOnBunny("urls", file);
   if (!uploadResult) {
-    await fs.unlink(tempFilePath).catch((err) => console.warn("Failed to delete temp file:", err.message));
+    await fs
+      .unlink(tempFilePath)
+      .catch((err) => console.warn("Failed to delete temp file:", err.message));
     throw new ApiError(500, "Failed to upload URL metadata to Bunny CDN");
   }
   console.log("Bunny CDN upload result:", uploadResult);
@@ -54,14 +63,23 @@ console.log("Prepared file for Bunny upload:", file);
   console.log("URL updated with Bunny CDN details:", urlObj);
 
   // Clean up temp file
-  await fs.unlink(tempFilePath).catch((err) => console.warn("Failed to delete temp file:", err.message));
+  await fs
+    .unlink(tempFilePath)
+    .catch((err) => console.warn("Failed to delete temp file:", err.message));
 
-  return res.status(201).json(new ApiRes(201, urlObj, "URL shortened and uploaded to Bunny CDN"));
+  return res
+    .status(201)
+    .json(new ApiRes(201, urlObj, "URL shortened and uploaded to Bunny CDN"));
 });
 
 export const getAllUrl = asyncWrapper(async (req, res, next) => {
-  const urls = await Url.find({ user: req.user._id }).populate("user", "username email");
-  return res.status(200).json(new ApiRes(200, urls, "All shortened URLs retrieved"));
+  const urls = await Url.find({ user: req.user._id }).populate(
+    "user",
+    "username email"
+  );
+  return res
+    .status(200)
+    .json(new ApiRes(200, urls, "All shortened URLs retrieved"));
 });
 
 export const redirectToUrl = asyncWrapper(async (req, res, next) => {
@@ -92,5 +110,9 @@ export const uploadMedia = asyncWrapper(async (req, res, next) => {
     throw new ApiError(500, "Failed to upload file to Bunny CDN");
   }
 
-  return res.status(201).json(new ApiRes(201, { url: uploadResult.url }, "Media uploaded successfully"));
+  return res
+    .status(201)
+    .json(
+      new ApiRes(201, { url: uploadResult.url }, "Media uploaded successfully")
+    );
 });

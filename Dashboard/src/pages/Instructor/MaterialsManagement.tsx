@@ -76,7 +76,7 @@ const MaterialsManagement = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/courses", {
+      const response = await axios.get("http://192.168.1.29:5000/api/courses", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -99,7 +99,7 @@ const MaterialsManagement = () => {
   const fetchAllCourses = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/courses", {
+      const response = await axios.get("http://192.168.1.29:5000/api/courses", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -145,7 +145,7 @@ const MaterialsManagement = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.delete(
-        `http://localhost:5000/api/courses/${courseId}/materials/${materialId}`,
+        `http://192.168.1.29:5000/api/courses/${courseId}/materials/${materialId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -167,7 +167,7 @@ const MaterialsManagement = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        "http://localhost:5000/api/url/upload",
+        "http://192.168.1.29:5000/api/url/upload",
         formData,
         {
           headers: {
@@ -232,14 +232,14 @@ const MaterialsManagement = () => {
 
       if (editingMaterial) {
         await axios.put(
-          `http://localhost:5000/api/courses/${formData.courseId}/materials/${editingMaterial.material.bunnyFileId}`,
+          `http://192.168.1.29:5000/api/courses/${formData.courseId}/materials/${editingMaterial.material.bunnyFileId}`,
           payload,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         alert("Material updated successfully!");
       } else {
         await axios.post(
-          `http://localhost:5000/api/courses/${formData.courseId}/materials`,
+          `http://192.168.1.29:5000/api/courses/${formData.courseId}/materials`,
           payload,
           { headers: { Authorization: `Bearer ${token}` } }
         );

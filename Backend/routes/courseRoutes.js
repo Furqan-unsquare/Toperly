@@ -16,7 +16,10 @@ import {
   deleteChapter,
   updateVideoInCourse,
   deleteVideoFromCourse,
-  updateCourseStatus
+  updateCourseStatus,
+  addCourseInclude,
+  updateCourseInclude,
+  deleteCourseInclude
 } from '../controllers/courseController.js';
 import { verifyToken, isInstructor } from '../middlewares/auth.middleware.js';
 
@@ -40,5 +43,8 @@ router.post('/:id/videos/:videoId/chapters',  addChapterToVideo);
 router.put('/:id/videos/:videoId/chapters/:chapterId', verifyToken, isInstructor, updateChapter);
 router.delete('/:id/videos/:videoId/chapters/:chapterId', verifyToken, isInstructor, deleteChapter);
 router.put('/:id/status', verifyToken, updateCourseStatus);
+router.post('/:id/includes', verifyToken, isInstructor, addCourseInclude);
+router.put('/:id/includes/:index', verifyToken, isInstructor, updateCourseInclude);
+router.delete('/:id/includes/:index', verifyToken, isInstructor, deleteCourseInclude);
 
 export default router;

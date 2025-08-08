@@ -2,16 +2,19 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { Play, Star, Clock, BookOpen, Heart } from "lucide-react";
+import { Play, Star, Clock, BookOpen, Heart, X } from "lucide-react";
 import VdoPlayer from "../VdoPlayer";
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "http://192.168.1.29:5000/api";
 
 const Wishlist = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const [wishlistCourses, setWishlistCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState(null);
+  const [deletingCourse, setDeletingCourse] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -36,8 +39,106 @@ const Wishlist = () => {
     }
   };
 
+  const handleRemoveFromWishlist = async (courseId) => {
+    try {
+      setDeletingCourse(courseId);
+      const res = await fetch(`${API_BASE}/wishlist/${courseId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ courseId }),
+      });
+
+      if (res.ok) {
+        setWishlistCourses((prev) =>
+          prev.filter((course) => course._id !== courseId)
+        );
+        setShowConfirmModal(false);
+        setCourseToDelete(null);
+      } else {
+        console.error("Failed to remove from wishlist");
+      }
+    } catch (err) {
+      console.error("Error removing from wishlist:", err);
+    } finally {
+      setDeletingCourse(null);
+    }
+  };
+
+  const openConfirmModal = (course) => {
+    setCourseToDelete(course);
+    setShowConfirmModal(true);
+  };
+
+  const closeConfirmModal = () => {
+    setShowConfirmModal(false);
+    setCourseToDelete(null);
+  };
+
+  // Confirmation Modal Component
+  const ConfirmationModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-md w-full p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">
+            Remove from Wishlist
+          </h3>
+          <button
+            onClick={closeConfirmModal}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="mb-6">
+          <p className="text-gray-600">
+            Are you sure you want to remove "{courseToDelete?.title}" from your
+            wishlist?
+          </p>
+        </div>
+
+        <div className="flex gap-3 justify-end">
+          <button
+            onClick={closeConfirmModal}
+            className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => handleRemoveFromWishlist(courseToDelete._id)}
+            disabled={deletingCourse === courseToDelete?._id}
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            {deletingCourse === courseToDelete?._id ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Removing...
+              </>
+            ) : (
+              "Remove"
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   const CourseCard = ({ course }) => (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:border-gray-300 hover:shadow-md transition-all duration-200">
+    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:border-gray-300 hover:shadow-md transition-all duration-200 relative">
+      {/* Heart Icon */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          openConfirmModal(course);
+        }}
+        className="absolute top-3 right-3 z-10 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-200 group"
+      >
+        <Heart className="w-4 h-4 text-red-500 fill-current group-hover:scale-110 transition-transform" />
+      </button>
+
       {/* Thumbnail */}
       <div className="relative h-44 bg-gray-100">
         {course?.thumbnail?.url ? (
@@ -53,10 +154,10 @@ const Wishlist = () => {
         )}
 
         {/* Price & Level */}
-        <div className="absolute top-3 right-3 text-sm bg-white px-2 py-1 rounded shadow">
+        <div className="absolute top-3 left-3 text-sm bg-white px-2 py-1 rounded shadow">
           ${course?.price}
         </div>
-        <div className="absolute top-3 left-3 text-xs font-medium px-2 py-1 rounded bg-blue-50 border border-blue-200 text-blue-700">
+        <div className="absolute bottom-3 left-3 text-xs font-medium px-2 py-1 rounded bg-blue-50 border border-blue-200 text-blue-700">
           {course?.level}
         </div>
       </div>
@@ -142,7 +243,9 @@ const Wishlist = () => {
           </div>
         )}
       </div>
-      <VdoPlayer videoId="ff2dabcc6615d0d2a3177bdc0e4c6312" />
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && <ConfirmationModal />}
     </div>
   );
 };

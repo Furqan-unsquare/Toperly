@@ -1,121 +1,346 @@
-import React from 'react';
-import { Award, CreditCard, BookOpen } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import {
+  Award,
+  CreditCard,
+  BookOpen,
+  PlayCircle,
+  Download,
+  Tv,
+  Infinity,
+  Clock,
+  Heart,
+  X,
+} from "lucide-react";
 
-const EnrollmentCard = ({ course, isEnrolled, onEnroll, enrollmentLoading }) => {
+const EnrollmentCard = ({
+  course,
+  isEnrolled,
+  onEnroll,
+  enrollmentLoading,
+}) => {
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [showAlert, setShowAlert] = useState({
+    show: false,
+    message: "",
+    type: "",
+  });
+
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
     }).format(price);
   };
 
-  return (
-    <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-      <div className="text-center mb-6">
-        <div className="text-3xl font-bold text-gray-900 mb-2">
-          {course.price === 0 ? (
-            <span className="text-green-600">Free</span>
-          ) : (
-            <span>{formatPrice(course.price)}</span>
-          )}
-        </div>
-        {course.price > 0 && course.originalPrice && (
-          <div className="text-sm text-gray-500 line-through">
-            {formatPrice(course.originalPrice)}
-          </div>
-        )}
-        {course.price > 0 && (
-          <div className="text-sm text-red-600 font-medium mt-1">
-            Limited time offer!
-          </div>
-        )}
-      </div>
+  // Check if course is already in wishlist on component mount
+  useEffect(() => {
+    checkWishlistStatus();
+  }, [course._id]);
 
-      {!isEnrolled ? (
-        <button
-          onClick={onEnroll}
-          disabled={enrollmentLoading}
-          className={`w-full py-3 rounded-lg mb-4 font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
-            course.price === 0
-              ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white'
-              : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
-          } ${enrollmentLoading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg transform hover:-translate-y-0.5'}`}
+  const checkWishlistStatus = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const response = await fetch(
+        `http://192.168.1.29:5000/api/wishlist/my-wishlist`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const wishlistCourses = await response.json();
+        const isInWishlist = wishlistCourses.some(
+          (wishlistCourse) => wishlistCourse._id === course._id
+        );
+        setIsWishlisted(isInWishlist);
+      }
+    } catch (error) {
+      console.error("Error checking wishlist status:", error);
+    }
+  };
+
+  const showAlertMessage = (message, type) => {
+    setShowAlert({ show: true, message, type });
+    setTimeout(() => {
+      setShowAlert({ show: false, message: "", type: "" });
+    }, 3000);
+  };
+
+  const handleWishlistToggle = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      showAlertMessage("Please login to manage wishlist", "error");
+      return;
+    }
+
+    setWishlistLoading(true);
+
+    try {
+      if (isWishlisted) {
+        // Remove from wishlist
+        const response = await fetch(
+          `http://192.168.1.29:5000/api/wishlist/${course._id}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to remove from wishlist");
+        }
+
+        setIsWishlisted(false);
+        showAlertMessage("Course removed from wishlist", "success");
+      } else {
+        // Add to wishlist
+        const response = await fetch(
+          `http://192.168.1.29:5000/api/wishlist/${course._id}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to add to wishlist");
+        }
+
+        setIsWishlisted(true);
+        showAlertMessage("Course added to wishlist", "success");
+      }
+    } catch (error) {
+      console.error("Error updating wishlist:", error);
+      showAlertMessage(
+        isWishlisted
+          ? "Failed to remove from wishlist"
+          : "Failed to add to wishlist",
+        "error"
+      );
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
+
+  const features = [
+    {
+      icon: <PlayCircle size={16} />,
+      text: `${course.videos?.length || 0} on-demand videos`,
+    },
+    { icon: <Download size={16} />, text: "Downloadable resources" },
+    { icon: <Tv size={16} />, text: "Access on mobile and TV" },
+    { icon: <Infinity size={16} />, text: "Full lifetime access" },
+    { icon: <Award size={16} />, text: "Certificate of completion" },
+  ];
+
+  // Alert Component
+  const AlertNotification = () =>
+    showAlert.show && (
+      <div className="fixed top-4 right-4 z-50 max-w-sm w-full">
+        <div
+          className={`p-4 rounded-lg shadow-lg border text-white font-medium flex items-center justify-between ${
+            showAlert.type === "success"
+              ? "bg-green-500 border-green-600"
+              : "bg-red-500 border-red-600"
+          }`}
         >
-          {enrollmentLoading ? (
-            <>
-              <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                <circle 
-                  className="opacity-25" 
-                  cx="12" 
-                  cy="12" 
-                  r="10" 
-                  stroke="currentColor" 
-                  strokeWidth="4"
-                  fill="none"
-                />
-                <path 
-                  className="opacity-75" 
-                  fill="currentColor" 
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              {course.price === 0 ? 'Enrolling...' : 'Processing...'}
-            </>
-          ) : (
-            <>
-              {course.price === 0 ? (
+          <span>{showAlert.message}</span>
+          <button
+            onClick={() => setShowAlert({ show: false, message: "", type: "" })}
+            className="ml-3 text-white hover:text-gray-200"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    );
+
+  return (
+    <>
+      <AlertNotification />
+
+      <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+        {/* Preview Video Thumbnail */}
+        <div className="relative h-48 bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center">
+          <div className="text-center text-white">
+            <PlayCircle size={48} className="mx-auto mb-2 opacity-80" />
+            <p className="text-sm font-medium">Preview this course</p>
+          </div>
+        </div>
+
+        <div className="p-6">
+          {/* Price Section */}
+          <div className="text-center mb-6">
+            <div className="flex items-center justify-center gap-3 mb-2">
+              <div className="text-3xl font-bold text-gray-900">
+                {course.price === 0 ? (
+                  <span className="text-green-600">Free</span>
+                ) : (
+                  <span>{formatPrice(course.price)}</span>
+                )}
+              </div>
+              {course.price > 0 && course.originalPrice && (
+                <div className="text-lg text-gray-500 line-through">
+                  {formatPrice(course.originalPrice)}
+                </div>
+              )}
+            </div>
+
+            {course.price > 0 && course.originalPrice && (
+              <div className="text-sm text-red-600 font-medium bg-red-50 px-3 py-1 rounded-full inline-block">
+                {Math.round((1 - course.price / course.originalPrice) * 100)}%
+                off
+              </div>
+            )}
+          </div>
+
+          {/* CTA Button */}
+          {!isEnrolled ? (
+            <button
+              onClick={onEnroll}
+              disabled={enrollmentLoading}
+              className={`w-full py-4 rounded-lg mb-4 font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-2 ${
+                course.price === 0
+                  ? "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                  : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+              } ${
+                enrollmentLoading
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:shadow-lg transform hover:-translate-y-0.5"
+              }`}
+            >
+              {enrollmentLoading ? (
                 <>
-                  <BookOpen size={20} />
-                  Enroll for Free
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  {course.price === 0 ? "Enrolling..." : "Processing..."}
                 </>
               ) : (
                 <>
-                  <CreditCard size={20} />
-                  Buy Now
+                  {course.price === 0 ? (
+                    <>
+                      <BookOpen size={20} />
+                      Enroll for Free
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard size={20} />
+                      Buy Now
+                    </>
+                  )}
                 </>
               )}
-            </>
+            </button>
+          ) : (
+            <div className="text-center py-4 bg-green-50 text-green-800 rounded-lg mb-4 font-semibold border-2 border-green-200">
+              <div className="flex items-center justify-center gap-2">
+                <svg
+                  className="h-5 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                ✨ You're Enrolled!
+              </div>
+            </div>
           )}
-        </button>
-      ) : (
-        <div className="text-center py-3 bg-green-100 text-green-800 rounded-lg mb-4 font-medium border-2 border-green-200">
-          <div className="flex items-center justify-center gap-2">
-            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-            </svg>
-            Successfully Enrolled
-          </div>
-        </div>
-      )}
 
-      <div className="space-y-3 text-sm text-gray-600">
-        <div className="flex items-center justify-center">
-          <Award size={16} className="mr-2 text-yellow-500" />
-          <span>Certificate of completion</span>
-        </div>
-        
-        <div className="flex items-center justify-center">
-          <BookOpen size={16} className="mr-2 text-blue-500" />
-          <span>Lifetime access</span>
-        </div>
-        
-        {course.price > 0 && (
-          <div className="flex items-center justify-center">
-            <svg className="h-4 w-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span>30-day money-back guarantee</span>
-          </div>
-        )}
+          {/* Money-back guarantee */}
+          {course.price > 0 && (
+            <div className="text-center text-sm text-gray-600 mb-6">
+              <span className="bg-yellow-50 text-yellow-800 px-2 py-1 rounded text-xs font-medium">
+                30-Day Money-Back Guarantee
+              </span>
+            </div>
+          )}
 
-        <div className="text-center pt-2 border-t border-gray-200">
-          <p className="text-xs text-gray-500">
-            {course.price === 0 ? 'No credit card required' : 'Secure payment powered by Razorpay'}
-          </p>
+          {/* Course includes */}
+          <div className="space-y-3">
+            <h4 className="font-semibold text-gray-900 text-sm">
+              This course includes:
+            </h4>
+            <div className="space-y-3">
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-3 text-sm text-gray-700"
+                >
+                  <span className="text-gray-500">{feature.icon}</span>
+                  <span>{feature.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Share and wishlist */}
+          <div className="border-t border-gray-200 mt-6 pt-6">
+            <div className="flex justify-between items-center text-sm">
+              <button className="text-purple-600 hover:text-purple-700 font-medium">
+                Share
+              </button>
+              <button
+                onClick={handleWishlistToggle}
+                disabled={wishlistLoading}
+                className={`font-medium flex items-center gap-1 transition-colors ${
+                  wishlistLoading
+                    ? "text-gray-400 cursor-not-allowed"
+                    : isWishlisted
+                    ? "text-red-600 hover:text-red-700"
+                    : "text-purple-600 hover:text-purple-700"
+                }`}
+              >
+                {wishlistLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                    Updating...
+                  </>
+                ) : (
+                  <>
+                    <Heart
+                      className={`w-4 h-4 ${
+                        isWishlisted ? "fill-current" : ""
+                      }`}
+                    />
+                    {isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

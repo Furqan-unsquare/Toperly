@@ -370,7 +370,7 @@ const LessonsForm = ({
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Lesson Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Section Name</label>
                   <input
                     type="text"
                     value={lesson.name}
@@ -412,12 +412,13 @@ const LessonsForm = ({
                 </div>
               </div>
               <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Lesson Description</label>
-                <textarea
+                <label className="block text-sm font-medium text-gray-700 mb-2">Lesson Name</label>
+                <input
+                  type="text"
                   value={lesson.description}
                   onChange={(e) => updateLesson(lessonIndex, "description", e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg h-20 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 outline-none transition hover:border-gray-400 resize-none"
-                  placeholder="Enter lesson description"
+                  className="w-full md:w-1/2 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-200 focus:border-blue-500 outline-none transition hover:border-gray-400 resize-none"
+                  placeholder="Enter lesson name"
                 />
               </div>
 
@@ -819,7 +820,7 @@ const CourseForm = ({
           onClick={() => setShowLessons(!showLessons)}
           className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 outline-none"
         >
-          <Plus size={16} className="mr-2" />
+          {showLessons ?  "" : <Plus size={16} className="mr-2" />}
           {showLessons ? "Hide Lessons" : "Add Lessons"}
         </button>
       </div>

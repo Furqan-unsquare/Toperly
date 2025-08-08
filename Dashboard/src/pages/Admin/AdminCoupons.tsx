@@ -31,12 +31,12 @@ const AdminCoupons = () => {
   const [notification, setNotification] = useState({ message: "", type: "" });
 
   const fetchCourses = async () => {
-    const res = await axios.get("http://localhost:5000/api/courses");
+    const res = await axios.get("http://192.168.1.29:5000/api/courses");
     setCourses(res.data);
   };
 
   const fetchCoupons = async () => {
-    const res = await axios.get("http://localhost:5000/api/coupons");
+    const res = await axios.get("http://192.168.1.29:5000/api/coupons");
     setCoupons(res.data);
   };
 
@@ -54,7 +54,7 @@ const AdminCoupons = () => {
     setLoading(true);
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/coupons/${editingId}`, {
+        await axios.put(`http://192.168.1.29:5000/api/coupons/${editingId}`, {
           ...form,
           course: form.course === "all" ? null : form.course,
         });
@@ -63,7 +63,7 @@ const AdminCoupons = () => {
           type: "success",
         });
       } else {
-        await axios.post("http://localhost:5000/api/coupons", {
+        await axios.post("http://192.168.1.29:5000/api/coupons", {
           ...form,
           course: form.course === "all" ? null : form.course,
         });
@@ -105,7 +105,7 @@ const AdminCoupons = () => {
     if (confirm("Are you sure you want to delete this coupon?")) {
       setLoading(true);
       try {
-        await axios.delete(`http://localhost:5000/api/coupons/${id}`);
+        await axios.delete(`http://192.168.1.29:5000/api/coupons/${id}`);
         setNotification({
           message: "Coupon deleted successfully!",
           type: "success",

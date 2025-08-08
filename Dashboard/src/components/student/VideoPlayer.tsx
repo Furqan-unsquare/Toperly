@@ -18,7 +18,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "http://192.168.1.29:5000/api";
 
 const AdvancedVideoPlayer = ({
   video,
@@ -548,17 +548,14 @@ const AdvancedVideoPlayer = ({
           <img
             src={course.thumbnail.url}
             alt="Course thumbnail"
-            className="absolute w-full h-full object-cover opacity-30"
+            className="absolute w-full h-full object-cover object-top opacity-30"
           />
         )}
         <div className="text-center text-white z-10 p-6">
           <Lock size={48} className="mx-auto mb-4 opacity-60" />
           <h3 className="text-xl font-semibold mb-2">Premium Content</h3>
-          <p className="text-gray-300 mb-6 max-w-md">
-            Unlock this video and access our advanced player with progress
-            tracking, multiple quality options, and interactive features.
-          </p>
-          <button
+          <p className="text-gray-300 mb-6 max-w-md">No video to play</p>
+          {/* <button
             onClick={onEnroll}
             disabled={enrollmentLoading}
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 
@@ -573,10 +570,10 @@ const AdvancedVideoPlayer = ({
             ) : (
               <>
                 <Play size={16} />
-                {course?.price === 0 ? "Enroll for Free" : "Enroll Now"}
+                {course?.price === 0 ? "Enroll for Free" : "No Video"}
               </>
             )}
-          </button>
+          </button> */}
         </div>
       </div>
     );
