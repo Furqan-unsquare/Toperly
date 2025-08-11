@@ -231,7 +231,7 @@ const Navbar = () => {
               <div className="relative group hidden lg:flex">
                 <button
                   className={`font-medium focus:outline-none flex items-center transition-colors duration-300 ${
-                    isScrolled ? 'text-gray-500 hover:text-gray-500' : 'text-gray-600 hover:text-gray-700'
+                    isScrolled ? 'text-gray-500 hover:text-gray-500' : 'text-gray-400 hover:text-gray-400'
                   }`}
                 >
                   Categories
@@ -263,7 +263,7 @@ const Navbar = () => {
                 key={index}
                 href={item.href}
                 className={`text-sm font-medium transition-colors duration-300 ${
-                  isScrolled ? 'text-gray-500 hover:text-gray-500' : 'text-gray-600 hover:text-gray-700'
+                  isScrolled ? 'text-gray-500 hover:text-gray-500' : 'text-gray-400 hover:text-gray-700'
                 }`}
                 onClick={(e) => {
                   e.preventDefault();
@@ -322,7 +322,7 @@ const Navbar = () => {
                 <div className="flex items-center space-x-2">
                   <button
                     className={`flex items-center text-sm font-medium transition-colors duration-300 ${
-                      isScrolled ? 'text-gray-500 hover:text-gray-700' : 'text-gray-600 hover:text-gray-300'
+                      isScrolled ? 'text-gray-500 hover:text-gray-700' : 'text-gray-400 hover:text-gray-300'
                     }`}
                     onClick={toggleProfileMenu}
                   >
@@ -375,7 +375,7 @@ const Navbar = () => {
                 <div className="flex items-center space-x-2">
                   <button
                     className={`text-sm font-medium transition-colors duration-300 ${
-                      isScrolled ? 'text-gray-500 hover:text-gray-700' : 'text-gray-600 hover:text-gray-300'
+                      isScrolled ? 'text-gray-500 hover:text-gray-700' : 'text-gray-400 hover:text-gray-300'
                     }`}
                     onClick={() => window.open('/auth/login')}
                   >
@@ -399,7 +399,7 @@ const Navbar = () => {
             <div className="relative group hidden md:flex">
               <button
                 className={`flex items-center text-sm font-medium transition-colors duration-300 ${
-                  isScrolled ? 'text-gray-500 hover:text-gray-700' : 'text-gray-600 hover:text-gray-300'
+                  isScrolled ? 'text-gray-500 hover:text-gray-700' : 'text-gray-400 hover:text-gray-300'
                 }`}
               >
                 <Globe className="h-4 w-4 mr-1" />

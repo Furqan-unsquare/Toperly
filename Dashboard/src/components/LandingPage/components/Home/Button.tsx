@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const Button: React.FC = () => {
+const Button = () => {
   return (
     <StyledWrapper>
       <div className="p">
@@ -115,28 +115,34 @@ const Button: React.FC = () => {
                 <div className="outline" />
                 <div className="glyphs">
                   <span className="text">
-                    <span data-label="L" data-index={3}>L</span>
-                    <span data-label="e" data-index={4}>e</span>
-                    <span data-label="a" data-index={5}>a</span>
-                    <span data-label="r" data-index={6}>r</span>
-                    <span data-label="n" data-index={7}>n</span>
-                    <span data-label=" " data-index={8}> </span>
-                    <span data-label="A" data-index={9}>A</span>
-                    <span data-label="I" data-index={10}>I</span>
+                    <span data-label="J" data-index={3}>J</span>
+                    <span data-label="o" data-index={4}>o</span>
+                    <span data-label="i" data-index={5}>i</span>
+                    <span data-label="n" data-index={6}>n</span> &nbsp;
+                    <span data-label=" " data-index={7}> </span>
+                    <span data-label="T" data-index={8}>T</span>
+                    <span data-label="h" data-index={9}>h</span>
+                    <span data-label="e" data-index={10}>e</span>&nbsp;
                     <span data-label=" " data-index={11}> </span>
-                    <span data-label="f" data-index={12}>f</span>
-                    <span data-label="r" data-index={13}>r</span>
-                    <span data-label="o" data-index={14}>o</span>
-                    <span data-label="m" data-index={15}>m</span>
-                    <span data-label=" " data-index={16}> </span>
-                    <span data-label="t" data-index={17}>t</span>
-                    <span data-label="h" data-index={18}>h</span>
-                    <span data-label="e" data-index={19}>e</span>
-                    <span data-label=" " data-index={20}> </span>
-                    <span data-label="B" data-index={21}>B</span>
-                    <span data-label="e" data-index={22}>e</span>
-                    <span data-label="s" data-index={23}>s</span>
-                    <span data-label="t" data-index={24}>t</span>
+                    <span data-label="A" data-index={12}>A</span>
+                    <span data-label="I" data-index={13}>I</span>&nbsp;
+                    <span data-label=" " data-index={14}> </span>
+                    <span data-label="R" data-index={15}>R</span>
+                    <span data-label="e" data-index={16}>e</span>
+                    <span data-label="v" data-index={17}>v</span>
+                    <span data-label="o" data-index={18}>o</span>
+                    <span data-label="l" data-index={19}>l</span>
+                    <span data-label="u" data-index={20}>u</span>
+                    <span data-label="t" data-index={21}>t</span>
+                    <span data-label="i" data-index={22}>i</span>
+                    <span data-label="o" data-index={23}>o</span>
+                    <span data-label="n" data-index={24}>n</span>&nbsp;
+                    <span data-label=" " data-index={25}> </span>
+                    <span data-label="T" data-index={26}>T</span>
+                    <span data-label="o" data-index={27}>o</span>
+                    <span data-label="d" data-index={28}>d</span>
+                    <span data-label="a" data-index={29}>a</span>
+                    <span data-label="y" data-index={30}>y</span>
                   </span>
                 </div>
               </div>
@@ -168,18 +174,54 @@ const StyledWrapper = styled.div`
       center center;
   }
 
+  .p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
   .button {
     --radius: 18px;
     outline: none;
     cursor: pointer;
-    font-size: 22px;
+    font-size: 20px;
     background: transparent;
     border: 0;
     position: relative;
-    width: 300px; /* Increased width for longer text */
+    width: 360px;
     height: 64px;
     box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
     border-radius: var(--radius);
+  }
+
+  /* Mobile responsive styles */
+  @media (max-width: 768px) {
+    .button {
+      font-size: 14px;
+      width: 280px;
+      height: 56px;
+    }
+    
+    .p {
+      padding: 10px;
+    }
+    
+    .circuit {
+      width: 300px !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .button {
+      font-size: 12px;
+      width: 240px;
+      height: 50px;
+    }
+    
+    .circuit {
+      width: 260px !important;
+    }
   }
 
   .button::before,
@@ -211,7 +253,7 @@ const StyledWrapper = styled.div`
   .glow {
     position: absolute;
     inset: 0;
-    box-shadow: 0 0 200px 5px rgba(58, 134, 255, 0.4); /* Blue glow */
+    box-shadow: 0 0 200px 5px rgba(58, 134, 255, 0.4);
     pointer-events: none;
     touch-action: none;
   }
@@ -220,7 +262,7 @@ const StyledWrapper = styled.div`
     content: "";
     position: absolute;
     margin: auto;
-    background: rgba(58, 134, 255, 0.05); /* Blue tint */
+    background: rgba(58, 134, 255, 0.05);
     border-radius: 50%;
     filter: blur(50px);
     inset: 0;
@@ -244,7 +286,7 @@ const StyledWrapper = styled.div`
     position: absolute;
     width: 100%;
     height: 100%;
-    border: 0.5px solid rgba(58, 134, 255, 0.4); /* Blue border */
+    border: 0.5px solid rgba(58, 134, 255, 0.4);
     inset: 0;
     filter: blur(2px);
     border-radius: 30px;
@@ -297,16 +339,16 @@ const StyledWrapper = styled.div`
   }
 
   .bg::after {
-    background: #0a192f; /* Dark blue background */
+    background: #0a192f;
     box-shadow:
-      inset 0 0 0 1px rgba(58, 134, 255, 0.4), /* Blue border */
+      inset 0 0 0 1px rgba(58, 134, 255, 0.4),
       inset -2px 0 0 -1px rgba(58, 134, 255, 1),
       inset 0 -2px 0 -1px rgba(58, 134, 255, 0.1);
   }
 
   .bg .shine {
     transition: all 0.5s linear;
-    color: rgba(58, 134, 255, 0.85); /* Blue shine */
+    color: rgba(58, 134, 255, 0.85);
   }
 
   .button:active .bg .shine {
@@ -362,7 +404,7 @@ const StyledWrapper = styled.div`
     background: linear-gradient(
       to right,
       transparent 0%,
-      #3a86ff 50%, /* Blue gradient */
+      #3a86ff 50%,
       transparent 100%
     );
     animation: spin 1.7s linear infinite;
@@ -479,7 +521,7 @@ const StyledWrapper = styled.div`
     overflow: hidden;
     height: 100%;
     padding: 2px;
-    background: linear-gradient(to bottom, #3a86ff, #2667cc); /* Blue gradient */
+    background: linear-gradient(to bottom, #3a86ff, #2667cc);
     box-shadow:
       inset 0 0 16px 6px #1a4b99,
       inset 0 -10px 10px -8px #3a86ff;
@@ -520,10 +562,10 @@ const StyledWrapper = styled.div`
     z-index: 1;
     position: relative;
     height: 100%;
-    gap: 2px; /* Reduced gap for better spacing */
+    gap: 2px;
     border-radius: calc(var(--radius) * 0.85);
     font-weight: 600;
-    background: linear-gradient(to bottom, #3a86ff, #2667cc); /* Blue gradient */
+    background: linear-gradient(to bottom, #3a86ff, #2667cc);
     box-shadow:
       inset 0 0 16px 6px #1a4b99,
       0 0 10px 10px rgba(0, 0, 0, 0.2),
@@ -559,7 +601,7 @@ const StyledWrapper = styled.div`
     transform: translateY(-100%);
   }
 
-  /* Animation for each character */
+
   .text span[data-index="3"] { animation: char-in 1.2s ease backwards calc(3 * 0.03s); }
   .text span[data-index="4"] { animation: char-in 1.2s ease backwards calc(4 * 0.03s); }
   .text span[data-index="5"] { animation: char-in 1.2s ease backwards calc(5 * 0.03s); }
@@ -582,6 +624,12 @@ const StyledWrapper = styled.div`
   .text span[data-index="22"] { animation: char-in 1.2s ease backwards calc(22 * 0.03s); }
   .text span[data-index="23"] { animation: char-in 1.2s ease backwards calc(23 * 0.03s); }
   .text span[data-index="24"] { animation: char-in 1.2s ease backwards calc(24 * 0.03s); }
+  .text span[data-index="25"] { animation: char-in 1.2s ease backwards calc(25 * 0.03s); }
+  .text span[data-index="26"] { animation: char-in 1.2s ease backwards calc(26 * 0.03s); }
+  .text span[data-index="27"] { animation: char-in 1.2s ease backwards calc(27 * 0.03s); }
+  .text span[data-index="28"] { animation: char-in 1.2s ease backwards calc(28 * 0.03s); }
+  .text span[data-index="29"] { animation: char-in 1.2s ease backwards calc(29 * 0.03s); }
+  .text span[data-index="30"] { animation: char-in 1.2s ease backwards calc(30 * 0.03s); }
 
   .button:hover .text span[data-index="3"]::before { animation: char-in 0.7s ease calc(3 * 0.03s); }
   .button:hover .text span[data-index="4"]::before { animation: char-in 0.7s ease calc(4 * 0.03s); }
@@ -605,6 +653,12 @@ const StyledWrapper = styled.div`
   .button:hover .text span[data-index="22"]::before { animation: char-in 0.7s ease calc(22 * 0.03s); }
   .button:hover .text span[data-index="23"]::before { animation: char-in 0.7s ease calc(23 * 0.03s); }
   .button:hover .text span[data-index="24"]::before { animation: char-in 0.7s ease calc(24 * 0.03s); }
+  .button:hover .text span[data-index="25"]::before { animation: char-in 0.7s ease calc(25 * 0.03s); }
+  .button:hover .text span[data-index="26"]::before { animation: char-in 0.7s ease calc(26 * 0.03s); }
+  .button:hover .text span[data-index="27"]::before { animation: char-in 0.7s ease calc(27 * 0.03s); }
+  .button:hover .text span[data-index="28"]::before { animation: char-in 0.7s ease calc(28 * 0.03s); }
+  .button:hover .text span[data-index="29"]::before { animation: char-in 0.7s ease calc(29 * 0.03s); }
+  .button:hover .text span[data-index="30"]::before { animation: char-in 0.7s ease calc(30 * 0.03s); }
 
   .button:hover .text span[data-index="3"]::after { opacity: 1; animation: char-out 0.7s ease calc(3 * 0.03s) backwards; }
   .button:hover .text span[data-index="4"]::after { opacity: 1; animation: char-out 0.7s ease calc(4 * 0.03s) backwards; }
@@ -628,6 +682,12 @@ const StyledWrapper = styled.div`
   .button:hover .text span[data-index="22"]::after { opacity: 1; animation: char-out 0.7s ease calc(22 * 0.03s) backwards; }
   .button:hover .text span[data-index="23"]::after { opacity: 1; animation: char-out 0.7s ease calc(23 * 0.03s) backwards; }
   .button:hover .text span[data-index="24"]::after { opacity: 1; animation: char-out 0.7s ease calc(24 * 0.03s) backwards; }
+  .button:hover .text span[data-index="25"]::after { opacity: 1; animation: char-out 0.7s ease calc(25 * 0.03s) backwards; }
+  .button:hover .text span[data-index="26"]::after { opacity: 1; animation: char-out 0.7s ease calc(26 * 0.03s) backwards; }
+  .button:hover .text span[data-index="27"]::after { opacity: 1; animation: char-out 0.7s ease calc(27 * 0.03s) backwards; }
+  .button:hover .text span[data-index="28"]::after { opacity: 1; animation: char-out 0.7s ease calc(28 * 0.03s) backwards; }
+  .button:hover .text span[data-index="29"]::after { opacity: 1; animation: char-out 0.7s ease calc(29 * 0.03s) backwards; }
+  .button:hover .text span[data-index="30"]::after { opacity: 1; animation: char-out 0.7s ease calc(30 * 0.03s) backwards; }
 
   @keyframes char-in {
     0% {

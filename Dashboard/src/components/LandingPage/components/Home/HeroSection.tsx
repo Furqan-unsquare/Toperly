@@ -169,7 +169,7 @@ const DarkAIHero = () => {
               variants={zoomOut}
             >
               <Shield className="w-4 h-4 mr-2 text-blue-400" />
-              Secure Your Spot in the AI Academy
+              Secure Your Spot in India's First AI Academy
               <motion.div 
                 className="w-2 h-2 rounded-full ml-2 bg-blue-400"
                 animate={{
@@ -194,12 +194,12 @@ const DarkAIHero = () => {
             
             {/* Subtitle */}
             <motion.p 
-              className="text-xs sm:text-xl mb-10 mx-auto leading-relaxed text-gray-300"
+              className="text-xs sm:text-lg mb-10 mx-auto leading-relaxed text-gray-300"
               variants={zoomOut}
               transition={{ delay: 0.3 }}
             >
-              Join <span className="font-semibold text-blue-400">50,000+</span> professionals mastering 
-              cutting-edge AI skills through our immersive, verifiable learning platform.
+                we’re not just teaching  <span className="font-semibold text-blue-400">AI</span> — we’re shaping the next generation of innovators and job creators.
+                From small-town students to professionals seeking change, we make AI learning accessible in your own language."
             </motion.p>
 
             {/* Action Button */}
@@ -217,9 +217,9 @@ const DarkAIHero = () => {
               variants={container}
             >
               {[
-                { value: '50K+', label: 'AI Professionals', icon: Users },
-                { value: '200+', label: 'Expert Courses', icon: Cpu },
-                { value: '98%', label: 'Our Success Rate', icon: TrendingUp }
+                { value: '25K+', label: 'Languages', icon: Users },
+                { value: '20,000+', label: 'Learners', icon: Cpu },
+                { value: '25+', label: 'Industry Experts', icon: TrendingUp }
               ].map((stat, index) => (
                 <motion.div 
                   key={index}
@@ -236,12 +236,12 @@ const DarkAIHero = () => {
                       <div className="text-xl sm:text-4xl font-black text-blue-400">
                         {stat.value}
                       </div>
-                      <motion.div
+                      {/* <motion.div
                         whileHover={{ y: [0, -5, 0] }}
                         transition={{ duration: 0.5 }}
                       >
                         <stat.icon className="w-6 h-6 text-blue-400" />
-                      </motion.div>
+                      </motion.div> */}
                     </div>
                     <div className="text-xs md:text-sm font-medium text-gray-300">
                       {stat.label}

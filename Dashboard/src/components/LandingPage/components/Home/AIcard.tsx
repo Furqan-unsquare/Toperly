@@ -143,19 +143,17 @@ const AIRepresentativesUI = () => {
 
       {/* Top Left Text */}
       <div className="absolute top-56 left-16 z-10">
-        <p className="text-sm text-gray-600 max-w-xs leading-relaxed">
-          Give our AI the task of creating a unit<br />
-          bot on social networks, write the style<br />
-          you like and it will publish.
+       <p className="text-sm text-gray-600 max-w-xs leading-relaxed">
+          At Toperly, we believe your background shouldn’t be a barrier to your future. That’s why we built
+a platform with four core principles:
         </p>
       </div>
 
       {/* Top Right Text */}
       <div className="absolute bottom-96 right-8 z-10">
-        <p className="text-sm text-gray-600 max-w-xs leading-relaxed">
-          You can tick the human moderation<br />
-          of posts. It can also comment and<br />
-          promote itself.
+         <p className="text-sm text-gray-600 max-w-xs leading-relaxed">
+          Other platforms teach AI like a foreign language. <br />
+          We teach it like your native one
         </p>
       </div>
 
@@ -200,7 +198,7 @@ const AIRepresentativesUI = () => {
         {/* Enhanced Header */}
         <div className="text-center mb-8">
           <h1 className="text-5xl sm:text-7xl lg:text-8xl font-light text-gray-800 tracking-tight">
-            AI Representatives in X
+            Why Is Toperly Different
           </h1>
         </div>
 

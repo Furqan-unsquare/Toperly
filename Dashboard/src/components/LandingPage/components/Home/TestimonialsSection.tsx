@@ -42,31 +42,34 @@ const TestimonialsSection = () => {
 
   const testimonials = [
     {
-      name: "Sarah Chen",
-      role: "Senior Data Scientist at Google",
-      company: "Google",
-      content: "Toperly's AI-powered learning completely revolutionized. The adaptive curriculum and real-time feedback accelerated my skills beyond what I thought possible.",
+      name: "Ravi Malhotra",
+      role: "Final Year B.Com Student",
+      company: "Lucknow",
+      header: "Toperly made AI feel doable",
+      content: "I always thought AI/ML was too complex for someone like me. But the way Toperly explains itreal examples, Hindi-English options, it just clicked.",
       rating: 5,
-      initials: "SC",
-      achievement: "200% salary increase"
+      initials: "RM",
+      achievement: "Built first AI-powered project in college"
     },
     {
-      name: "Lisa Wang",
-      role: "Chief Technology Officer",
-      company: "Fortune 500",
-      content: "I needed to understand AI's transformative potential. Toperly's executive course gave me the strategic framework to lead our company's AI transformation successfully.",
+      name: "Asmita Roy",
+      role: "Graphic Designer",
+      company: "Kolkata",
+      header: "Toperly got me my first freelance gig",
+      content: "After finishing the AI in Graphic Design course, I created a portfolio using AI tools and got hired by a local brand. This platform changed the game for me.",
       rating: 5,
-      initials: "LW",
-      achievement: "Led digital transformation"
+      initials: "AR",
+      achievement: "Gained 3 paying freelance clients in 2 months"
     },
     {
-      name: "James Miller",
-      role: "AI Solutions Architect",
-      company: "Amazon Web Services",
-      content: "The AI-powered learning system adapted perfectly to my schedule and learning style. I went from beginner to deploying production ML models in just 3 months.",
+      name: "Jitendra Sharma",
+      role: "Aspiring EdTech Consultant",
+      company: "Jaipur",
+      header: "Perfect for career switchers like me.",
+      content: "I was a school teacher, now I’m learning AI in EdTech through Toperly. The content is beginner-friendly, and the support is amazing",
       rating: 5,
-      initials: "JM",
-      achievement: "AWS ML certification"
+      initials: "JS",
+      achievement: "Designed AI-based EdTech prototype"
     }
   ];
 
@@ -106,7 +109,7 @@ const TestimonialsSection = () => {
         {/* Animated Header */}
         <div 
           ref={headerRef}
-          className={`text-center mb-20 transition-all duration-1000 ${
+          className={`text-center mb-20 md:mb-32 transition-all duration-1000 ${
             headerInView 
               ? 'opacity-100 transform translate-y-0' 
               : 'opacity-0 transform translate-y-8'
@@ -116,9 +119,7 @@ const TestimonialsSection = () => {
             headerInView ? 'animate-title-reveal' : ''
           }`}>
             Trusted by{" "}
-            <span className={`bg-gradient-primary bg-clip-text text-transparent transition-all duration-1000 delay-400 ${
-              headerInView ? 'animate-gradient-flow' : ''
-            }`}>
+            <span className={`bg-gradient-primary bg-clip-text text-transparent transition-all duration-1000 delay-400 `}>
               Industry Leaders
             </span>
           </h2>
@@ -151,7 +152,7 @@ const TestimonialsSection = () => {
                   style={{ transitionDelay: `${index * 200}ms` }}
                 >
                   <Card className={`group hover:shadow-elevated transition-all duration-700 border-0 bg-card/90 backdrop-blur-sm h-full overflow-hidden hover:scale-105 hover:-translate-y-2`} style={{ animationDelay: `${800 + index * 200}ms` }}>
-                    <CardContent className="p-6 relative h-full">
+                    <CardContent className="pt-6 px-6 relative h-full">
                       
                       {/* Animated Quote Icon */}
                       <div className="absolute top-4 right-4">
@@ -172,8 +173,10 @@ const TestimonialsSection = () => {
                           />
                         ))}
                       </div>
-                      
-                      <p className="line-clamp-4 text-muted-foreground mb-4 leading-relaxed">
+                      <h1 className="line-clamp-2 mb-4 leading-relaxed">
+                        {testimonial.header}
+                      </h1>
+                      <p className="line-clamp-3 text-xs text-muted-foreground mb-4 leading-relaxed">
                         "{testimonial.content}"
                       </p>
                       
@@ -192,7 +195,7 @@ const TestimonialsSection = () => {
                             : 'opacity-0 transform translate-x-4'
                         }`} style={{ transitionDelay: `${1500 + index * 200}ms` }}>
                           <div className="font-bold">{testimonial.name}</div>
-                          <div className="text-sm text-muted-foreground">{testimonial.role}</div>
+                          <div className="text-xs text-muted-foreground">{testimonial.role}</div>
                           <div className="text-xs font-semibold text-primary">{testimonial.company}</div>
                         </div>
                       </div>
@@ -249,8 +252,10 @@ const TestimonialsSection = () => {
                       />
                     ))}
                   </div>
-                  
-                  <p className="text-muted-foreground mb-6 leading-relaxed text-lg">
+                  <h2 className="font-semibold mb-6 leading-relaxed text-lg">
+                    {testimonial.header}
+                  </h2>
+                  <p className="text-muted-foreground mb-6 leading-relaxed text-sm">
                     "{testimonial.content}"
                   </p>
                   
