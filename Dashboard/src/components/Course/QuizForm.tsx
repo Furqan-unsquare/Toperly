@@ -67,7 +67,7 @@ const QuizForm = ({
             : {};
 
           const res = await axios.get(
-            `http://192.168.1.29:5000/api/courses/${courseId}`,
+            `http://localhost:5000/api/courses/${courseId}`,
             config
           );
 
@@ -210,7 +210,7 @@ const QuizForm = ({
       if (quiz?._id) {
         // Update Quiz
         response = await axios.put(
-          `http://192.168.1.29:5000/api/quizzes/${quiz._id}`,
+          `http://localhost:5000/api/quizzes/${quiz._id}`,
           payload,
           {
             headers: {
@@ -221,7 +221,7 @@ const QuizForm = ({
       } else {
         // Create Quiz
         response = await axios.post(
-          "http://192.168.1.29:5000/api/quizzes",
+          "http://localhost:5000/api/quizzes",
           payload,
           {
             headers: {

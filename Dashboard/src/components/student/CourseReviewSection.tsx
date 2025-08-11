@@ -3,7 +3,7 @@ import { Star, User, Trash2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import moment from "moment";
 
-const API_BASE = "http://192.168.1.29:5000/api";
+const API_BASE = "http://localhost:5000/api";
 
 const CourseReviewSection = ({ courseId, currentUser, isEnrolled }) => {
   const [reviews, setReviews] = useState([]);

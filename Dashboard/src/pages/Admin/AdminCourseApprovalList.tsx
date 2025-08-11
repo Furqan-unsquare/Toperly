@@ -19,7 +19,7 @@ const AdminCourseApprovalList = () => {
 
   const fetchCourses = async () => {
     try {
-      const res = await fetch("http://192.168.1.29:5000/api/courses", {
+      const res = await fetch("http://localhost:5000/api/courses", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -39,7 +39,7 @@ const AdminCourseApprovalList = () => {
   const updateCourseStatus = async (courseId, newStatus) => {
     try {
       const res = await fetch(
-        `http://192.168.1.29:5000/api/courses/${courseId}/status`,
+        `http://localhost:5000/api/courses/${courseId}/status`,
         {
           method: "PUT",
           headers: {

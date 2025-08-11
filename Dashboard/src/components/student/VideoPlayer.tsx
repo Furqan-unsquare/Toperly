@@ -18,7 +18,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 
-const API_BASE = "http://192.168.1.29:5000/api";
+const API_BASE = "http://localhost:5000/api";
 
 const AdvancedVideoPlayer = ({
   video,

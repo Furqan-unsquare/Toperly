@@ -35,7 +35,7 @@ export const StudentDashboard = () => {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const navigate = useNavigate();
   useEffect(() => {
-    fetch("http://192.168.1.29:5000/api/auth/me", {
+    fetch("http://localhost:5000/api/auth/me", {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },

@@ -45,7 +45,7 @@ const EnrollmentCard = ({
 
     try {
       const response = await fetch(
-        `http://192.168.1.29:5000/api/wishlist/my-wishlist`,
+        `http://localhost:5000/api/wishlist/my-wishlist`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -85,7 +85,7 @@ const EnrollmentCard = ({
       if (isWishlisted) {
         // Remove from wishlist
         const response = await fetch(
-          `http://192.168.1.29:5000/api/wishlist/${course._id}`,
+          `http://localhost:5000/api/wishlist/${course._id}`,
           {
             method: "DELETE",
             headers: {
@@ -104,7 +104,7 @@ const EnrollmentCard = ({
       } else {
         // Add to wishlist
         const response = await fetch(
-          `http://192.168.1.29:5000/api/wishlist/${course._id}`,
+          `http://localhost:5000/api/wishlist/${course._id}`,
           {
             method: "POST",
             headers: {

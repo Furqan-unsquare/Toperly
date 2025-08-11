@@ -27,14 +27,14 @@ const AdminCoursesReviews = () => {
       try {
         // Fetch all courses
         const coursesResponse = await fetch(
-          "http://192.168.1.29:5000/api/courses/"
+          "http://localhost:5000/api/courses/"
         );
         const coursesData = await coursesResponse.json();
         setCourses(coursesData);
 
         // Fetch all reviews once
         const reviewsResponse = await fetch(
-          "http://192.168.1.29:5000/api/reviews/all"
+          "http://localhost:5000/api/reviews/all"
         );
         const allReviews = await reviewsResponse.json();
 

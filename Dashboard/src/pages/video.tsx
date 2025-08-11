@@ -43,7 +43,7 @@ const MediaManagementSystem = () => {
       try {
         const token = localStorage.getItem("token");
         const res = await fetch(
-          "http://192.168.1.29:5000/unsquare-toperly/images",
+          "http://localhost:5000/unsquare-toperly/images",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -91,7 +91,7 @@ const MediaManagementSystem = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://192.168.1.29:5000/api/url/upload", {
+      const res = await fetch("http://localhost:5000/api/url/upload", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

@@ -32,7 +32,7 @@ const HeroSection = () => {
   const fetchStats = async () => {
     try {
       // You can create an endpoint for stats or use existing data
-      const response = await fetch("http://192.168.1.29:5000/api/courses");
+      const response = await fetch("http://localhost:5000/api/courses");
       if (response.ok) {
         const courses = await response.json();
         setStats({

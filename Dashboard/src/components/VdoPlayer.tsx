@@ -14,7 +14,7 @@ const VdoPlayer: React.FC<VdoPlayerProps> = ({ videoId }) => {
     const fetchOtp = async () => {
       try {
         const response = await axios.get(
-          `http://192.168.1.29:5000/api/vdocipher/otp/${videoId}`
+          `http://localhost:5000/api/vdocipher/otp/${videoId}`
         );
         setOtp(response.data.otp);
         setPlaybackInfo(response.data.playbackInfo);

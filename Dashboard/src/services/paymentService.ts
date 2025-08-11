@@ -1,7 +1,7 @@
 import axios from "axios";
 import { PaymentResponse } from "../types/payment";
 
-const API_BASE_URL = "http://192.168.1.29:5000/api";
+const API_BASE_URL = "http://localhost:5000/api";
 
 export const paymentService = {
   createOrder: async (orderData: {

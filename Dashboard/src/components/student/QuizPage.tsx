@@ -18,10 +18,10 @@ const QuizPage = () => {
     const loadQuizAndAttempt = async () => {
       try {
         const quizRes = await axios.get(
-          `http://192.168.1.29:5000/api/quizzes/${quizId}`
+          `http://localhost:5000/api/quizzes/${quizId}`
         );
         const attemptRes = await axios.get(
-          `http://192.168.1.29:5000/api/quiz-attempts`,
+          `http://localhost:5000/api/quiz-attempts`,
           {
             params: {
               studentId: user.id,
@@ -36,7 +36,7 @@ const QuizPage = () => {
         if (err.response?.status === 404) {
           // Quiz not yet attempted
           const quizRes = await axios.get(
-            `http://192.168.1.29:5000/api/quizzes/${quizId}`
+            `http://localhost:5000/api/quizzes/${quizId}`
           );
           setQuiz(quizRes.data.data);
         } else {
@@ -64,7 +64,7 @@ const QuizPage = () => {
 
     try {
       const res = await axios.post(
-        "http://192.168.1.29:5000/api/quiz-attempts",
+        "http://localhost:5000/api/quiz-attempts",
         {
           student: user.id,
           studentCustomId: user.id,

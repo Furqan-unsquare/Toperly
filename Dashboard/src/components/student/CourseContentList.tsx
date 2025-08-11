@@ -25,7 +25,7 @@ const CourseContentList = ({
     const fetchQuizzes = async () => {
       try {
         const res = await axios.get(
-          `http://192.168.1.29:5000/api/quizzes/course/${course._id}`
+          `http://localhost:5000/api/quizzes/course/${course._id}`
         );
         if (res.data.success) {
           setQuizzes(res.data.data);

@@ -54,8 +54,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use("/temp", express.static(path.join(__dirname, "public/temp")));
 const allowedOrigins = [
-  "http://192.168.1.29:8080",
-  "http://192.168.1.29:8081",
+  "ttp://localhost:8080",
+  "ttp://localhost:8081",
   "https://toperly-unsquare.netlify.app",
   "https://toperly-dashboard-unsquare.netlify.app",
 ];
@@ -482,7 +482,7 @@ async function start() {
   try {
     await connectDB();
     app.listen(PORT, () => {
-      console.log(`Server is listening on http://192.168.1.29:${PORT}`);
+      console.log(`Server is listening on ttp://localhost:${PORT}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error.message);

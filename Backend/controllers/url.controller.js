@@ -13,7 +13,7 @@ export const createUrl = asyncWrapper(async (req, res, next) => {
     throw new ApiError(400, "URL is required");
   }
   const shortId = nanoid(5);
-  const shortedUrl = `http://192.168.1.29:${
+  const shortedUrl = `ttp://localhost:${
     process.env.PORT || 5000
   }/api/${shortId}`;
 

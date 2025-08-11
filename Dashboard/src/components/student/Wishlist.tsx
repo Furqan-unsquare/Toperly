@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Play, Star, Clock, BookOpen, Heart, X } from "lucide-react";
 import VdoPlayer from "../VdoPlayer";
 
-const API_BASE = "http://192.168.1.29:5000/api";
+const API_BASE = "http://localhost:5000/api";
 
 const Wishlist = () => {
   const { user, token } = useAuth();

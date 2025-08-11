@@ -38,7 +38,7 @@ export const Navbar = () => {
         {/* <div className="text-lg font-semibold truncate">
           Welcome, {user?.name}
         </div> */}
-        <a href="/dashboard"><img src="/logo.png" alt="logo" className="w-40" /></a>
+        <a href="/student/dashboard"><img src="/logo.png" alt="logo" className="w-40" /></a>
 
         {/* Right Action Icons */}
         <div className="flex items-center space-x-4">
@@ -124,3 +124,5 @@ export const Navbar = () => {
     </nav>
   );
 };
+
+export default Navbar;

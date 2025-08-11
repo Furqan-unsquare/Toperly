@@ -88,7 +88,7 @@ const QuizManagement = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://192.168.1.29:5000/api/quizzes", {
+      const response = await axios.get("http://localhost:5000/api/quizzes", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -115,7 +115,7 @@ const QuizManagement = () => {
   const fetchCourses = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://192.168.1.29:5000/api/courses", {
+      const response = await axios.get("http://localhost:5000/api/courses", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -146,7 +146,7 @@ const QuizManagement = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `http://192.168.1.29:5000/api/courses/${courseId}`,
+        `http://localhost:5000/api/courses/${courseId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -222,7 +222,7 @@ const QuizManagement = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://192.168.1.29:5000/api/quizzes/${quizId}`, {
+      await axios.delete(`http://localhost:5000/api/quizzes/${quizId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       await fetchQuizzes();
@@ -368,7 +368,7 @@ const QuizManagement = () => {
 
       if (editingQuiz) {
         await axios.put(
-          `http://192.168.1.29:5000/api/quizzes/${editingQuiz._id}`,
+          `http://localhost:5000/api/quizzes/${editingQuiz._id}`,
           payload,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -376,7 +376,7 @@ const QuizManagement = () => {
         );
         alert("Quiz updated successfully!");
       } else {
-        await axios.post("http://192.168.1.29:5000/api/quizzes", payload, {
+        await axios.post("http://localhost:5000/api/quizzes", payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
         alert("Quiz created successfully!");

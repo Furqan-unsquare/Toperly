@@ -31,7 +31,7 @@ const InstructorDashboard = () => {
 
   const fetchInstructorData = async () => {
     try {
-      const response = await fetch("http://192.168.1.29:5000/api/auth/me", {
+      const response = await fetch("http://localhost:5000/api/auth/me", {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

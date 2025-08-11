@@ -52,7 +52,7 @@ const AdminUserManagement = () => {
       setLoading(true);
       setError(null);
 
-      const res = await axios.get("http://192.168.1.29:5000/api/admin/users", {
+      const res = await axios.get("http://localhost:5000/api/admin/users", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -115,7 +115,7 @@ const AdminUserManagement = () => {
       setError(null);
 
       await axios.put(
-        "http://192.168.1.29:5000/api/admin/user/suspend",
+        "http://localhost:5000/api/admin/user/suspend",
         {
           userId: user._id,
           userType: user.role,
@@ -168,7 +168,7 @@ const AdminUserManagement = () => {
         if (!user) return Promise.resolve();
 
         return axios.put(
-          "http://192.168.1.29:5000/api/admin/user/suspend",
+          "http://localhost:5000/api/admin/user/suspend",
           {
             userId: user._id,
             userType: user.role,

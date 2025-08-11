@@ -27,6 +27,7 @@
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
     "nft.storage": "^7.2.0",
+    "passport-facebook": "^3.0.0",
     "pdfkit": "^0.17.1",
     "razorpay": "^2.9.6",
     "web3.storage": "^4.5.5"

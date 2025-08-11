@@ -62,7 +62,7 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
         });
         setFormData({ email: "", password: "" });
         setRole("student");
-        navigate("/dashboard"); // Redirect to dashboard on successful login
+        navigate("/student/dashboard"); // Redirect to dashboard on successful login
         onSuccess?.();
       } else {
         toast({

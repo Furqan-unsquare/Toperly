@@ -92,7 +92,7 @@ const AdminRevenueTracker = () => {
   const fetchEnrollments = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`http://192.168.1.29:5000/api/enroll`, {
+      const res = await fetch(`http://localhost:5000/api/enroll`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
