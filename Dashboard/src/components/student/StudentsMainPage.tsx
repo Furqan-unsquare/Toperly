@@ -13,7 +13,6 @@ const StudentsMainPage = () => {
       <RecommendedCourses/>
       <TopPick/>
       <TopRatedCourses/>
-      <Footer/>
     </div>
   )
 }

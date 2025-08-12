@@ -36,7 +36,7 @@ interface SidebarProps {
 export const Sidebar = ({ user, logout }: SidebarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [coursesOpen, setCoursesOpen] = useState(false);
   const [assessmentOpen, setAssessmentOpen] = useState(false);
@@ -55,17 +55,24 @@ export const Sidebar = ({ user, logout }: SidebarProps) => {
   };
 
   const navItems = [
-    { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-    { name: "My Courses", path: "/all-courses", icon: FolderOpen },
-    { name: "Create Course", path: "/create-course", icon: FilePlus2 },
-    { name: "Approvals", path: "/approvals", icon: CheckSquare },
-    { name: "Quizzes", path: "/all-quizzes", icon: GraduationCap },
-    // { name: "Create Quiz", path: "/create-quiz", icon: FilePlus2 },
-    { name: "Materials", path: "/materials", icon: BookOpen },
-    { name: "Reviews & Feedback", path: "/reviews-feedback", icon: Users },
-    { name: "All Students", path: "/all-students", icon: Users },
-    { name: "Help Center", path: "/helpcenter", icon: LifeBuoy },
+    { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard, roles: ["instructor", "admin", "subadmin"] },
+    { name: "My Courses", path: "/instructor/all-courses", icon: FolderOpen, roles: ["instructor", "admin", "subadmin"] },
+    { name: "Create Course", path: "/instructor/create-course", icon: FilePlus2, roles: ["instructor", "admin", "subadmin"] },
+    { name: "Approvals", path: "/instructor/approvals", icon: CheckSquare, roles: ["instructor", "admin", "subadmin"] },
+    { name: "Quizzes", path: "/instructor/all-quizzes", icon: GraduationCap, roles: ["instructor", "admin", "subadmin"] },
+    { name: "Materials", path: "/instructor/materials", icon: BookOpen, roles: ["instructor", "admin", "subadmin"] },
+    { name: "Reviews & Feedback", path: "/instructor/reviews-feedback", icon: Users, roles: ["instructor", "admin", "subadmin"] },
+    { name: "All Students", path: "/instructor/all-students", icon: Users, roles: ["instructor", "admin", "subadmin"] },
+    { name: "Help Center", path: "/instructor/helpcenter", icon: LifeBuoy, roles: ["instructor", "admin", "subadmin"] },
+    { name: "Coupons (Admin)", path: "/instructor/admin/coupons", icon: LifeBuoy, roles: ["admin", "subadmin"] },
+    { name: "Revenue (Admin)", path: "/instructor/admin/revenue", icon: LifeBuoy, roles: ["admin"] },
+    { name: "Analytics (Admin)", path: "/instructor/admin/analytics", icon: LifeBuoy, roles: ["admin", "subadmin"] },
+    { name: "Approvals (Admin)", path: "/instructor/admin/approvals", icon: LifeBuoy, roles: ["admin", "subadmin"] },
+    { name: "User Management (Admin)", path: "/instructor/admin/user-management", icon: LifeBuoy, roles: ["admin", "subadmin"] },
   ];
+
+  // Filter nav items based on user role
+  const filteredNavItems = navItems.filter((item) => item.roles.includes(user.role));
 
   return (
     <aside
@@ -111,142 +118,158 @@ export const Sidebar = ({ user, logout }: SidebarProps) => {
               </li>
 
               {/* Course Management */}
-              <li>
-                <div className="w-full my-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      if (collapsed) setCollapsed(false); // Expand sidebar if collapsed
-                      setCoursesOpen(!coursesOpen);
-                      setAssessmentOpen(false); // Close other dropdowns
-                      setSettingsOpen(false);
-                    }}
-                    className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
-                  >
-                    <BookOpen className="w-4 h-4" />
-                    {!collapsed && (
-                      <>
-                        <span className="ml-2 text-sm">Course Management</span>
-                        <ChevronDown
-                          className={`ml-auto w-4 h-4 transform transition-transform ${
-                            coursesOpen ? "rotate-180" : "rotate-0"
-                          }`}
-                        />
-                      </>
-                    )}
-                  </Button>
+              {filteredNavItems.some((item) => ["My Courses", "Approvals"].includes(item.name)) && (
+                <li>
+                  <div className="w-full my-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        if (collapsed) setCollapsed(false);
+                        setCoursesOpen(!coursesOpen);
+                        setAssessmentOpen(false);
+                        setSettingsOpen(false);
+                      }}
+                      className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
+                    >
+                      <BookOpen className="w-4 h-4" />
+                      {!collapsed && (
+                        <>
+                          <span className="ml-2 text-sm">Course Management</span>
+                          <ChevronDown
+                            className={`ml-auto w-4 h-4 transform transition-transform ${
+                              coursesOpen ? "rotate-180" : "rotate-0"
+                            }`}
+                          />
+                        </>
+                      )}
+                    </Button>
 
-                  {!collapsed && coursesOpen && (
-                    <ul className="ml-6 mt-1 space-y-1 text-gray-600">
-                      <li>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="w-full justify-start"
-                          onClick={() => navigate("/all-courses")}
-                        >
-                          <FolderOpen className="w-4 h-4 mr-2" />
-                          My Courses
-                        </Button>
-                      </li>
-                      <li>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="w-full justify-start"
-                          onClick={() => navigate("/approvals")}
-                        >
-                          <CheckSquare className="w-4 h-4 mr-2" />
-                          Approvals
-                        </Button>
-                      </li>
-                    </ul>
-                  )}
-                </div>
-              </li>
+                    {!collapsed && coursesOpen && (
+                      <ul className="ml-6 mt-1 space-y-1 text-gray-600">
+                        {filteredNavItems.find((item) => item.name === "My Courses") && (
+                          <li>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="w-full justify-start"
+                              onClick={() => navigate("/instructor/all-courses")}
+                            >
+                              <FolderOpen className="w-4 h-4 mr-2" />
+                              My Courses
+                            </Button>
+                          </li>
+                        )}
+                        {filteredNavItems.find((item) => item.name === "Approvals") && (
+                          <li>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="w-full justify-start"
+                              onClick={() => navigate("/instructor/approvals")}
+                            >
+                              <CheckSquare className="w-4 h-4 mr-2" />
+                              Approvals
+                            </Button>
+                          </li>
+                        )}
+                      </ul>
+                    )}
+                  </div>
+                </li>
+              )}
 
               {/* Assessment Studio */}
-              <li>
-                <div className="w-full">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      if (collapsed) setCollapsed(false); // Expand sidebar if collapsed
-                      setAssessmentOpen(!assessmentOpen);
-                      setCoursesOpen(false); // Close other dropdowns
-                      setSettingsOpen(false);
-                    }}
-                    className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
-                  >
-                    <GraduationCap className="w-4 h-4" />
-                    {!collapsed && (
-                      <>
-                        <span className="ml-2 text-sm">Assessment</span>
-                        <ChevronDown
-                          className={`ml-auto w-4 h-4 transform transition-transform ${
-                            assessmentOpen ? "rotate-180" : "rotate-0"
-                          }`}
-                        />
-                      </>
-                    )}
-                  </Button>
+              {filteredNavItems.some((item) => ["Quizzes", "Materials"].includes(item.name)) && (
+                <li>
+                  <div className="w-full">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        if (collapsed) setCollapsed(false);
+                        setAssessmentOpen(!assessmentOpen);
+                        setCoursesOpen(false);
+                        setSettingsOpen(false);
+                      }}
+                      className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
+                    >
+                      <GraduationCap className="w-4 h-4" />
+                      {!collapsed && (
+                        <>
+                          <span className="ml-2 text-sm">Assessment</span>
+                          <ChevronDown
+                            className={`ml-auto w-4 h-4 transform transition-transform ${
+                              assessmentOpen ? "rotate-180" : "rotate-0"
+                            }`}
+                          />
+                        </>
+                      )}
+                    </Button>
 
-                  {!collapsed && assessmentOpen && (
-                    <ul className="ml-6 mt-1 space-y-1 text-gray-600">
-                      <li>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="w-full justify-start"
-                          onClick={() => navigate("/all-quizzes")}
-                        >
-                          <FileQuestion className="w-4 h-4 mr-2" />
-                          Quizzes
-                        </Button>
-                      </li>
-                      <li>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="w-full justify-start"
-                          onClick={() => navigate("/materials")}
-                        >
-                          <BookOpen className="w-4 h-4 mr-2" />
-                          Materials
-                        </Button>
-                      </li>
-                    </ul>
-                  )}
-                </div>
-              </li>
+                    {!collapsed && assessmentOpen && (
+                      <ul className="ml-6 mt-1 space-y-1 text-gray-600">
+                        {filteredNavItems.find((item) => item.name === "Quizzes") && (
+                          <li>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="w-full justify-start"
+                              onClick={() => navigate("/instructor/all-quizzes")}
+                            >
+                              <FileQuestion className="w-4 h-4 mr-2" />
+                              Quizzes
+                            </Button>
+                          </li>
+                        )}
+                        {filteredNavItems.find((item) => item.name === "Materials") && (
+                          <li>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="w-full justify-start"
+                              onClick={() => navigate("/instructor/materials")}
+                            >
+                              <BookOpen className="w-4 h-4 mr-2" />
+                              Materials
+                            </Button>
+                          </li>
+                        )}
+                      </ul>
+                    )}
+                  </div>
+                </li>
+              )}
 
               {/* Reviews & Feedback */}
-              <li>
-                <Button
-                  variant={location.pathname === "/reviews-feedback" ? "secondary" : "ghost"}
-                  size="sm"
-                  className={`w-full my-2 justify-start ${collapsed ? "justify-center px-0" : ""}`}
-                  onClick={() => navigate("/reviews-feedback")}
-                >
-                  <Users className="w-4 h-4" />
-                  {!collapsed && <span className="ml-2 text-sm">Reviews & Feedback</span>}
-                </Button>
-              </li>
+              {filteredNavItems.find((item) => item.name === "Reviews & Feedback") && (
+                <li>
+                  <Button
+                    variant={location.pathname === "/instructor/reviews-feedback" ? "secondary" : "ghost"}
+                    size="sm"
+                    className={`w-full my-2 justify-start ${collapsed ? "justify-center px-0" : ""}`}
+                    onClick={() => navigate("/instructor/reviews-feedback")}
+                  >
+                    <Users className="w-4 h-4" />
+                    {!collapsed && <span className="ml-2 text-sm">Reviews & Feedback</span>}
+                  </Button>
+                </li>
+              )}
 
               {/* All Students */}
-              <li>
-                <Button
-                  variant={location.pathname === "/all-students" ? "secondary" : "ghost"}
-                  size="sm"
-                  className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
-                  onClick={() => navigate("/all-students")}
-                >
-                  <Users className="w-4 h-4" />
-                  {!collapsed && <span className="ml-2 text-sm">All Students</span>}
-                </Button>
-              </li>
+              {filteredNavItems.find((item) => item.name === "All Students") && (
+                <li>
+                  <Button
+                    variant={location.pathname === "/instructor/all-students" ? "secondary" : "ghost"}
+                    size="sm"
+                    className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
+                    onClick={() => navigate("/instructor/all-students")}
+                  >
+                    <Users className="w-4 h-4" />
+                    {!collapsed && <span className="ml-2 text-sm">All Students</span>}
+                  </Button>
+                </li>
+              )}
 
               {/* Settings Dropdown */}
               <li>
@@ -255,9 +278,9 @@ export const Sidebar = ({ user, logout }: SidebarProps) => {
                     variant="ghost"
                     size="sm"
                     onClick={() => {
-                      if (collapsed) setCollapsed(false); // Expand sidebar if collapsed
+                      if (collapsed) setCollapsed(false);
                       setSettingsOpen(!settingsOpen);
-                      setCoursesOpen(false); // Close other dropdowns
+                      setCoursesOpen(false);
                       setAssessmentOpen(false);
                     }}
                     className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
@@ -282,7 +305,7 @@ export const Sidebar = ({ user, logout }: SidebarProps) => {
                           variant="ghost"
                           size="sm"
                           className="w-full justify-start"
-                          onClick={() => navigate("/user-profile")}
+                          onClick={() => navigate("/instructor/user-profile")}
                         >
                           <UserCircle2 className="w-4 h-4 mr-2" />
                           User Profile
@@ -293,7 +316,7 @@ export const Sidebar = ({ user, logout }: SidebarProps) => {
                           variant="ghost"
                           size="sm"
                           className="w-full justify-start"
-                          onClick={() => navigate("/security")}
+                          onClick={() => navigate("/instructor/security")}
                         >
                           <LockKeyhole className="w-4 h-4 mr-2" />
                           Security
@@ -305,72 +328,92 @@ export const Sidebar = ({ user, logout }: SidebarProps) => {
               </li>
 
               {/* Help Center */}
-              <li>
-                <Button
-                  variant={location.pathname === "/Instructor-helpcenter" ? "secondary" : "ghost"}
-                  size="sm"
-                  className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
-                  onClick={() => navigate("/Instructor-helpcenter")}
-                >
-                  <LifeBuoy className="w-4 h-4" />
-                  {!collapsed && <span className="ml-2 text-sm">Help Center</span>}
-                </Button>
-              </li>
-              <li>
-                <Button
-                  variant={location.pathname === "/admin/coupons" ? "secondary" : "ghost"}
-                  size="sm"
-                  className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
-                  onClick={() => navigate("/admin/coupons")}
-                >
-                  <LifeBuoy className="w-4 h-4" />
-                  {!collapsed && <span className="ml-2 text-sm">Coupons (Admin)</span>}
-                </Button>
-              </li>
-              <li>
-                <Button
-                  variant={location.pathname === "/admin/revenue" ? "secondary" : "ghost"}
-                  size="sm"
-                  className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
-                  onClick={() => navigate("/admin/revenue")}
-                >
-                  <LifeBuoy className="w-4 h-4" />
-                  {!collapsed && <span className="ml-2 text-sm">Revenue (Admin)</span>}
-                </Button>
-              </li>
-              <li>
-                <Button
-                  variant={location.pathname === "/admin/analytics" ? "secondary" : "ghost"}
-                  size="sm"
-                  className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
-                  onClick={() => navigate("/admin/analytics")}
-                >
-                  <LifeBuoy className="w-4 h-4" />
-                  {!collapsed && <span className="ml-2 text-sm">Analytics (Admin)</span>}
-                </Button>
-              </li>
-              <li>
-                <Button
-                  variant={location.pathname === "/admin/approvals" ? "secondary" : "ghost"}
-                  size="sm"
-                  className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
-                  onClick={() => navigate("/admin/approvals")}
-                >
-                  <LifeBuoy className="w-4 h-4" />
-                  {!collapsed && <span className="ml-2 text-sm">Approvals (Admin)</span>}
-                </Button>
-              </li>
-              <li>
-                <Button
-                  variant={location.pathname === "/admin/user-management" ? "secondary" : "ghost"}
-                  size="sm"
-                  className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
-                  onClick={() => navigate("/admin/user-management")}
-                >
-                  <LifeBuoy className="w-4 h-4" />
-                  {!collapsed && <span className="ml-2 text-sm">User Management (Admin)</span>}
-                </Button>
-              </li>
+              {filteredNavItems.find((item) => item.name === "Help Center") && (
+                <li>
+                  <Button
+                    variant={location.pathname === "/instructor/helpcenter" ? "secondary" : "ghost"}
+                    size="sm"
+                    className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
+                    onClick={() => navigate("/instructor/helpcenter")}
+                  >
+                    <LifeBuoy className="w-4 h-4" />
+                    {!collapsed && <span className="ml-2 text-sm">Help Center</span>}
+                  </Button>
+                </li>
+              )}
+
+              {/* Admin Navigation */}
+              {filteredNavItems.some((item) =>
+                ["Coupons (Admin)", "Revenue (Admin)", "Analytics (Admin)", "Approvals (Admin)", "User Management (Admin)"].includes(item.name)
+              ) && (
+                <>
+                  {filteredNavItems.find((item) => item.name === "Coupons (Admin)") && (
+                    <li>
+                      <Button
+                        variant={location.pathname === "/instructor/admin/coupons" ? "secondary" : "ghost"}
+                        size="sm"
+                        className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
+                        onClick={() => navigate("/instructor/admin/coupons")}
+                      >
+                        <LifeBuoy className="w-4 h-4" />
+                        {!collapsed && <span className="ml-2 text-sm">Coupons (Admin)</span>}
+                      </Button>
+                    </li>
+                  )}
+                  {filteredNavItems.find((item) => item.name === "Revenue (Admin)") && (
+                    <li>
+                      <Button
+                        variant={location.pathname === "/instructor/admin/revenue" ? "secondary" : "ghost"}
+                        size="sm"
+                        className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
+                        onClick={() => navigate("/instructor/admin/revenue")}
+                      >
+                        <LifeBuoy className="w-4 h-4" />
+                        {!collapsed && <span className="ml-2 text-sm">Revenue (Admin)</span>}
+                      </Button>
+                    </li>
+                  )}
+                  {filteredNavItems.find((item) => item.name === "Analytics (Admin)") && (
+                    <li>
+                      <Button
+                        variant={location.pathname === "/instructor/admin/analytics" ? "secondary" : "ghost"}
+                        size="sm"
+                        className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
+                        onClick={() => navigate("/instructor/admin/analytics")}
+                      >
+                        <LifeBuoy className="w-4 h-4" />
+                        {!collapsed && <span className="ml-2 text-sm">Analytics (Admin)</span>}
+                      </Button>
+                    </li>
+                  )}
+                  {filteredNavItems.find((item) => item.name === "Approvals (Admin)") && (
+                    <li>
+                      <Button
+                        variant={location.pathname === "/instructor/admin/approvals" ? "secondary" : "ghost"}
+                        size="sm"
+                        className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
+                        onClick={() => navigate("/instructor/admin/approvals")}
+                      >
+                        <LifeBuoy className="w-4 h-4" />
+                        {!collapsed && <span className="ml-2 text-sm">Approvals (Admin)</span>}
+                      </Button>
+                    </li>
+                  )}
+                  {filteredNavItems.find((item) => item.name === "User Management (Admin)") && (
+                    <li>
+                      <Button
+                        variant={location.pathname === "/instructor/admin/user-management" ? "secondary" : "ghost"}
+                        size="sm"
+                        className={`w-full justify-start ${collapsed ? "justify-center px-0" : ""}`}
+                        onClick={() => navigate("/instructor/admin/user-management")}
+                      >
+                        <LifeBuoy className="w-4 h-4" />
+                        {!collapsed && <span className="ml-2 text-sm">User Management (Admin)</span>}
+                      </Button>
+                    </li>
+                  )}
+                </>
+              )}
             </ul>
           </nav>
         </div>

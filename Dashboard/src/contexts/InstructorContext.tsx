@@ -1,19 +1,16 @@
 import { useAuth } from '@/contexts/AuthContext';
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 const InstructorRoutes = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
+  const { user, isLoading } = useAuth();
 
-  useEffect(() => {
-    if (user && user.role !== 'instructor') {
-      navigate('/dashboard');
-    }
-  }, [user, navigate]);
+  if (isLoading) {
+    return <div className="text-center mt-10">Loading...</div>;
+  }
 
-  // Prevent rendering until role check is done
-  if (!user || user.role !== 'instructor') return null;
+  if (!user || !['instructor', 'admin', 'subadmin'].includes(user.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return <>{children}</>;
 };

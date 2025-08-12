@@ -1,49 +1,54 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Hand } from 'lucide-react';
 
 const TopsyBot = () => {
-  const [isWaving, setIsWaving] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const images = [
+    '/topsy/1.png',
+    '/topsy/2.png',
+    '/topsy/3.png',
+    '/topsy/4.png',
+    '/topsy/5.png',
+    '/topsy/6.png',
+    '/topsy/7.png',
+  ];
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setIsWaving(true);
-      setTimeout(() => setIsWaving(false), 2000); // Wave for 2 seconds
-    }, 5000); // Repeat every 5 seconds
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    }, 1500); // Change image every 1 second
     return () => clearInterval(interval);
   }, []);
 
+  const handleClick = () => {
+    window.open('https://chatgpt.com', '_blank');
+  };
+
   return (
     <motion.div
-      className="fixed bottom-6 right-6 z-50"
+      className="fixed bottom-2 right-2 z-50 drop-shadow-xl"
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
       <motion.button
-        className="flex items-center justify-center bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+        onClick={handleClick}
+        className="flex items-center justify-center"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         style={{
-          minWidth: '56px',
-          minHeight: '56px',
+          minWidth: '100px',
+          minHeight: '100px',
+          width: '48px',
+          height: '48px',
         }}
       >
-        <motion.div
-          className="flex items-center space-x-2"
-          animate={{
-            rotate: isWaving ? [0, -15, 15, 0] : 0,
-          }}
-          transition={{
-            duration: 0.8,
-            ease: "easeInOut",
-            times: [0, 0.25, 0.75, 1],
-            repeat: isWaving ? 1 : 0,
-          }}
-        >
-          <Hand className="w-6 h-6 text-white" />
-          <span className="text-sm font-medium hidden md:inline">Hey! Use me!</span>
-        </motion.div>
+        <img
+          src={images[currentIndex]}
+          alt="Topsy"
+          className="w-full h-full object-cover rounded-full"
+        />
       </motion.button>
     </motion.div>
   );

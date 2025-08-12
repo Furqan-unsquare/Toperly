@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronDown, Menu, X, Search, Home, BookOpen, PenTool, Mail, Folder, Sparkles, Globe, User } from 'lucide-react';
+import { ChevronDown, Menu, X, Search, Home, BookOpen, PenTool, Mail, Folder, Sparkles, Globe, User, Shield, UserCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 import debounce from 'lodash/debounce';
-import { useAuth } from '@/contexts/AuthContext'; // Adjust the import path as needed
+import { useAuth } from '@/contexts/AuthContext';
 
 // Animated AI Wave Component
 const AnimatedAIWave = () => (
@@ -97,7 +97,7 @@ const Navbar = () => {
   const [language, setLanguage] = useState('Eng');
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth(); // Access auth context
+  const { user, logout } = useAuth();
 
   // Fetch courses and derive categories
   useEffect(() => {
@@ -162,7 +162,7 @@ const Navbar = () => {
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
     setIsCategoriesOpen(true);
-    setIsProfileOpen(false); // Close profile dropdown when mobile menu toggles
+    setIsProfileOpen(false);
   };
 
   const toggleProfileMenu = () => {
@@ -176,6 +176,39 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   };
 
+  // Determine dashboard path based on user role
+  const getDashboardPath = () => {
+    if (!user) return '/auth/login';
+    switch (user.role) {
+      case 'student':
+        return '/student/dashboard';
+      case 'instructor':
+        return '/dashboard';
+      case 'admin':
+      case 'subadmin':
+        return '/admin/dashboard';
+      default:
+        return '/auth/login';
+    }
+  };
+
+  // Get role-specific icon
+  const getRoleIcon = () => {
+    if (!user) return null;
+    switch (user.role) {
+      case 'student':
+        return <BookOpen className="h-4 w-4 mr-1" /> ;
+      case 'instructor':
+        return <User className="h-4 w-4 mr-1" />;
+      case 'admin':
+        return <Shield className="h-4 w-4 mr-1" />;
+      case 'subadmin':
+        return <UserCheck className="h-4 w-4 mr-1" />;
+      default:
+        return null;
+    }
+  };
+
   const mainNavItems = [
     { label: 'All Courses', href: '/courses', icon: 'book' },
     { label: 'Blog', href: '/blogs', icon: 'pen' },
@@ -186,7 +219,6 @@ const Navbar = () => {
     { label: 'Become an Instructor', href: '/auth/login' },
     { label: 'My learning', href: '/auth/login' },
   ];
-
   const languages = ['Eng', 'Hin', 'Mar'];
 
   return (
@@ -221,7 +253,7 @@ const Navbar = () => {
 
       {/* Main navbar */}
       <div className={`${isScrolled ? 'h-16' : 'h-14 sm:h-16'} transition-all duration-300`}>
-        <div className="px-20 mx-auto  h-full flex items-center justify-between">
+        <div className="px-20 mx-auto h-full flex items-center justify-between">
           {/* Logo & Categories */}
           <div className="flex items-center">
             <div className="flex items-center space-x-3">
@@ -326,8 +358,8 @@ const Navbar = () => {
                     }`}
                     onClick={toggleProfileMenu}
                   >
-                    <User className="h-4 w-4 mr-1" />
-                    {user.name.split(' ')[0]} {/* Display first name */}
+                    {getRoleIcon()}
+                    {user.name.split(' ')[0]}
                     <ChevronDown className="h-4 w-4 ml-1 transition-transform duration-300" />
                   </button>
                   <AnimatePresence>
@@ -340,10 +372,10 @@ const Navbar = () => {
                         className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50"
                       >
                         <a
-                          href="/dashboard"
+                          href={getDashboardPath()}
                           onClick={(e) => {
                             e.preventDefault();
-                            navigate('/dashboard');
+                            navigate(getDashboardPath());
                             setIsProfileOpen(false);
                           }}
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
@@ -377,7 +409,7 @@ const Navbar = () => {
                     className={`text-sm font-medium transition-colors duration-300 ${
                       isScrolled ? 'text-gray-500 hover:text-gray-700' : 'text-gray-400 hover:text-gray-300'
                     }`}
-                    onClick={() => window.open('/auth/login')}
+                    onClick={() => navigate('/auth/login')}
                   >
                     Login
                   </button>
@@ -387,7 +419,7 @@ const Navbar = () => {
                         ? 'bg-gray-200 text-gray-900 hover:bg-gray-300'
                         : 'bg-gray-700 text-white hover:bg-gray-600'
                     }`}
-                    onClick={() => window.open('/auth/login')}
+                    onClick={() => navigate('/auth/login')}
                   >
                     Sign Up
                   </button>
@@ -672,7 +704,7 @@ const Navbar = () => {
                       >
                         <div className="flex items-center">
                           <div className="w-8 h-8 flex items-center justify-center mr-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
-                            <User className="text-blue-600" size={18} />
+                            {getRoleIcon()}
                           </div>
                           <span className="text-lg font-medium">Profile: {user.name.split(' ')[0]}</span>
                         </div>
@@ -696,11 +728,11 @@ const Navbar = () => {
                             initial={{ opacity: 0, x: 10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.15 }}
-                            href="/dashboard"
+                            href={getDashboardPath()}
                             className="flex items-center py-2 px-4 text-base text-gray-600 hover:text-blue-600 cursor-pointer transition-colors duration-200 group"
                             onClick={(e) => {
                               e.preventDefault();
-                              navigate('/dashboard');
+                              navigate(getDashboardPath());
                               toggleMobileMenu();
                             }}
                           >
@@ -722,7 +754,9 @@ const Navbar = () => {
                             }}
                           >
                             <span className="w-2 h-2 mr-3 bg-blue-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
-                            <span className="group-hover:translate-x-1 transition-transform duration-200">
+                            <span className="group-hover:translate-x-
+
+1 transition-transform duration-200">
                               Settings
                             </span>
                           </motion.a>

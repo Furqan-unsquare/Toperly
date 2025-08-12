@@ -69,8 +69,12 @@ import { StudentDashboard } from "./pages/StudentDashboard";
 const queryClient = new QueryClient();
 
 // Protected Route Component
-const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode, allowedRoles: string[] }) => {
-  const { user } = useAuth();
+const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode; allowedRoles: string[] }) => {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div className="text-center mt-10">Loading...</div>;
+  }
 
   if (!user) {
     return <Navigate to="/auth/login" replace />;

@@ -49,7 +49,7 @@ export const Navbar = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => navigate("/enrolled-courses")}
+                onClick={() => navigate("/student/enrolled-courses")}
                 className="hover:bg-accent"
               >
                 <BookOpen className="w-5 h-5" />
@@ -66,7 +66,7 @@ export const Navbar = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => navigate("/wishlist")}
+                onClick={() => navigate("/student/wishlist")}
                 className="hover:bg-accent"
               >
                 <Heart className="w-5 h-5" />
@@ -84,7 +84,7 @@ export const Navbar = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => navigate("/helpcenter")}
+                onClick={() => navigate("/student/helpcenter")}
                 className="hover:bg-accent"
               >
                 <HelpCircle className="w-5 h-5" />
@@ -109,7 +109,7 @@ export const Navbar = () => {
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => navigate("/profile")}>
+              <DropdownMenuItem onClick={() => navigate("/student/profile")}>
                 <User className="w-4 h-4 mr-2" />
                 Profile
               </DropdownMenuItem>
