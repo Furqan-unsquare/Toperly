@@ -16,6 +16,9 @@ import {
   UserCircle2,
   LockKeyhole,
   FileQuestion,
+  IndianRupee,
+  IndianRupeeIcon,
+  Star,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
@@ -61,14 +64,15 @@ export const Sidebar = ({ user, logout }: SidebarProps) => {
     { name: "Approvals", path: "/instructor/approvals", icon: CheckSquare, roles: ["instructor", "admin", "subadmin"] },
     { name: "Quizzes", path: "/instructor/all-quizzes", icon: GraduationCap, roles: ["instructor", "admin", "subadmin"] },
     { name: "Materials", path: "/instructor/materials", icon: BookOpen, roles: ["instructor", "admin", "subadmin"] },
+    { name: "Revenue dashboard", path: "/instructor/revenue-dashboar", icon: IndianRupee, roles: ["instructor", "admin", "subadmin"] },
     { name: "Reviews & Feedback", path: "/instructor/reviews-feedback", icon: Users, roles: ["instructor", "admin", "subadmin"] },
     { name: "All Students", path: "/instructor/all-students", icon: Users, roles: ["instructor", "admin", "subadmin"] },
     { name: "Help Center", path: "/instructor/helpcenter", icon: LifeBuoy, roles: ["instructor", "admin", "subadmin"] },
-    { name: "Coupons (Admin)", path: "/instructor/admin/coupons", icon: LifeBuoy, roles: ["admin", "subadmin"] },
-    { name: "Revenue (Admin)", path: "/instructor/admin/revenue", icon: LifeBuoy, roles: ["admin"] },
-    { name: "Analytics (Admin)", path: "/instructor/admin/analytics", icon: LifeBuoy, roles: ["admin", "subadmin"] },
-    { name: "Approvals (Admin)", path: "/instructor/admin/approvals", icon: LifeBuoy, roles: ["admin", "subadmin"] },
-    { name: "User Management (Admin)", path: "/instructor/admin/user-management", icon: LifeBuoy, roles: ["admin", "subadmin"] },
+    { name: "Coupons", path: "/instructor/admin/coupons", icon: LifeBuoy, roles: ["admin", "subadmin"] },
+    { name: "Revenue", path: "/instructor/admin/revenue", icon: LifeBuoy, roles: ["admin"] },
+    { name: "Analytics", path: "/instructor/admin/analytics", icon: LifeBuoy, roles: ["admin", "subadmin"] },
+    { name: "Approvals", path: "/instructor/admin/approvals", icon: LifeBuoy, roles: ["admin", "subadmin"] },
+    { name: "User Management", path: "/instructor/admin/user-management", icon: LifeBuoy, roles: ["admin", "subadmin"] },
   ];
 
   // Filter nav items based on user role
@@ -240,6 +244,21 @@ export const Sidebar = ({ user, logout }: SidebarProps) => {
                   </div>
                 </li>
               )}
+              
+               {/* Revenue dashboard */}
+              {filteredNavItems.find((item) => item.name === "Revenue dashboard") && (
+                <li>
+                  <Button
+                    variant={location.pathname === "/instructor/revenue-dashboard" ? "secondary" : "ghost"}
+                    size="sm"
+                    className={`w-full my-2 justify-start ${collapsed ? "justify-center px-0" : ""}`}
+                    onClick={() => navigate("/instructor/revenue-dashboard")}
+                  >
+                    <IndianRupeeIcon className="w-4 h-4" />
+                    {!collapsed && <span className="ml-2 text-sm">Revenue dashboard</span>}
+                  </Button>
+                </li>
+              )}
 
               {/* Reviews & Feedback */}
               {filteredNavItems.find((item) => item.name === "Reviews & Feedback") && (
@@ -250,7 +269,7 @@ export const Sidebar = ({ user, logout }: SidebarProps) => {
                     className={`w-full my-2 justify-start ${collapsed ? "justify-center px-0" : ""}`}
                     onClick={() => navigate("/instructor/reviews-feedback")}
                   >
-                    <Users className="w-4 h-4" />
+                    <Star className="w-4 h-4" />
                     {!collapsed && <span className="ml-2 text-sm">Reviews & Feedback</span>}
                   </Button>
                 </li>

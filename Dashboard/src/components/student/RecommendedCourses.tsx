@@ -126,7 +126,7 @@ const RecommendedCourses = () => {
       const originalId = course._id.includes("_dup")
         ? course._id.split("_dup")[0]
         : course._id;
-      navigate(`/courses/${originalId}`);
+      navigate(`/student/courses/${originalId}`);
     };
 
     return (

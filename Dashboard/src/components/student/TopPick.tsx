@@ -387,7 +387,7 @@ const TopPick: React.FC = () => {
                   )}
 
                   <button
-                    onClick={() => navigate(`/courses/${topCourse._id}`)}
+                    onClick={() => navigate(`/student/courses/${topCourse._id}`)}
                     className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all duration-200 font-medium transform hover:scale-105 active:scale-95"
                   >
                     View Course

@@ -192,7 +192,7 @@ const Wishlist = () => {
 
         {/* Actions */}
         <button
-          onClick={() => navigate(`/courses/${course?._id}`)}
+          onClick={() => navigate(`/student/courses/${course?._id}`)}
           className="w-full bg-gray-900 text-white py-2.5 rounded-md hover:bg-gray-800 transition font-medium text-sm"
         >
           View Course

@@ -1,5 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
-import { InstructorDashboard } from "./InstructorDashboard";
+import { InstructorDashboard } from "../InstructorDashboard";
 import { StudentDashboard } from "./StudentDashboard";
 import StudentsMainPage from "@/components/student/StudentsMainPage";
 

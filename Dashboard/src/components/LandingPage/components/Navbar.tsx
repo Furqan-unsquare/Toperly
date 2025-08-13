@@ -216,8 +216,8 @@ const Navbar = () => {
     { label: 'Contact', href: '/contact-us', icon: 'mail' },
   ];
   const topNavItems = [
-    { label: 'Become an Instructor', href: '/auth/login' },
-    { label: 'My learning', href: '/auth/login' },
+    { label: 'Become an Instructor', href: '/dashboard' },
+    { label: 'My learning', href: '/student/dashboard' },
   ];
   const languages = ['Eng', 'Hin', 'Mar'];
 

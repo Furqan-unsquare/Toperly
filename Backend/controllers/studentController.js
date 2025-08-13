@@ -19,7 +19,7 @@ export const getMyStudents = async (req, res) => {
       })
       .populate({
         path: 'course',
-        select: 'title customId'
+        select: 'title customId category rating'
       });
 
     res.status(200).json({

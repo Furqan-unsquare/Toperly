@@ -29,16 +29,16 @@ import SubscriptionPlans from "./pages/LandingPage/pages/SubscriptionPlans";
 // 📄 Pages
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
-import { Dashboard } from "./pages/Dashboard";
+import { Dashboard } from "./pages/Student/Dashboard";
 import NotFound from "./pages/NotFound";
 
 // 🎓 Student Components
-import CoursesCatalog from './components/CoursesCatalog';
-import CourseDetail from './components/CourseDetail';
+import CoursesCatalog from './components/student/CoursesCatalog';
+import CourseDetail from './components/student/CourseDetail';
 import QuizPage from "./components/student/QuizPage";
 import EnrolledCourses from "./components/student/EnrolledCourses";
 import Wishlist from "./components/student/Wishlist";
-import HelpCenter from "./components/Helpcenter";
+import HelpCenter from "./components/student/Helpcenter";
 
 // 🎓 Instructor Components
 import CourseManagementSystem from "./pages/Instructor/Course";
@@ -63,8 +63,10 @@ import AdminUserManagement from "./pages/Admin/AdminUserManagement";
 // ⚙️ Common Pages
 import { ProfileSettings } from "./components/ProfileSettings";
 import { Notifications } from "./components/Notifications";
-import AboutPage from "./components/AboutPage";
-import { StudentDashboard } from "./pages/StudentDashboard";
+import AboutPage from "./components/student/AboutPage";
+import { StudentDashboard } from "./pages/Student/StudentDashboard";
+import Revenue from "./pages/Instructor/Revenue";
+import PaymentHistory from "./pages/Student/PaymentHistory";
 
 const queryClient = new QueryClient();
 
@@ -124,6 +126,7 @@ const App = () => (
               <Route path="/student/enrolled-courses" element={<StudentRoutes><EnrolledCourses /></StudentRoutes>} />
               <Route path="/student/wishlist" element={<StudentRoutes><Wishlist /></StudentRoutes>} />
               <Route path="/student/profile" element={<StudentRoutes><StudentDashboard /></StudentRoutes>} />
+              <Route path="/student/payment-history" element={<StudentRoutes><PaymentHistory /></StudentRoutes>} />
               <Route path="/student/about" element={<StudentRoutes><AboutPage /></StudentRoutes>} />
               <Route path="/student/notifications" element={<StudentRoutes><Notifications /></StudentRoutes>} />
               <Route path="/student/helpcenter" element={<StudentRoutes><HelpCenter /></StudentRoutes>} />
@@ -141,6 +144,7 @@ const App = () => (
               <Route path="/instructor/approvals" element={<InstructorRoutes><Approval /></InstructorRoutes>} />
               <Route path="/instructor/all-quizzes" element={<InstructorRoutes><Quizz /></InstructorRoutes>} />
               <Route path="/instructor/materials" element={<InstructorRoutes><Materials /></InstructorRoutes>} />
+              <Route path="/instructor/revenue-dashboard" element={<InstructorRoutes><Revenue /></InstructorRoutes>} />
               <Route path="/instructor/reviews-feedback" element={<InstructorRoutes><AdminCoursesReviews /></InstructorRoutes>} />
               <Route path="/instructor/all-students" element={<InstructorRoutes><EnrolledStudents /></InstructorRoutes>} />
               <Route path="/instructor/change-password" element={<InstructorRoutes><ChangePassword /></InstructorRoutes>} />
