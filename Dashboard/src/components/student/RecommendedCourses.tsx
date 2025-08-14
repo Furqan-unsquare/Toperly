@@ -126,7 +126,7 @@ const RecommendedCourses = () => {
       const originalId = course._id.includes("_dup")
         ? course._id.split("_dup")[0]
         : course._id;
-      navigate(`/courses/${originalId}`);
+      navigate(`/student/courses/${originalId}`);
     };
 
     return (
@@ -291,7 +291,7 @@ const RecommendedCourses = () => {
           </div>
 
           <button
-            onClick={() => navigate("/courses")}
+            onClick={() => navigate("/student/courses")}
             className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 transform hover:scale-105 active:scale-95 font-medium"
           >
             All Courses

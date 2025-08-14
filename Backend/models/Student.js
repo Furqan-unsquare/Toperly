@@ -2,10 +2,11 @@ import mongoose from "mongoose";
 import Counter from "./Counter.js";
 
 const studentSchema = new mongoose.Schema({
+  auth0Id: { type: String, unique: true }, // Added
   customId: { type: String, unique: true },
   name: { type: String, required: true },
   email: { type: String, unique: true, required: true },
-  passwordHash: { type: String, required: true },
+  passwordHash: { type: String }, // Optional now for social
   profileImage: { type: String },
   phone: { type: String },
   language: { type: String, default: "en" },

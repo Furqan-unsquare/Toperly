@@ -289,7 +289,7 @@ const CoursesCatalog = () => {
 
           {/* Action Button */}
           <button
-            onClick={() => navigate(`/courses/${course._id}`)}
+            onClick={() => navigate(`/student/courses/${course._id}`)}
             className="w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-800 active:bg-gray-700 transition-all duration-200 font-medium text-sm transform hover:scale-[1.02] active:scale-[0.98]"
           >
             View Course

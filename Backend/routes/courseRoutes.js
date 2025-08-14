@@ -1,4 +1,4 @@
-import express from 'express';
+import express from "express";
 import {
   createCourse,
   getAllCourses,
@@ -19,32 +19,90 @@ import {
   updateCourseStatus,
   addCourseInclude,
   updateCourseInclude,
-  deleteCourseInclude
-} from '../controllers/courseController.js';
-import { verifyToken, isInstructor } from '../middlewares/auth.middleware.js';
+  deleteCourseInclude,
+} from "../controllers/courseController.js";
+import {
+  verifyAuth0Token,
+  isInstructor,
+} from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-// router.post('/', verifyToken, isInstructor, createCourse);
-router.post('/', createCourse);
-router.get('/', getAllCourses);
-router.get('/:id', getCourseById);
-router.get('/instructor/myCourses', verifyToken, isInstructor, getInstructorsCourses);
-router.put('/:id', verifyToken, isInstructor, updateCourse);
-router.post('/:id/videos', verifyToken, isInstructor, addVideoToCourse);
-router.put('/:id/videos/:videoId', verifyToken, isInstructor, updateVideoInCourse);
-router.delete('/:id/videos/:videoId', verifyToken, isInstructor, deleteVideoFromCourse);
-router.post('/:id/thumbnail', verifyToken, isInstructor, addThumbnailToCourse);
-router.delete('/:id', verifyToken, isInstructor, deleteCourse);
-router.post('/:id/materials', verifyToken, isInstructor, addMaterialToCourse);
-router.put('/:id/materials/:materialId', verifyToken, isInstructor, updateMaterial);
-router.delete('/:id/materials/:materialId', verifyToken, isInstructor, deleteMaterial);
-router.post('/:id/videos/:videoId/chapters',  addChapterToVideo);
-router.put('/:id/videos/:videoId/chapters/:chapterId', verifyToken, isInstructor, updateChapter);
-router.delete('/:id/videos/:videoId/chapters/:chapterId', verifyToken, isInstructor, deleteChapter);
-router.put('/:id/status', verifyToken, updateCourseStatus);
-router.post('/:id/includes', verifyToken, isInstructor, addCourseInclude);
-router.put('/:id/includes/:index', verifyToken, isInstructor, updateCourseInclude);
-router.delete('/:id/includes/:index', verifyToken, isInstructor, deleteCourseInclude);
+// router.post('/', verifyAuth0Token, isInstructor, createCourse);
+router.post("/", createCourse);
+router.get("/", getAllCourses);
+router.get("/:id", getCourseById);
+router.get(
+  "/instructor/myCourses",
+  verifyAuth0Token,
+  isInstructor,
+  getInstructorsCourses
+);
+router.put("/:id", verifyAuth0Token, isInstructor, updateCourse);
+router.post("/:id/videos", verifyAuth0Token, isInstructor, addVideoToCourse);
+router.put(
+  "/:id/videos/:videoId",
+  verifyAuth0Token,
+  isInstructor,
+  updateVideoInCourse
+);
+router.delete(
+  "/:id/videos/:videoId",
+  verifyAuth0Token,
+  isInstructor,
+  deleteVideoFromCourse
+);
+router.post(
+  "/:id/thumbnail",
+  verifyAuth0Token,
+  isInstructor,
+  addThumbnailToCourse
+);
+router.delete("/:id", verifyAuth0Token, isInstructor, deleteCourse);
+router.post(
+  "/:id/materials",
+  verifyAuth0Token,
+  isInstructor,
+  addMaterialToCourse
+);
+router.put(
+  "/:id/materials/:materialId",
+  verifyAuth0Token,
+  isInstructor,
+  updateMaterial
+);
+router.delete(
+  "/:id/materials/:materialId",
+  verifyAuth0Token,
+  isInstructor,
+  deleteMaterial
+);
+router.post("/:id/videos/:videoId/chapters", addChapterToVideo);
+router.put(
+  "/:id/videos/:videoId/chapters/:chapterId",
+  verifyAuth0Token,
+  isInstructor,
+  updateChapter
+);
+router.delete(
+  "/:id/videos/:videoId/chapters/:chapterId",
+  verifyAuth0Token,
+  isInstructor,
+  deleteChapter
+);
+router.put("/:id/status", verifyAuth0Token, updateCourseStatus);
+router.post("/:id/includes", verifyAuth0Token, isInstructor, addCourseInclude);
+router.put(
+  "/:id/includes/:index",
+  verifyAuth0Token,
+  isInstructor,
+  updateCourseInclude
+);
+router.delete(
+  "/:id/includes/:index",
+  verifyAuth0Token,
+  isInstructor,
+  deleteCourseInclude
+);
 
 export default router;

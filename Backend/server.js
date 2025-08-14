@@ -24,7 +24,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { uploadBufferToIPFS } from "./utils/uploadToIPFS.js";
-import { verifyToken } from "./middlewares/auth.middleware.js";
+import { verifyAuth0Token } from "./middlewares/auth.middleware.js";
 import Student from "./models/Student.js";
 import Instructor from "./models/Instructor.js";
 import EnrolledCourse from "./models/EnrolledCourse.js";
@@ -60,9 +60,7 @@ const allowedOrigins = [
   "https://toperly-dashboard-unsquare.netlify.app",
 ];
 
-app.use(
-  cors("*")
-);
+app.use(cors("*"));
 
 // Middleware
 app.use(express.json({ limit: "20mb" }));
@@ -423,7 +421,7 @@ app.get("/api/vdocipher/otp/:videoId", async (req, res) => {
   }
 });
 
-app.get("/api", verifyToken, async (req, res) => {
+app.get("/api", verifyAuth0Token, async (req, res) => {
   try {
     const students = await Student.find();
     const instructors = await Instructor.find();

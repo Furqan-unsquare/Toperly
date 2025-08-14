@@ -1,51 +1,63 @@
-import jwt from 'jsonwebtoken';
+import { expressjwt as jwt } from "express-jwt";
+import jwksRsa from "jwks-rsa";
+import dotenv from "dotenv";
+dotenv.config();
+import Student from "../models/Student.js";
+import Instructor from "../models/Instructor.js";
+import Admin from "../models/Admin.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
+export const verifyAuth0Token = jwt({
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`,
+  }),
+  audience: process.env.AUTH0_AUDIENCE,
+  issuer: `https://${process.env.AUTH0_DOMAIN}/`,
+  algorithms: ["RS256"],
+});
 
-export const verifyToken = (req, res, next) => {
+export const isStudent = async (req, res, next) => {
   try {
-    let token;
-    const authHeader = req.headers['authorization'];
-    const queryToken = req.query.token;
-
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      token = authHeader.split(' ')[1];
-    } else if (queryToken) {
-      token = queryToken;
+    const student = await Student.find({auth0Id: req.auth.sub});
+    if (!student) {
+      return res.status(403).json({ message: "Access denied. Not a student." });
     }
-
-    if (!token) {
-      return res.status(401).json({ message: 'Authorization token missing' });
-    }
-
-    const decoded = jwt.verify(token, JWT_SECRET);
-
-    // Attach user info to request
-    req.user = decoded;
+    req.user = student[0];
     next();
   } catch (err) {
-    console.error('JWT verification failed:', err.message);
-    return res.status(401).json({ message: 'Invalid or expired token' });
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-export const isInstructor = (req, res, next) => {
-  if (req.user?.role === 'instructor' || req.user?.role === 'admin') {
-    return next();
+// For instructors
+export const isInstructor = async (req, res, next) => {
+  try {
+    const instructor = await Instructor.find({auth0Id: req.auth.sub});
+    if (!instructor) {
+      return res.status(403).json({ message: "Access denied. Not an instructor." });
+    }
+    req.user = instructor[0];
+    next();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
-  return res.status(403).json({ message: 'Access denied. Instructor only.' });
 };
 
-export const isStudent = (req, res, next) => {
-  if (req.user?.role === 'student' || req.user?.role === 'admin') {
-    return next();
+// For admins
+export const isAdmin = async (req, res, next) => {
+  try {
+    const admin = await Admin.find({auth0Id: req.auth.sub});
+    if (!admin) {
+      return res.status(403).json({ message: "Access denied. Not an admin." });
+    }
+    req.user = admin[0];
+    next();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
-  return res.status(403).json({ message: 'Access denied. Student only.' });
-};
-
-export const isAdmin = (req, res, next) => {
-  if (req.user?.role === 'admin') {
-    return next();
-  }
-  return res.status(403).json({ message: 'Access denied. Admin only.' });
 };

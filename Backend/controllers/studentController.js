@@ -1,36 +1,40 @@
-import EnrolledCourse from '../models/EnrolledCourse.js';
-import Course from '../models/Course.js';
-import Student from '../models/Student.js';
+import EnrolledCourse from "../models/EnrolledCourse.js";
+import Course from "../models/Course.js";
+import Student from "../models/Student.js";
 
 export const getMyStudents = async (req, res) => {
   try {
-    const instructorId = req.user.id; // Set by verifyToken middleware
+    const instructorId = req.user.id; // Set by verifyAuth0Token middleware
 
     // Step 1: Find all courses created by this instructor
-    const instructorCourses = await Course.find({ instructor: instructorId }).select('_id');
+    const instructorCourses = await Course.find({
+      instructor: instructorId,
+    }).select("_id");
 
-    const courseIds = instructorCourses.map(course => course._id);
+    const courseIds = instructorCourses.map((course) => course._id);
 
     // Step 2: Find enrolled students for these courses
-    const enrollments = await EnrolledCourse.find({ course: { $in: courseIds } })
+    const enrollments = await EnrolledCourse.find({
+      course: { $in: courseIds },
+    })
       .populate({
-        path: 'student',
-        select: 'name email profileImage'
+        path: "student",
+        select: "name email profileImage",
       })
       .populate({
-        path: 'course',
-        select: 'title customId'
+        path: "course",
+        select: "title customId",
       });
 
     res.status(200).json({
       success: true,
-      data: enrollments
+      data: enrollments,
     });
   } catch (error) {
-    console.error('Error fetching students:', error);
+    console.error("Error fetching students:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch enrolled students'
+      message: "Failed to fetch enrolled students",
     });
   }
 };
@@ -54,26 +58,29 @@ export const getAllStudents = async (req, res) => {
 
 // READ student by ID
 export const getStudentById = async (req, res) => {
-  const student = await Student.findById(req.params.id).populate({
-    path: 'enrolledCourses.courseId',
-    populate: { path: 'instructor' } // To get instructor name
-  })
-  .lean();;
-  if (!student) return res.status(404).json({ message: 'Student Not Found' });
+  const student = await Student.findById(req.params.id)
+    .populate({
+      path: "enrolledCourses.courseId",
+      populate: { path: "instructor" }, // To get instructor name
+    })
+    .lean();
+  if (!student) return res.status(404).json({ message: "Student Not Found" });
   res.json(student);
 };
 
 // UPDATE student (admin use)
 export const updateStudent = async (req, res) => {
-  const student = await Student.findByIdAndUpdate(req.params.id, req.body, { new: true });
-  if (!student) return res.status(404).json({ message: 'Student Not Found' });
+  const student = await Student.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+  if (!student) return res.status(404).json({ message: "Student Not Found" });
   res.json(student);
 };
 
 // DELETE student (admin use)
 export const deleteStudent = async (req, res) => {
   const student = await Student.findByIdAndDelete(req.params.id);
-  if (!student) return res.status(404).json({ message: 'Student Not Found' });
+  if (!student) return res.status(404).json({ message: "Student Not Found" });
   res.json({ message: "Student deleted" });
 };
 
@@ -95,7 +102,9 @@ export const enrollCourse = async (req, res) => {
     );
 
     if (alreadyEnrolled) {
-      return res.status(400).json({ message: "Already enrolled in this course" });
+      return res
+        .status(400)
+        .json({ message: "Already enrolled in this course" });
     }
 
     // Add course to student's enrolledCourses

@@ -33,8 +33,8 @@ import { Dashboard } from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
 // 🎓 Student Components
-import CoursesCatalog from './components/CoursesCatalog';
-import CourseDetail from './components/CourseDetail';
+import CoursesCatalog from "./components/CoursesCatalog";
+import CourseDetail from "./components/CourseDetail";
 import QuizPage from "./components/student/QuizPage";
 import EnrolledCourses from "./components/student/EnrolledCourses";
 import Wishlist from "./components/student/Wishlist";
@@ -69,9 +69,15 @@ import { StudentDashboard } from "./pages/StudentDashboard";
 const queryClient = new QueryClient();
 
 // Protected Route Component
-const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode; allowedRoles: string[] }) => {
+const ProtectedRoute = ({
+  children,
+  allowedRoles,
+}: {
+  children: React.ReactNode;
+  allowedRoles: string[];
+}) => {
   const { user, isLoading } = useAuth();
-
+  console.log(user)
   if (isLoading) {
     return <div className="text-center mt-10">Loading...</div>;
   }
@@ -90,11 +96,11 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode;
 // 🧠 Main App Component
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <AuthProvider>
           <Routes>
             {/* Auth Routes (No Layout) */}
             <Route element={<AuthLayout />}>
@@ -107,70 +113,249 @@ const App = () => (
               <Route path="/" element={<HomePage />} />
               <Route path="/courses" element={<AllCoursesPage />} />
               <Route path="/blogs" element={<BlogPage />} />
-              <Route path="/subscription-plans" element={<SubscriptionPlans />} />
+              <Route
+                path="/subscription-plans"
+                element={<SubscriptionPlans />}
+              />
               <Route path="/contact-us" element={<ContactPage />} />
             </Route>
 
             {/* Student Routes */}
-            <Route element={
-              <ProtectedRoute allowedRoles={['student']}>
-                <StudentLayout />
-              </ProtectedRoute>
-            }>
-              <Route path="/student/dashboard" element={<StudentRoutes><Dashboard /></StudentRoutes>} />
-              <Route path="/student/courses" element={<StudentRoutes><CoursesCatalog /></StudentRoutes>} />
-              <Route path="/student/courses/:courseId" element={<StudentRoutes><CourseDetail /></StudentRoutes>} />
-              <Route path="/student/courses/:courseId/quiz/:quizId" element={<StudentRoutes><QuizPage /></StudentRoutes>} />
-              <Route path="/student/enrolled-courses" element={<StudentRoutes><EnrolledCourses /></StudentRoutes>} />
-              <Route path="/student/wishlist" element={<StudentRoutes><Wishlist /></StudentRoutes>} />
-              <Route path="/student/profile" element={<StudentRoutes><StudentDashboard /></StudentRoutes>} />
-              <Route path="/student/about" element={<StudentRoutes><AboutPage /></StudentRoutes>} />
-              <Route path="/student/notifications" element={<StudentRoutes><Notifications /></StudentRoutes>} />
-              <Route path="/student/helpcenter" element={<StudentRoutes><HelpCenter /></StudentRoutes>} />
+            <Route
+              element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <StudentLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route
+                path="/student/dashboard"
+                element={
+                  <StudentRoutes>
+                    <Dashboard />
+                  </StudentRoutes>
+                }
+              />
+              <Route
+                path="/student/courses"
+                element={
+                  <StudentRoutes>
+                    <CoursesCatalog />
+                  </StudentRoutes>
+                }
+              />
+              <Route
+                path="/student/courses/:courseId"
+                element={
+                  <StudentRoutes>
+                    <CourseDetail />
+                  </StudentRoutes>
+                }
+              />
+              <Route
+                path="/student/courses/:courseId/quiz/:quizId"
+                element={
+                  <StudentRoutes>
+                    <QuizPage />
+                  </StudentRoutes>
+                }
+              />
+              <Route
+                path="/student/enrolled-courses"
+                element={
+                  <StudentRoutes>
+                    <EnrolledCourses />
+                  </StudentRoutes>
+                }
+              />
+              <Route
+                path="/student/wishlist"
+                element={
+                  <StudentRoutes>
+                    <Wishlist />
+                  </StudentRoutes>
+                }
+              />
+              <Route
+                path="/student/profile"
+                element={
+                  <StudentRoutes>
+                    <StudentDashboard />
+                  </StudentRoutes>
+                }
+              />
+              <Route
+                path="/student/about"
+                element={
+                  <StudentRoutes>
+                    <AboutPage />
+                  </StudentRoutes>
+                }
+              />
+              <Route
+                path="/student/notifications"
+                element={
+                  <StudentRoutes>
+                    <Notifications />
+                  </StudentRoutes>
+                }
+              />
+              <Route
+                path="/student/helpcenter"
+                element={
+                  <StudentRoutes>
+                    <HelpCenter />
+                  </StudentRoutes>
+                }
+              />
             </Route>
 
             {/* Instructor Routes */}
-            <Route element={
-              <ProtectedRoute allowedRoles={['instructor']}>
-                <InstructorLayout />
-              </ProtectedRoute>
-            }>
-              <Route path="/dashboard" element={<InstructorRoutes><Dashboard /></InstructorRoutes>} />
-              <Route path="/instructor/all-courses" element={<InstructorRoutes><CourseManagementSystem /></InstructorRoutes>} />
-              <Route path="/instructor/create-course" element={<InstructorRoutes><Createcourse /></InstructorRoutes>} />
-              <Route path="/instructor/approvals" element={<InstructorRoutes><Approval /></InstructorRoutes>} />
-              <Route path="/instructor/all-quizzes" element={<InstructorRoutes><Quizz /></InstructorRoutes>} />
-              <Route path="/instructor/materials" element={<InstructorRoutes><Materials /></InstructorRoutes>} />
-              <Route path="/instructor/reviews-feedback" element={<InstructorRoutes><AdminCoursesReviews /></InstructorRoutes>} />
-              <Route path="/instructor/all-students" element={<InstructorRoutes><EnrolledStudents /></InstructorRoutes>} />
-              <Route path="/instructor/change-password" element={<InstructorRoutes><ChangePassword /></InstructorRoutes>} />
-              <Route path="/instructor/user-profile" element={<InstructorRoutes><ProfileSettings /></InstructorRoutes>} />
-              <Route path="/instructor/security" element={<InstructorRoutes><Security /></InstructorRoutes>} />
-              <Route path="/instructor/helpcenter" element={<InstructorRoutes><InstructorHelpCenter /></InstructorRoutes>} />
-              <Route path="/instructor/notifications" element={<InstructorRoutes><Notifications /></InstructorRoutes>} />
+            <Route
+              element={
+                <ProtectedRoute allowedRoles={["instructor"]}>
+                  <InstructorLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route
+                path="/dashboard"
+                element={
+                  <InstructorRoutes>
+                    <Dashboard />
+                  </InstructorRoutes>
+                }
+              />
+              <Route
+                path="/instructor/all-courses"
+                element={
+                  <InstructorRoutes>
+                    <CourseManagementSystem />
+                  </InstructorRoutes>
+                }
+              />
+              <Route
+                path="/instructor/create-course"
+                element={
+                  <InstructorRoutes>
+                    <Createcourse />
+                  </InstructorRoutes>
+                }
+              />
+              <Route
+                path="/instructor/approvals"
+                element={
+                  <InstructorRoutes>
+                    <Approval />
+                  </InstructorRoutes>
+                }
+              />
+              <Route
+                path="/instructor/all-quizzes"
+                element={
+                  <InstructorRoutes>
+                    <Quizz />
+                  </InstructorRoutes>
+                }
+              />
+              <Route
+                path="/instructor/materials"
+                element={
+                  <InstructorRoutes>
+                    <Materials />
+                  </InstructorRoutes>
+                }
+              />
+              <Route
+                path="/instructor/reviews-feedback"
+                element={
+                  <InstructorRoutes>
+                    <AdminCoursesReviews />
+                  </InstructorRoutes>
+                }
+              />
+              <Route
+                path="/instructor/all-students"
+                element={
+                  <InstructorRoutes>
+                    <EnrolledStudents />
+                  </InstructorRoutes>
+                }
+              />
+              <Route
+                path="/instructor/change-password"
+                element={
+                  <InstructorRoutes>
+                    <ChangePassword />
+                  </InstructorRoutes>
+                }
+              />
+              <Route
+                path="/instructor/user-profile"
+                element={
+                  <InstructorRoutes>
+                    <ProfileSettings />
+                  </InstructorRoutes>
+                }
+              />
+              <Route
+                path="/instructor/security"
+                element={
+                  <InstructorRoutes>
+                    <Security />
+                  </InstructorRoutes>
+                }
+              />
+              <Route
+                path="/instructor/helpcenter"
+                element={
+                  <InstructorRoutes>
+                    <InstructorHelpCenter />
+                  </InstructorRoutes>
+                }
+              />
+              <Route
+                path="/instructor/notifications"
+                element={
+                  <InstructorRoutes>
+                    <Notifications />
+                  </InstructorRoutes>
+                }
+              />
             </Route>
 
             {/* Admin Routes */}
-            <Route element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <AdminLayout />
-              </ProtectedRoute>
-            }>
+            <Route
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/admin/coupons" element={<AdminCoupons />} />
               <Route path="/admin/revenue" element={<AdminRevenueTracker />} />
-              <Route path="/admin/analytics" element={<AdminRealTimeAnalytics />} />
-              <Route path="/admin/approvals" element={<AdminCourseApprovalList />} />
-              <Route path="/admin/user-management" element={<AdminUserManagement />} />
+              <Route
+                path="/admin/analytics"
+                element={<AdminRealTimeAnalytics />}
+              />
+              <Route
+                path="/admin/approvals"
+                element={<AdminCourseApprovalList />}
+              />
+              <Route
+                path="/admin/user-management"
+                element={<AdminUserManagement />}
+              />
               <Route path="/admin/notifications" element={<Notifications />} />
             </Route>
 
             {/* Fallback Route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </TooltipProvider>
   </QueryClientProvider>
 );
 

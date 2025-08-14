@@ -204,7 +204,7 @@ const ProfessionalCourseSection = () => {
                       <div
                         key={course._id}
                         className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 group cursor-pointer flex flex-col"
-                        onClick={() => navigate(`/courses/${course._id}`)}
+                        onClick={() => navigate(`/student/courses/${course._id}`)}
                       >
                         {/* Image */}
                         <div className="relative">

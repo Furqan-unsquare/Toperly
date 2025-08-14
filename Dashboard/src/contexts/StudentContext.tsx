@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 
 const StudentRoutes = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
-
+  
   if (isLoading) {
     return <div className="text-center mt-10">Loading...</div>;
   }

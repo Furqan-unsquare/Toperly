@@ -1,13 +1,20 @@
+// Modified: backend/routes/authRoutes.js
+// Changes: Add new endpoints for sync and assign-role. Keep existing for compatibility if needed.
+// Use Auth0 token validation.
+
 import express from 'express';
-import { register, login, logout, changePassword, getUserDetails,updateUserInfo } from '../controllers/authController.js';
-import { verifyToken } from '../middlewares/auth.middleware.js';
+import { register, login, logout, changePassword, getUserDetails, updateUserInfo, syncAuth0User, assignRole } from '../controllers/authController.js';
+import { verifyAuth0Token } from '../middlewares/auth.middleware.js'; // Modified name
+
 const router = express.Router();
 
-router.post('/register', register);
-router.post('/login', login);
-router.post('/logout', logout); // POST for consistency with state-changing actions
-router.post('/change-password', verifyToken, changePassword);
-router.get('/me', verifyToken, getUserDetails);
-router.put('/update', verifyToken, updateUserInfo);
+router.post('/register', register); // Keep for custom if needed
+router.post('/login', login); // Keep for custom if needed
+router.post('/logout', logout);
+router.post('/change-password', verifyAuth0Token, changePassword);
+router.get('/me', verifyAuth0Token, getUserDetails);
+router.put('/update', verifyAuth0Token, updateUserInfo);
+router.post('/sync', verifyAuth0Token, syncAuth0User); // New
+router.post('/assign-role', verifyAuth0Token, assignRole); // New
 
 export default router;

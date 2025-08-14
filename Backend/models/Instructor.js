@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
 
 const instructorSchema = new mongoose.Schema({
+  auth0Id: { type: String, unique: true }, // Added
   customId: { type: String, unique: true },
   name: { type: String, required: true, trim: true },
   email: { type: String, required: true, unique: true, trim: true, lowercase: true },
-  password: { type: String, required: true, minlength: 6 },
+  password: { type: String, minlength: 6 }, // Optional for social
   profileImage: { type: String, default: '' },
   bio: { type: String, default: '' },
   expertise: [{ type: String, trim: true }],

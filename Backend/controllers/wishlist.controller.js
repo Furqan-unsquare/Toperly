@@ -15,7 +15,8 @@ export const getUserWishlist = async (req, res) => {
 export const addToWishlist = async (req, res) => {
   try {
     const { courseId } = req.params;
-    const userId = req.user.id;
+    const userId = req.user._id;
+    console.log(req.user)
 
     const exists = await Wishlist.findOne({ student: userId, course: courseId });
     if (exists) return res.status(400).json({ message: 'Already in wishlist' });

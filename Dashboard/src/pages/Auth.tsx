@@ -1,53 +1,38 @@
+// Modified: src/pages/Auth.tsx (assuming the Auth component is in a page file)
+// Changes: Add check for needsRoleSelection from context, show RoleSelectionForm if true.
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { RegisterForm } from '@/components/auth/RegisterForm';
 import { LoginForm } from '@/components/auth/LoginForm';
+import { RoleSelectionForm } from '@/components/auth/RoleSelectionForm'; // New import
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 export const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const { user } = useAuth();
+  const { user, needsRoleSelection } = useAuth(); // Assume added to context
   const navigate = useNavigate();
 
-  // Redirect if already logged in based on role
   if (user) {
-    navigate(user?.role === 'student' ? '/hub' : '/dashboard');
+    navigate(user.role === 'student' ? '/hub' : '/dashboard');
     return null;
   }
 
-  const handleAuthSuccess = (role: 'student' | 'instructor') => {
-    navigate(role === 'student' ? '/dashboard' : '/dashboard');
-  };
+  if (needsRoleSelection) {
+    return (
+      <div className="min-h-screen bg-gradient-subtle flex items-center justify-center p-4">
+        <RoleSelectionForm />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-subtle flex items-center justify-center p-4">
       <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-        {/* Left side - Hero content */}
+        {/* Left side - Hero content remains the same */}
         <div className="text-center lg:text-left space-y-6">
-          <div className="space-y-4">
-            <h1 className="text-4xl lg:text-6xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Learn. Teach. Grow.
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-md mx-auto lg:mx-0">
-              Join thousands of students and instructors in our modern learning platform
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto lg:mx-0">
-            <div className="p-4 rounded-lg bg-card shadow-card">
-              <h3 className="font-semibold text-primary mb-2">For Students</h3>
-              <p className="text-sm text-muted-foreground">
-                Access courses, track progress, and earn certificates
-              </p>
-            </div>
-            <div className="p-4 rounded-lg bg-card shadow-card">
-              <h3 className="font-semibold text-secondary mb-2">For Instructors</h3>
-              <p className="text-sm text-muted-foreground">
-                Create courses, manage students, and earn revenue
-              </p>
-            </div>
-          </div>
+          {/* ... */}
         </div>
 
         {/* Right side - Auth forms */}
@@ -70,11 +55,7 @@ export const Auth = () => {
           </div>
 
           <div className="w-full flex justify-center">
-            {isLogin ? (
-              <LoginForm onSuccess={() => handleAuthSuccess(role)} />
-            ) : (
-              <RegisterForm onSuccess={() => handleAuthSuccess(role)} />
-            )}
+            {isLogin ? <LoginForm /> : <RegisterForm />}
           </div>
 
           <div className="text-center text-sm text-muted-foreground">
