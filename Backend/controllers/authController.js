@@ -366,8 +366,9 @@ export const changePassword = async (req, res) => {
 
 export const getUserDetails = async (req, res) => {
   try {
-    const { sub: auth0Id, role } = req.auth;
-
+    console.log(req.user)
+    const { sub: auth0Id } = req.auth;
+    const { role } = req.user;
     if (role === "student") {
       const student = await Student.findOne({ auth0Id }).lean();
       if (!student)
@@ -381,12 +382,12 @@ export const getUserDetails = async (req, res) => {
         transactions,
         wishlist,
       ] = await Promise.all([
-        EnrolledCourse.find({ student: id }).populate("course").lean(),
-        Certificate.find({ student: id }).populate("course").lean(),
-        QuizAttempt.find({ student: id }).populate("quiz course").lean(),
-        Review.find({ student: id }).populate("course").lean(),
-        Transaction.find({ student: id }).populate("course").lean(),
-        Wishlist.find({ student: id }).populate("course").lean(),
+        EnrolledCourse.find({ student: student._id }).populate("course").lean(),
+        Certificate.find({ student: student._id }).populate("course").lean(),
+        QuizAttempt.find({ student: student._id }).populate("quiz course").lean(),
+        Review.find({ student: student._id }).populate("course").lean(),
+        Transaction.find({ student: student._id }).populate("course").lean(),
+        Wishlist.find({ student: student._id }).populate("course").lean(),
       ]);
 
       return res.json({
@@ -403,7 +404,7 @@ export const getUserDetails = async (req, res) => {
       if (!instructor)
         return res.status(404).json({ message: "Instructor not found" });
 
-      const courses = await Course.find({ instructor: id }).lean();
+      const courses = await Course.find({ instructor: instructor._id }).lean();
 
       const courseIds = courses.map((c) => c._id);
 

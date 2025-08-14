@@ -146,7 +146,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const parsedUser = JSON.parse(userJson);
         setUser(parsedUser);
         setToken(storedToken);
-        navigate(getRedirectPath(parsedUser.role));
+        // navigate(getRedirectPath(parsedUser.role));
       } else if (isAuthenticated) {
         await syncUserWithBackend();
       }

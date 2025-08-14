@@ -183,8 +183,8 @@ const CourseManagementSystem: FC = () => {
           currentUser?.role === "instructor"
             ? data.filter(
                 (course: any) =>
-                  course.instructor?._id === currentUser.id ||
-                  course.instructor?.id === currentUser.id
+                  course.instructor?._id === currentUser._id ||
+                  course.instructor?.id === currentUser._id
               )
             : data;
         setCourses(instructorCourses || []);
@@ -624,7 +624,7 @@ const CourseManagementSystem: FC = () => {
         .map((tag) => tag.trim())
         .filter(Boolean),
       isPublished: courseData.isPublished,
-      instructorId: currentUser.id,
+      instructorId: currentUser._id,
       certificate: courseData.certificate,
     };
 
@@ -703,7 +703,7 @@ const CourseManagementSystem: FC = () => {
           });
         }
       }
-      window.location.href = "/all-courses";
+      window.location.href = "/instructor/all-courses";
     }
   };
 

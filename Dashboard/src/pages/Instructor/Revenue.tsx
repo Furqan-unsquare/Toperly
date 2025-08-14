@@ -97,7 +97,7 @@ const InstructorRevenueDashboard = () => {
           name: course.title || 'Untitled Course',
           customId: course.customId || 'N/A',
           category: enrollment.category || course.category || 'Uncategorized',
-          price: payment.amount ? payment.amount / 100 : 0,
+          price: payment.amount ? payment.amount : 0,
           students: 0,
           revenue: 0,
           rating: course.rating || 0,

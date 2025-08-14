@@ -20,7 +20,6 @@ interface InstructorData {
 }
 
 const InstructorDashboard = () => {
-  const { token } = useAuth();
   const [data, setData] = useState<InstructorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +32,7 @@ const InstructorDashboard = () => {
     try {
       const response = await fetch("http://localhost:5000/api/auth/me", {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
           "Content-Type": "application/json",
         },
       });

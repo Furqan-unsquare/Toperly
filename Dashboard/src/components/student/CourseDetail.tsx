@@ -181,17 +181,17 @@ const CourseDetail = () => {
   };
 
   const handleCertificate = async () => {
-    if (!user?.id || !isEnrolled)
+    if (!user?._id || !isEnrolled)
       return showToast("You must be enrolled", "error");
 
     try {
       setCertificateLoading(true);
       const res = await fetch(
-        `${API_BASE}/certificates/issue/${courseId}/${user.id}`,
+        `${API_BASE}/certificates/issue/${courseId}/${user._id}`,
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${user.token}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
             "Content-Type": "application/json",
           },
         }
@@ -221,7 +221,7 @@ const CourseDetail = () => {
     try {
       const res = await fetch(`${API_BASE}/enroll/my-courses`, {
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
       const data = await res.json();

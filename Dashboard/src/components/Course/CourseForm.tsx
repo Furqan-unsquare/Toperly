@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import { ArrowLeft, Upload, Save, Plus, Trash2, Clock } from "lucide-react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 
 interface CourseFormProps {
   isEdit: boolean;
@@ -41,7 +41,7 @@ interface CourseFormProps {
   };
   errors: { [key: string]: string };
   uploadProgress: { [key: string]: number | undefined };
-  currentUser: { id: string; name: string; email: string; role: string } | null;
+  currentUser: { _id: string; name: string; email: string; role: string } | null;
   editingCourse: any;
   setCourseData: React.Dispatch<React.SetStateAction<any>>;
   setErrors: React.Dispatch<React.SetStateAction<any>>;

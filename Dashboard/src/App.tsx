@@ -187,6 +187,14 @@ const App = () => (
                 }
               />
               <Route
+                path="/student/user-profile"
+                element={
+                  <StudentRoutes>
+                    <ProfileSettings />
+                  </StudentRoutes>
+                }
+              />
+              <Route
                 path="/student/about"
                 element={
                   <StudentRoutes>
@@ -207,6 +215,14 @@ const App = () => (
                 element={
                   <StudentRoutes>
                     <HelpCenter />
+                  </StudentRoutes>
+                }
+              />
+              <Route
+                path="/student/payment-history"
+                element={
+                  <StudentRoutes>
+                    <PaymentHistory />
                   </StudentRoutes>
                 }
               />
@@ -273,6 +289,14 @@ const App = () => (
                 element={
                   <InstructorRoutes>
                     <AdminCoursesReviews />
+                  </InstructorRoutes>
+                }
+              />
+              <Route
+                path="/instructor/revenue-dashboard"
+                element={
+                  <InstructorRoutes>
+                    <Revenue />
                   </InstructorRoutes>
                 }
               />

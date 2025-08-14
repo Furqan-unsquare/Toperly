@@ -68,7 +68,7 @@ export const usePayment = () => {
               razorpay_signature: response.razorpay_signature,
               courseId: course.id,
               userEmail: userDetails.email,
-              userId:user.id
+              userId:user._id
             });
 
             if (verificationResponse.success) {

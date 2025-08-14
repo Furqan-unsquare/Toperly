@@ -18,6 +18,30 @@ export const verifyAuth0Token = jwt({
   algorithms: ["RS256"],
 });
 
+export const commonVerification = async (req, res, next) => {
+  try {
+    const student = await Student.find({auth0Id: req.auth.sub});
+    const instructor = await Instructor.find({auth0Id: req.auth.sub});
+    const admin = await Admin.find({auth0Id: req.auth.sub});
+    console.log(student)
+    if (student[0]) {
+      req.user = student[0];
+      next();
+    }
+    if (instructor[0]) {
+      req.user = instructor[0];
+      next();
+    }
+    if (admin[0]) {
+      req.user = admin[0];
+      next();
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
 export const isStudent = async (req, res, next) => {
   try {
     const student = await Student.find({auth0Id: req.auth.sub});

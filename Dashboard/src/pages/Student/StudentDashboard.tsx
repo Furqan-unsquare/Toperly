@@ -61,7 +61,7 @@ export const StudentDashboard = () => {
   const totalCourses = data.enrolledCourses?.length;
   const totalCertificates = data.certificates?.length;
   const totalReviews = data.reviews?.length;
-  const totalScore = data.quizAttempts.reduce(
+  const totalScore = data.quizAttempts?.reduce(
     (acc: number, q: any) => acc + (q.score || 0),
     0
   );
@@ -70,7 +70,7 @@ export const StudentDashboard = () => {
     : "0";
 
   // Course Progress Chart Data
-  const progressChartData = data.enrolledCourses.map((c: any, idx: number) => ({
+  const progressChartData = data.enrolledCourses?.map((c: any, idx: number) => ({
     name:
       c.course.title?.length > 15
         ? c.course.title.substring(0, 15) + "..."
@@ -81,7 +81,7 @@ export const StudentDashboard = () => {
   }));
 
   // Quiz Performance Data
-  const quizData = data.quizAttempts.slice(-5).map((q: any, idx: number) => ({
+  const quizData = data.quizAttempts.slice(-5)?.map((q: any, idx: number) => ({
     quiz: `Quiz ${idx + 1}`,
     score: q.score || 0,
     date: new Date(q.createdAt).toLocaleDateString(),
@@ -161,7 +161,7 @@ export const StudentDashboard = () => {
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
           <p className="font-medium text-gray-900">{`${label}`}</p>
-          {payload.map((entry: any, index: number) => (
+          {payload?.map((entry: any, index: number) => (
             <p key={index} className="text-sm" style={{ color: entry.color }}>
               {`${entry.dataKey}: ${entry.value}${
                 entry.dataKey === "progress" ? "%" : ""
@@ -196,7 +196,7 @@ export const StudentDashboard = () => {
             <button
               className="w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-800 active:bg-gray-700 transition-all duration-200 font-medium text-sm transform hover:scale-[1.02] active:scale-[0.98] px-4"
               onClick={() => {
-                navigate("/user-profile");
+                navigate("/student/user-profile");
               }}
             >
               Edit Profile
@@ -207,7 +207,7 @@ export const StudentDashboard = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statCards.map((stat) => {
+        {statCards?.map((stat) => {
           const Icon = stat.icon;
           return (
             <Card
@@ -359,7 +359,7 @@ export const StudentDashboard = () => {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  {courseStatusData.map((entry, index) => (
+                  {courseStatusData?.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>

@@ -213,9 +213,9 @@ const PaymentHistory = () => {
       return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: currency || 'USD'
-      }).format(amount / 100);
+      }).format(amount);
     } catch (error) {
-      return `${currency || '$'} ${(amount / 100).toFixed(2)}`;
+      return `${currency || '$'} ${(amount).toFixed(2)}`;
     }
   };
 
