@@ -366,7 +366,7 @@ export const changePassword = async (req, res) => {
 
 export const getUserDetails = async (req, res) => {
   try {
-    console.log(req.user)
+    
     const { sub: auth0Id } = req.auth;
     const { role } = req.user;
     if (role === "student") {

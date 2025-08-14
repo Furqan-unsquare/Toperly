@@ -67,6 +67,7 @@ import AboutPage from "./components/student/AboutPage";
 import { StudentDashboard } from "./pages/Student/StudentDashboard";
 import Revenue from "./pages/Instructor/Revenue";
 import PaymentHistory from "./pages/Student/PaymentHistory";
+import { AdminAuth } from "./pages/AdminAuth";
 
 const queryClient = new QueryClient();
 
@@ -375,6 +376,7 @@ const App = () => (
               />
               <Route path="/admin/notifications" element={<Notifications />} />
             </Route>
+            
 
             {/* Fallback Route */}
             <Route path="*" element={<NotFound />} />
