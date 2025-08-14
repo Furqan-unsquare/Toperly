@@ -136,7 +136,7 @@ const TopRatedCourses = () => {
       const originalId = course._id.includes("_advanced")
         ? course._id.split("_advanced")[0]
         : course._id;
-      navigate(`/courses/${originalId}`);
+      navigate(`/student/courses/${originalId}`);
     };
 
     const getRatingColor = (rating) => {

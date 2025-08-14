@@ -29,7 +29,7 @@ import SubscriptionPlans from "./pages/LandingPage/pages/SubscriptionPlans";
 // 📄 Pages
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
-import { Dashboard } from "./pages/Dashboard";
+import { Dashboard } from "./pages/Student/Dashboard";
 import NotFound from "./pages/NotFound";
 
 // 🎓 Student Components
@@ -38,7 +38,7 @@ import CourseDetail from "./components/CourseDetail";
 import QuizPage from "./components/student/QuizPage";
 import EnrolledCourses from "./components/student/EnrolledCourses";
 import Wishlist from "./components/student/Wishlist";
-import HelpCenter from "./components/Helpcenter";
+import HelpCenter from "./components/student/Helpcenter";
 
 // 🎓 Instructor Components
 import CourseManagementSystem from "./pages/Instructor/Course";
@@ -63,8 +63,10 @@ import AdminUserManagement from "./pages/Admin/AdminUserManagement";
 // ⚙️ Common Pages
 import { ProfileSettings } from "./components/ProfileSettings";
 import { Notifications } from "./components/Notifications";
-import AboutPage from "./components/AboutPage";
-import { StudentDashboard } from "./pages/StudentDashboard";
+import AboutPage from "./components/student/AboutPage";
+import { StudentDashboard } from "./pages/Student/StudentDashboard";
+import Revenue from "./pages/Instructor/Revenue";
+import PaymentHistory from "./pages/Student/PaymentHistory";
 
 const queryClient = new QueryClient();
 

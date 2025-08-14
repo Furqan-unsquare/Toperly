@@ -22,8 +22,13 @@ export const getMyStudents = async (req, res) => {
         select: "name email profileImage",
       })
       .populate({
+<<<<<<< HEAD
         path: "course",
         select: "title customId",
+=======
+        path: 'course',
+        select: 'title customId category rating'
+>>>>>>> 140a8b202ba9a73f207a01e68df732c0df6c173b
       });
 
     res.status(200).json({

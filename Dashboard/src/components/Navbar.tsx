@@ -7,6 +7,7 @@ import {
   BookOpen,
   LogOut,
   GalleryHorizontalEnd,
+  CreditCard,
 } from "lucide-react";
 import {
   Tooltip,
@@ -112,6 +113,10 @@ export const Navbar = () => {
               <DropdownMenuItem onClick={() => navigate("/student/profile")}>
                 <User className="w-4 h-4 mr-2" />
                 Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/student/payment-history")}>
+                <CreditCard className="w-4 h-4 mr-2" />
+                Payment History
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleLogout}>
                 <LogOut className="w-4 h-4 mr-2" />

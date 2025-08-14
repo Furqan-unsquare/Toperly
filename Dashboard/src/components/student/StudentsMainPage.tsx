@@ -1,5 +1,5 @@
 import React from 'react'
-import CoursesCatalog from '../CoursesCatalog'
+import CoursesCatalog from './CoursesCatalog'
 import RecommendedCourses from './RecommendedCourses'
 import TopPick from './TopPick'
 import Footer from './Footer'
