@@ -130,7 +130,7 @@ const AIChatInterface = () => {
                   leftColumnInView ? 'animate-slideInUp' : 'opacity-0 transform translate-y-[50px]'
                 }`}>
                   <h1 className="text-2xl sm:text-3xl lg:text-4xl text-gray-900 leading-tight animate-gradient bg-gradient-to-r from-gray-900 via-indigo-900 to-gray-900 bg-clip-text">
-                    The Only AI For Respond
+                    The Only AI For Respond 
                   </h1>
                   <h1 className="text-2xl sm:text-3xl lg:text-4xl text-gray-900 leading-tight animate-gradient bg-gradient-to-r from-gray-900 via-purple-900 to-gray-900 bg-clip-text">
                     To Your Messages

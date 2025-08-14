@@ -1,6 +1,6 @@
 import React from "react";
 import HeroSection from "@/components/LandingPage/components/Home/HeroSection";
-import FeaturesSection from "@/components/Home/FeaturesSection";
+import FeaturesSection from "@/components/LandingPage/components/Home/FeaturesSection";
 import CoursesSection from "@/components/LandingPage/components/Home/TopRated";
 import TestimonialsSection from "@/components/LandingPage/components/Home/TestimonialsSection";
 import MentorAccessSection from "@/components/LandingPage/components/Home/MentorAccessSection";
@@ -14,11 +14,11 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <HeroSection />
-      <About />
-      <AdmissionsSection />
-      {/* <FeaturesSection /> */}
-      <AICommunityCards />
       <CoursesSection />
+      {/* <About /> */}
+      <AdmissionsSection />
+      <FeaturesSection />
+      {/* <AICommunityCards /> */}
       {/* <TrustedCoursesBrand /> */}
       <MentorAccessSection />
       <TestimonialsSection />

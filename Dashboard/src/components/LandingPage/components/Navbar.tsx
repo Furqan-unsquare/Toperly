@@ -224,25 +224,23 @@ const Navbar = () => {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled ? 'shadow-lg backdrop-blur-md bg-white/5' : 'text-white bg-transparent'
-      } ${isScrolled ? 'h-16' : 'h-16 sm:h-24'}`}
+        isScrolled ? 'shadow-lg backdrop-blur-md bg-white' : 'text-black bg-white'
+      } ${isScrolled ? 'h-16' : 'h-16 sm:h-28'}`}
     >
       {/* Top row */}
       <div
         className={`${
           isScrolled ? 'h-0 opacity-0 overflow-hidden' : 'sm:h-12 opacity-100'
-        } transition-all duration-300 ${
-          isScrolled ? 'bg-gray-200' : location.pathname === '/' ? 'bg-gray-900' : 'text-black bg-gray-50'
-        } ${isScrolled ? 'border-gray-200' : 'border-gray-700'}`}
+        } transition-all duration-300 `}
       >
-        <div className="max-w-7xl mx-auto pt-2 px-4 h-full flex items-center justify-end">
+        <div className="max-w-7xl mx-auto pt-1 h-full flex items-center justify-end">
           <div className="hidden md:flex items-center space-x-6 text-sm">
-            <p className='text-gray-500'>Welcome to Toperly</p>
+            <p className='text-gray-600'>Welcome to Toperly</p>
             {topNavItems.map((item, index) => (
               <a
                 key={index}
-                href={item.href}
-                className={`cursor-pointer underline transition-colors duration-200 text-gray-500`}
+                // href={item.href}
+                className={`cursor-pointer underline transition-colors duration-200 text-gray-600`}
               >
                 {item.label}
               </a>
@@ -253,7 +251,7 @@ const Navbar = () => {
 
       {/* Main navbar */}
       <div className={`${isScrolled ? 'h-16' : 'h-14 sm:h-16'} transition-all duration-300`}>
-        <div className="px-20 mx-auto h-full flex items-center justify-between">
+        <div className="md:px-20 mx-auto h-full flex items-center justify-between">
           {/* Logo & Categories */}
           <div className="flex items-center">
             <div className="flex items-center space-x-3">
@@ -263,7 +261,7 @@ const Navbar = () => {
               <div className="relative group hidden lg:flex">
                 <button
                   className={`font-medium focus:outline-none flex items-center transition-colors duration-300 ${
-                    isScrolled ? 'text-gray-500 hover:text-gray-500' : 'text-gray-400 hover:text-gray-400'
+                    isScrolled ? 'text-gray-700 hover:text-gray-500' : 'text-gray-700 hover:text-gray-400'
                   }`}
                 >
                   Categories
@@ -295,7 +293,7 @@ const Navbar = () => {
                 key={index}
                 href={item.href}
                 className={`text-sm font-medium transition-colors duration-300 ${
-                  isScrolled ? 'text-gray-500 hover:text-gray-500' : 'text-gray-400 hover:text-gray-700'
+                  isScrolled ? 'text-gray-700 hover:text-gray-500' : 'text-gray-700 hover:text-gray-500'
                 }`}
                 onClick={(e) => {
                   e.preventDefault();
@@ -319,11 +317,7 @@ const Navbar = () => {
                   setQuery(e.target.value);
                   handleSearch(e.target.value);
                 }}
-                className={`w-64 px-4 py-2 rounded-md border focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300 ${
-                  isScrolled
-                    ? 'bg-gray-100 text-gray-900 placeholder-gray-500 border-gray-200'
-                    : 'bg-gray-700 text-gray-900 placeholder-gray-400 border-gray-600'
-                }`}
+                className={`w-64 px-4 py-2 rounded-md border bg-gray-100 text-gray-900 placeholder-gray-500 border-gray-200 transition-all duration-300 `}
                 aria-label="Search courses"
               />
               <button className="absolute right-3 top-2.5">
@@ -431,7 +425,7 @@ const Navbar = () => {
             <div className="relative group hidden md:flex">
               <button
                 className={`flex items-center text-sm font-medium transition-colors duration-300 ${
-                  isScrolled ? 'text-gray-500 hover:text-gray-700' : 'text-gray-400 hover:text-gray-300'
+                  isScrolled ? 'text-gray-700 hover:text-gray-500' : 'text-gray-700 hover:text-gray-500'
                 }`}
               >
                 <Globe className="h-4 w-4 mr-1" />
@@ -454,7 +448,7 @@ const Navbar = () => {
             {/* Mobile menu button */}
             <button
               className={`lg:hidden p-2 rounded-md transition-all relative z-[60] ${
-                isScrolled ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-300 hover:bg-gray-800'
+                isScrolled ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-700 hover:bg-gray-800'
               }`}
               onClick={toggleMobileMenu}
               aria-label="Toggle Menu"

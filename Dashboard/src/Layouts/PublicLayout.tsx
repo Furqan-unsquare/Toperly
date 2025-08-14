@@ -11,7 +11,7 @@ export default function PublicLayout() {
       <main>
         <Outlet />
       </main>
-      <Topsy />
+      {/* <Topsy /> */}
       <Footer />
     </div>
   );

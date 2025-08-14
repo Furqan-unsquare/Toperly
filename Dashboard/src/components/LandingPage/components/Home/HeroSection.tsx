@@ -165,7 +165,7 @@ const DarkAIHero = () => {
           <div className=" mx-auto text-left">
             {/* Premium Badge */}
             <motion.div 
-              className="inline-flex items-center px-6 py-3 backdrop-blur-sm rounded-full text-sm font-semibold mb-8 border shadow-2xl bg-blue-500/20 text-blue-400 border-blue-500/30"
+              className="inline-flex items-center mt-6 px-6 py-3 backdrop-blur-sm rounded-full text-sm font-semibold mb-8 border shadow-2xl bg-blue-500/20 text-blue-400 border-blue-500/30"
               variants={zoomOut}
             >
               <Shield className="w-4 h-4 mr-2 text-blue-400" />

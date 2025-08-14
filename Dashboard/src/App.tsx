@@ -33,8 +33,8 @@ import { Dashboard } from "./pages/Student/Dashboard";
 import NotFound from "./pages/NotFound";
 
 // 🎓 Student Components
-import CoursesCatalog from "./components/CoursesCatalog";
-import CourseDetail from "./components/CourseDetail";
+import CoursesCatalog from "./components/student/CoursesCatalog";
+import CourseDetail from "./components/student/CourseDetail";
 import QuizPage from "./components/student/QuizPage";
 import EnrolledCourses from "./components/student/EnrolledCourses";
 import Wishlist from "./components/student/Wishlist";

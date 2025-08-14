@@ -43,6 +43,7 @@ export const enrollStudent = async (req, res) => {
         paymentId,
         orderId,
         signature,
+        method: paymentMethod,
         amount: course.price,
         currency: 'INR',
         status: 'completed'
@@ -81,7 +82,8 @@ export const getAllEnrollments = async (req, res) => {
       .populate({
         path: 'course',
         select: 'title price'
-      });
+      })
+       .select('student course paymentDetails');
 
     res.status(200).json(enrollments);
   } catch (err) {

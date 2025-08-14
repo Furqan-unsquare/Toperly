@@ -31,18 +31,158 @@ const useInView = (threshold = 0.1, rootMargin = '0px') => {
   return [ref, isInView];
 };
 
+// Profile Card Component
+const ProfileCard = ({ 
+  name, 
+  role, 
+  image, 
+  size = 'md', 
+  position = { top: '50%', left: '50%' },
+  delay = 0,
+  isVisible = false 
+}) => {
+  const sizeClasses = {
+    sm: 'w-12 h-12',
+    md: 'w-16 h-16',
+    lg: 'w-20 h-20',
+    xl: 'w-24 h-24'
+  };
+
+  return (
+    <div
+      className={`absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-1000 ${
+        isVisible 
+          ? 'opacity-100 scale-100 rotate-0' 
+          : 'opacity-0 scale-50 rotate-180'
+      }`}
+      style={{ 
+        top: position.top, 
+        left: position.left,
+        transitionDelay: `${delay}ms`
+      }}
+    >
+      <div className="relative group cursor-pointer">
+        <div className={`${sizeClasses[size]} rounded-full overflow-hidden border-3 border-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110`}>
+          <img 
+            src={image} 
+            alt={name}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        
+        {/* Tooltip */}
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-black text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+          <div className="font-medium">{name}</div>
+          <div className="text-gray-300">{role}</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Central Post Component
+const CentralPost = ({ isVisible, delay = 0 }) => {
+  return (
+    <div
+      className={`absolute mt-32 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-1000 ${
+        isVisible 
+          ? 'opacity-100 scale-100 translate-y-0' 
+          : 'opacity-0 scale-90 translate-y-8'
+      }`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      <div className="bg-white rounded-2xl shadow-xl w-80  border border-gray-100 hover:shadow-2xl transition-shadow duration-300">
+        <img src="https://i.pinimg.com/736x/65/d2/93/65d293150279b6edf041aeb40652cb82.jpg" className='rounded-t-2xl ' alt="" />
+        {/* Header */}
+        <div className='p-4'>
+          
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+            <span className="text-white font-bold">AI</span>
+          </div>
+          <div>
+            <div className="font-semibold text-gray-900">Career Mentor</div>
+            <div className="text-sm text-gray-500">Available now</div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div>
+          <div className="text-gray-600 text-sm">
+            Get personalized guidance on interview prep, and career transitions from industry experts.
+          </div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const MentorAccessSection = () => {
   // Intersection Observer hooks for different sections
   const [sectionRef, sectionInView] = useInView(0.2);
   const [textRef, textInView] = useInView(0.3);
   const [laptopRef, laptopInView] = useInView(0.2);
 
+  // Profile data - easily customizable
+  const profiles = [
+    {
+      name: "Marcus Johnson",
+      role: "Tech Lead at Meta",
+      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+      size: "md",
+      position: { top: "35%", left: "70%" },
+      delay: 700
+    },
+    {
+      name: "Priya Patel",
+      role: "Engineering Director",
+      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop&crop=face",
+      size: "sm",
+      position: { top: "55%", left: "85%" },
+      delay: 900
+    },
+    {
+      name: "David Kim",
+      role: "Startup Founder",
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+      size: "xl",
+      position: { top: "75%", left: "20%" },
+      delay: 600
+    },
+    {
+      name: "Lisa Rodriguez",
+      role: "UX Designer",
+      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+      size: "md",
+      position: { top: "80%", left: "75%" },
+      delay: 800
+    },
+    {
+      name: "Alex Thompson",
+      role: "Data Scientist",
+      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
+      size: "sm",
+      position: { top: "50%", left: "25%" },
+      delay: 1000
+    },
+    {
+      name: "Emma Wilson",
+      role: "Marketing Director",
+      image: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=150&h=150&fit=crop&crop=face",
+      size: "md",
+      position: { top: "25%", left: "20%" },
+      delay: 1200
+    }
+  ];
+
   return (
     <section
       ref={sectionRef}
-      className="bg-blue-500/10 text-black relative overflow-hidden"
+      className="bg-white text-black relative overflow-hidden min-h-screen py-20"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center h-full">
         {/* Left Text with Staggered Animations */}
         <div 
           ref={textRef}
@@ -53,7 +193,7 @@ const MentorAccessSection = () => {
           }`}
         >
           {/* Animated Heading */}
-          <h2 className={`text-3xl md:text-4xl font-semibold leading-snug transition-all duration-1000 delay-200 ${
+          <h2 className={`text-3xl md:text-5xl font-semibold leading-snug transition-all duration-1000 delay-200 ${
             textInView 
               ? 'opacity-100 transform translate-y-0' 
               : 'opacity-0 transform translate-y-8'
@@ -82,7 +222,7 @@ const MentorAccessSection = () => {
                 }`}
                 style={{ transitionDelay: `${600 + index * 200}ms` }}
               >
-                <span className={`font-bold text-gray-700 w-6 h-6 rounded-full  flex items-center justify-center text-sm transition-all duration-500`} style={{ animationDelay: `${800 + index * 200}ms` }}>
+                <span className={`font-bold text-gray-700 w-6 h-6 rounded-full flex items-center justify-center text-sm transition-all duration-500`} style={{ animationDelay: `${800 + index * 200}ms` }}>
                   {index + 1}
                 </span>
                 <span className="flex-1">
@@ -93,40 +233,30 @@ const MentorAccessSection = () => {
           </ul>
         </div>
 
-        {/* Right Side - Animated Laptop */}
+        {/* Right Side - Profile Layout */}
         <div 
           ref={laptopRef}
-          className={`bg-gradient-mobile px-4 md:px-12 lg:px-24 transition-all duration-1000 ${
+          className={`relative h-96 lg:h-[600px] px-4 md:px-12 lg:px-24 transition-all duration-1000 ${
             laptopInView 
               ? 'opacity-100 transform translate-x-0 scale-100' 
               : 'opacity-0 transform translate-x-12 scale-95'
           }`}
           style={{ transitionDelay: '400ms' }}
         >
-          <div className="relative w-full max-w-2xl mx-auto z-10 mb-10">
-            {/* MacBook Image with Hover Effect */}
-            <div className={`relative transition-all duration-1000 }`}>
-              <img
-                src="/macbook.png"
-                alt="MacBook"
-                className="w-full h-auto z-10 relative transform transition-all duration-500"
-              />
-    </div>
+          {/* Central Post */}
+          <CentralPost isVisible={laptopInView} delay={400} />
+          
+          {/* Profile Cards */}
+          {profiles.map((profile, index) => (
+            <ProfileCard
+              key={index}
+              {...profile}
+              isVisible={laptopInView}
+            />
+          ))}
 
-            {/* Screen content with Enhanced Animation */}
-            <div className={`absolute top-[2%] left-[11%] w-[77%] h-[93%] overflow-hidden z-20 transition-all duration-1000`} style={{ transitionDelay: '800ms' }}>
-              <img
-                src="/dashboard.png"
-                className="w-full h-full object-fill rounded-[8px] transition-all duration-500"
-                alt="Mentor Dashboard"
-              />
-              
-              {/* Screen Overlay Effects */}
-              <div className={`absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent pointer-events-none transition-opacity duration-1000 ${
-                laptopInView ? 'animate-screen-shine' : 'opacity-0'
-              }`}></div>
-            </div>
-          </div>
+          {/* Background decoration */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50 rounded-3xl -z-10"></div>
         </div>
       </div>
 
@@ -135,102 +265,10 @@ const MentorAccessSection = () => {
           0% { background-position: -200% center; }
           100% { background-position: 200% center; }
         }
-        
-        @keyframes number-pop {
-          0% { transform: scale(0) rotate(-180deg); opacity: 0; }
-          50% { transform: scale(1.2) rotate(-90deg); }
-          100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-        
-        @keyframes laptop-float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-8px); }
-        }
-        
-        @keyframes pulse-glow {
-          0%, 100% { opacity: 0.3; transform: scale(0.95); }
-          50% { opacity: 0.7; transform: scale(1.05); }
-        }
-        
-        @keyframes screen-shine {
-          0% { transform: translateX(-100%) skewX(-15deg); opacity: 0; }
-          50% { opacity: 0.6; }
-          100% { transform: translateX(200%) skewX(-15deg); opacity: 0; }
-        }
-        
-        @keyframes badge-float {
-          0% { 
-            transform: scale(0) translateY(20px); 
-            opacity: 0; 
-            rotation: 180deg; 
-          }
-          60% { 
-            transform: scale(1.1) translateY(-5px); 
-            rotation: -10deg; 
-          }
-          100% { 
-            transform: scale(1) translateY(0); 
-            opacity: 1; 
-            rotation: 0deg; 
-          }
-        }
-        
-        @keyframes fadeInLeft {
-          0% { 
-            opacity: 0; 
-            transform: translateX(-50px); 
-          }
-          100% { 
-            opacity: 1; 
-            transform: translateX(0); 
-          }
-        }
-        
-        @keyframes fadeInRight {
-          0% { 
-            opacity: 0; 
-            transform: translateX(50px); 
-          }
-          100% { 
-            opacity: 1; 
-            transform: translateX(0); 
-          }
-        }
-        
-        @keyframes slideInUp {
-          0% { 
-            opacity: 0; 
-            transform: translateY(30px); 
-          }
-          100% { 
-            opacity: 1; 
-            transform: translateY(0); 
-          }
-        }
 
         .animate-gradient-slide {
           background-size: 200% auto;
           animation: gradient-slide 2s ease-in-out;
-        }
-        
-        .animate-number-pop {
-          animation: number-pop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-        }
-        
-        .animate-laptop-float {
-          animation: laptop-float 4s ease-in-out infinite;
-        }
-        
-        .animate-pulse-glow {
-          animation: pulse-glow 3s ease-in-out infinite;
-        }
-        
-        .animate-screen-shine {
-          animation: screen-shine 2s ease-out infinite 2s;
-        }
-        
-        .animate-badge-float {
-          animation: badge-float 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
         }
       `}</style>
     </section>
