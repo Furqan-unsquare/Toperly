@@ -1,3 +1,4 @@
+
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -80,7 +81,8 @@ const ProtectedRoute = ({
   allowedRoles: string[];
 }) => {
   const { user, isLoading } = useAuth();
-  console.log(user)
+  console.log("ProtectedRoute user:", user);
+
   if (isLoading) {
     return <div className="text-center mt-10">Loading...</div>;
   }
@@ -89,6 +91,12 @@ const ProtectedRoute = ({
     return <Navigate to="/auth/login" replace />;
   }
 
+  // Allow admins to access all routes
+  if (user.role === "admin") {
+    return <>{children}</>;
+  }
+
+  // For non-admin users, check allowed roles
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -359,24 +367,13 @@ const App = () => (
                 </ProtectedRoute>
               }
             >
-              <Route path="/admin/dashboard" element={<Dashboard />} />
+              <Route path="/admin/dashboard" element={<AdminRealTimeAnalytics />} />
               <Route path="/admin/coupons" element={<AdminCoupons />} />
               <Route path="/admin/revenue" element={<AdminRevenueTracker />} />
-              <Route
-                path="/admin/analytics"
-                element={<AdminRealTimeAnalytics />}
-              />
-              <Route
-                path="/admin/approvals"
-                element={<AdminCourseApprovalList />}
-              />
-              <Route
-                path="/admin/user-management"
-                element={<AdminUserManagement />}
-              />
+              <Route path="/admin/approvals" element={<AdminCourseApprovalList />} />
+              <Route path="/admin/user-management" element={<AdminUserManagement />} />
               <Route path="/admin/notifications" element={<Notifications />} />
             </Route>
-            
 
             {/* Fallback Route */}
             <Route path="*" element={<NotFound />} />

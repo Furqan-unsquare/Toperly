@@ -441,8 +441,8 @@ const AdminRealTimeAnalytics = () => {
   }));
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-6">
+    <div className="min-h-screen bg-gray-50 ">
+      <div className="max-w-5xl mx-auto p-6 px-14">
         {/* Header with Real-time Indicator */}
         <div className="flex justify-between items-center mb-8">
           <div>

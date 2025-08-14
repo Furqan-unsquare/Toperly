@@ -50,7 +50,7 @@ const TermsPrivacyPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="max-w-5xl px-14 mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
           <h2 className="text-2xl font-semibold text-gray-900">Terms & Privacy Policy</h2>

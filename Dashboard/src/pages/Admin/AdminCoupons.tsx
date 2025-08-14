@@ -122,7 +122,7 @@ const AdminCoupons = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white min-h-screen">
+    <div className="max-w-5xl px-14 mx-auto p-6 bg-white min-h-screen">
       <h2 className="text-3xl font-bold text-gray-800 mb-6">Manage Coupons</h2>
 
       {notification.message && (

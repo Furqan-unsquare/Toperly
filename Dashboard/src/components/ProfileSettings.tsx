@@ -260,7 +260,7 @@ export const ProfileSettings = () => {
 
   return (
     <div className="bg-gray-100 space-y-6 p-6">
-      <div className="max-w-5xl mx-auto space-y-6 p-6">
+      <div className="max-w-5xl px-14 mx-auto space-y-6 p-6">
         {/* Profile Overview Card */}
         <Card>
           <CardHeader className="pb-4">
