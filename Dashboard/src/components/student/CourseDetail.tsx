@@ -351,12 +351,12 @@ const CourseDetail = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 ">
       <Toast message={toastMessage} />
 
       {/* Hero Section - Hidden if enrolled */}
       {!isEnrolled ? (
-        <div className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 text-white">
+        <div className="bg-gradient-to-r mt-28 from-gray-900 via-gray-700 to-gray-900 text-white">
           <div className="mx-auto px-4 sm:px-6 lg:px-0 lg:pl-40 lg:pr-10 py-8">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
               <div className="lg:col-span-2">

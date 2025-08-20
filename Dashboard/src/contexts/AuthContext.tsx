@@ -8,6 +8,8 @@ import React, {
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import publicRoutes from "./public"; // adjust path
+import { matchPath } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -155,21 +157,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 useEffect(() => {
   const initializeAuth = async () => {
-    if (auth0Loading) {
-      return; // Wait for Auth0 to finish loading
-    }
-
-    // Define public routes that unauthenticated users can access
-    const publicRoutes = ["/", "/courses", "/contact-us", "/subscription-plans", "/blogs", "/auth/login", "/auth/Instructor"]; // Adjust as needed
+    if (auth0Loading) return;
 
     const userJson = localStorage.getItem("user");
     const storedToken = localStorage.getItem("token");
+
     if (userJson && storedToken) {
       const parsedUser = JSON.parse(userJson);
       setUser(parsedUser);
       setToken(storedToken);
       setNeedsRoleSelection(false);
-      // Only redirect to dashboard if on root or login page
+
       if (location.pathname === "/" || location.pathname === "/auth/login") {
         navigate(getRedirectPath(parsedUser.role), { replace: true });
       }
@@ -179,8 +177,13 @@ useEffect(() => {
     } else {
       setIsLoading(false);
       setNeedsRoleSelection(false);
-      // Only redirect to "/" if the current path is not a public route
-      if (!publicRoutes.includes(location.pathname)) {
+
+      // ✅ FIX: matchPath instead of includes
+      const isPublic = publicRoutes.some((route) =>
+        matchPath({ path: route, end: true }, location.pathname)
+      );
+
+      if (!isPublic) {
         navigate("/", { replace: true });
       }
     }
@@ -188,6 +191,7 @@ useEffect(() => {
 
   initializeAuth();
 }, [auth0Loading, isAuthenticated, syncUserWithBackend, navigate, location.pathname]);
+
 
   const loginWithSocial = (connection: string) => {
     loginWithRedirect({ authorizationParams: { connection } });

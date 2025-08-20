@@ -30,19 +30,26 @@ export default function InstructorLogin() {
         </div>
       </div>
 
-      {/* Right Panel - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12">
-        <div className="w-full  max-w-xl">
-          {/* Mobile Header - Only visible on small screens */}
-          <div className="lg:hidden mb-8 text-center">
-            <div className="w-full h-32 bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 rounded-lg flex items-center justify-center mb-6">
-              <div className=" text-center">
-                <p className="text-sm opacity-90 mb-2">You can easily</p>
-                <h1 className="text-xl font-bold">Speed up your work<br />with our Web App</h1>
-              </div>
-            </div>
-          </div>
 
+    <div>
+     {/* Mobile Header - Only visible on small screens */}
+      <div className=" absolute lg:hidden text-center h-full w-full">
+        <div className="w-full h-full rounded-lg flex items-center justify-center"
+        style={{
+          backgroundImage: "url('https://i.pinimg.com/736x/82/88/a9/8288a984840efba268f78e43ec110787.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}>
+          <div className="-mt-16 -ml-10 text-left">
+            <p className="text-2xl opacity-90 mb-2">You can easily</p>
+            <h1 className="text-3xl font-bold">Speed up your work<br />with our Web App</h1>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Panel - Login Form */}
+      <div className="absolute bg-white bottom-0 md:-top-1/2 mt-80 rounded-t-3xl w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12">
+        <div className="w-full max-w-xl">
           {/* Form Header */}
           <div className="mb-8">
             <h2 className="text-2xl md:text-5xl font-bold text-gray-900 mb-2">Become Student Now</h2>
@@ -85,7 +92,8 @@ export default function InstructorLogin() {
             </button>
           </div>
         </div>
-      </div>
+      </div>   
+    </div>
     </div>
   );
 }

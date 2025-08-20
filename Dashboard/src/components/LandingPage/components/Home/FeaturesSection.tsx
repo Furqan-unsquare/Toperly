@@ -55,9 +55,9 @@ const VirtualDevicesDashboard = () => {
           size: "h-24"
         },
         {
-          src: "https://www.liblogo.com/img-logo/ja362j7d4-java-logo-java-free-logo-icons.png",
-          position: "top-[70%] left-[25%]",
-          size: "h-20"
+          src: "https://static.vecteezy.com/system/resources/previews/022/100/214/non_2x/java-logo-transparent-free-png.png",
+          position: "top-[65%] left-[20%]",
+          size: "h-40"
         },
         {
           src: "https://www.freeiconspng.com/uploads/c--logo-icon-0.png",
@@ -65,7 +65,7 @@ const VirtualDevicesDashboard = () => {
           size: "h-20"
         },
         {
-          src: "https://seeklogo.com/images/T/tensorflow-logo-02FCED4F98-seeklogo.com.png",
+          src: "https://www.syntonize.com/wp-content/uploads/2024/01/7746A535-AC40-442A-9627-ADAD756DCF82.png",
           position: "bottom-[25%] right-[20%]",
           size: "h-24"
         }
@@ -109,22 +109,22 @@ const VirtualDevicesDashboard = () => {
       comments: [],
       randomImages: [
         {
-          src: "https://www.pngmart.com/files/8/Certificate-PNG-Image.png",
-          position: "top-[15%] left-[20%]",
+          src: "https://clipart-library.com/img1/1053315.png",
+          position: "top-[7%] left-[22%]",
           size: "h-28"
         },
         {
-          src: "https://i.pinimg.com/originals/7c/1a/e3/7c1ae3300a066213f2c247d0a03110c0.png",
+          src: "https://static.vecteezy.com/system/resources/previews/021/358/803/original/artificial-intelligence-icon-element-design-illustration-ai-technology-and-cyber-icon-element-futuristic-technology-service-and-communication-artificial-intelligence-concept-png.png",
           position: "top-[15%] right-[15%]",
           size: "h-24"
         },
         {
           src: "https://www.pngmart.com/files/22/Social-Network-PNG-Free-Download.png",
           position: "bottom-[20%] left-[10%]",
-          size: "h-40"
+          size: "h-48"
         },
         {
-          src: "https://cdn-icons-png.flaticon.com/512/10262/10262344.png",
+          src: "https://www.freeiconspng.com/uploads/idea-icon-11.png",
           position: "bottom-[25%] right-[25%]",
           size: "h-24"
         }

@@ -1,6 +1,7 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useLocation, matchPath } from "react-router-dom";
 
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 
@@ -19,6 +20,7 @@ import AuthLayout from "./layouts/AuthLayout";
 // 🧭 Route Wrappers
 import StudentRoutes from "./contexts/StudentContext";
 import InstructorRoutes from "./contexts/InstructorContext";
+import publicRoutes from "./contexts/public"; // adjust path
 
 // Landing Page
 import HomePage from "./pages/LandingPage/pages/HomePage";
@@ -76,37 +78,35 @@ import PaymentHistory from "./pages/Student/PaymentHistory";
 
 const queryClient = new QueryClient();
 
-// Protected Route Component
+
 const ProtectedRoute = ({
   children,
   allowedRoles,
 }: {
   children: React.ReactNode;
-  allowedRoles: string[];
+  allowedRoles?: string[];
 }) => {
   const { user, isLoading } = useAuth();
-  console.log("ProtectedRoute - User:", user?.role, "Allowed Roles:", allowedRoles);
+  const location = useLocation();
 
-  if (isLoading) {
-    return <div className="text-center mt-10">Loading...</div>;
-  }
+  const isPublic = publicRoutes.some((route) =>
+    matchPath({ path: route, end: true }, location.pathname)
+  );
 
-  if (!user) {
-    console.log("ProtectedRoute - No user, redirecting to /auth/login");
-    return <Navigate to="/auth/login" replace />;
-  }
+  if (isLoading) return <div>Loading...</div>;
 
-  if (user.role === "admin", "subadmin") {
-    console.log("ProtectedRoute - Admin user, allowing access");
+  if (isPublic) return <>{children}</>;
+
+  if (!user) return <Navigate to="/auth/login" replace />;
+
+  if (user.role === "admin" || user.role === "subadmin") {
     return <>{children}</>;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    console.log(`ProtectedRoute - Role ${user.role} not allowed, redirecting to /admin/dashboard`);
     return <Navigate to="/admin/dashboard" replace />;
   }
 
-  console.log("ProtectedRoute - Access granted");
   return <>{children}</>;
 };
 
@@ -131,6 +131,7 @@ const App = () => (
             <Route element={<PublicLayout />}>
               <Route path="/" element={<HomePage />} />
               <Route path="/courses" element={<AllCoursesPage />} />
+              <Route path="/courses/:courseId" element={ <CourseDetail /> }/>
               <Route path="/blogs" element={<BlogPage />} />
               <Route path="/subscription-plans" element={<SubscriptionPlans />} />
               <Route path="/contact-us" element={<ContactPage />} />

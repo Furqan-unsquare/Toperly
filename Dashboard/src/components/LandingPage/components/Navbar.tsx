@@ -402,8 +402,8 @@ const Navbar = () => {
                 <button
                   className={`px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-300 ${
                     isScrolled
-                      ? 'bg-gray-300 text-gray-900 hover:bg-gray-300'
-                      : 'bg-purple-700 text-white hover:bg-gray-600'
+                      ? 'bg-[#2721F7] text-gray-200 hover:bg-gray-300'
+                      : 'bg-[#2721F7] text-white hover:bg-gray-600'
                   }`}
                   onClick={() => navigate('/auth/login')}
                 >
