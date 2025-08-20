@@ -84,15 +84,14 @@ const ProfileCard = ({
 const CentralPost = ({ isVisible, delay = 0 }) => {
   return (
     <div
-      className={`absolute mt-32 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-1000 ${
+      className={`absolute mt-0 md:mt-32 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-1000 ${
         isVisible 
           ? 'opacity-100 scale-100 translate-y-0' 
           : 'opacity-0 scale-90 translate-y-8'
       }`}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      <div className="bg-white rounded-2xl shadow-xl w-80  border border-gray-100 hover:shadow-2xl transition-shadow duration-300">
-        <img src="https://i.pinimg.com/736x/65/d2/93/65d293150279b6edf041aeb40652cb82.jpg" className='rounded-t-2xl ' alt="" />
+      style={{ transitionDelay: `${delay}ms` }}>
+      <div className="bg-white rounded-2xl shadow-xl w-72 border border-gray-100 hover:shadow-2xl transition-shadow duration-300">
+        <img src="https://i.pinimg.com/736x/65/d2/93/65d293150279b6edf041aeb40652cb82.jpg" className='rounded-t-2xl shadow' alt="" />
         {/* Header */}
         <div className='p-4'>
           
@@ -124,6 +123,14 @@ const MentorAccessSection = () => {
   const [sectionRef, sectionInView] = useInView(0.2);
   const [textRef, textInView] = useInView(0.3);
   const [laptopRef, laptopInView] = useInView(0.2);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // Profile data - easily customizable
   const profiles = [
@@ -133,22 +140,25 @@ const MentorAccessSection = () => {
       image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
       size: "md",
       position: { top: "35%", left: "70%" },
+    mobilePosition: { top: "10%", left: "10%" },
       delay: 700
     },
     {
       name: "Priya Patel",
       role: "Engineering Director",
       image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop&crop=face",
-      size: "sm",
-      position: { top: "55%", left: "85%" },
+      size: "md",
+      position: { top: "25%", left: "25%" },
+    mobilePosition: { top: "90%", left: "10%" },
       delay: 900
     },
     {
       name: "David Kim",
       role: "Startup Founder",
       image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-      size: "xl",
-      position: { top: "75%", left: "20%" },
+      size: "lg",
+      position: { top: "75%", left: "25%" },
+    mobilePosition: { top: "80%", left: "90%" },
       delay: 600
     },
     {
@@ -157,6 +167,7 @@ const MentorAccessSection = () => {
       image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
       size: "md",
       position: { top: "80%", left: "75%" },
+    mobilePosition: { top: "20%", left: "90%" },
       delay: 800
     },
     {
@@ -164,29 +175,57 @@ const MentorAccessSection = () => {
       role: "Data Scientist",
       image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
       size: "sm",
-      position: { top: "50%", left: "25%" },
+      position: { top: "50%", left: "30%" },
+    mobilePosition: { top: "60%", left: "15%" },
       delay: 1000
     },
-    {
-      name: "Emma Wilson",
-      role: "Marketing Director",
-      image: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=150&h=150&fit=crop&crop=face",
-      size: "md",
-      position: { top: "25%", left: "20%" },
-      delay: 1200
-    }
+    // {
+    //   name: "Emma Wilson",
+    //   role: "Marketing Director",
+    //   image: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=150&h=150&fit=crop&crop=face",
+    //   size: "md",
+    //   position: { top: "25%", left: "20%" },
+    // mobilePosition: { top: "80%", left: "90%" },
+    //   delay: 1200
+    // }
   ];
 
   return (
-    <section
-      ref={sectionRef}
-      className="bg-white text-black relative overflow-hidden min-h-screen py-20"
-    >
+    <section ref={sectionRef} className="bg-white text-black relative overflow-hidden min-h-full py-20">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center h-full">
+        {/* Right Side - Profile Layout */}
+        <div 
+          ref={laptopRef}
+          className={`relative h-[400px] lg:h-[600px] px-4 md:px-12 lg:px-24 transition-all duration-1000 order-first lg:order-last ${
+            laptopInView 
+              ? 'opacity-100 transform translate-x-0 scale-100' 
+              : 'opacity-0 transform translate-x-12 scale-95'
+          }`}
+          style={{ transitionDelay: '400ms' }}>
+          {/* 🌟 Glow Background */}
+          <div className="absolute inset-0 -z-10 flex justify-center items-center">
+            <div className="w-[500px] h-[500px] bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 rounded-full blur-[120px] opacity-40 animate-pulse" />
+          </div>
+
+          {/* Central Post */}
+          <CentralPost isVisible={laptopInView} delay={400} />
+          
+          {/* Profile Cards */}
+         {profiles.map((profile, index) => (
+  <ProfileCard
+    key={index}
+    {...profile}
+    position={isMobile ? profile.mobilePosition : profile.position} // 👈 choose mobile vs desktop
+    isVisible={laptopInView}
+  />
+))}
+
+        </div>
+
         {/* Left Text with Staggered Animations */}
         <div 
           ref={textRef}
-          className={`space-y-6 z-10 px-4 md:px-12 lg:px-24 md:pt-0 pt-16 transition-all duration-1000 ${
+          className={`space-y-6 z-10 px-4 md:px-12 lg:px-24 md:pt-0 pt-16 transition-all duration-1000 order-last lg:order-first ${
             textInView 
               ? 'opacity-100 transform translate-x-0' 
               : 'opacity-0 transform -translate-x-12'
@@ -207,56 +246,15 @@ const MentorAccessSection = () => {
           </h2>
 
           {/* Animated List Items */}
-          <ul className="space-y-4 text-[16px] md:text-[18px] text-gray-800">
-            {[
-              "Get instant support from 200+ expert mentors.",
-              "Prep for interviews, startup, or support.",
-              "Connect with mentors in under an hour."
-            ].map((text, index) => (
-              <li 
-                key={index}
-                className={`flex items-start gap-3 transition-all duration-800 ${
-                  textInView 
-                    ? 'opacity-100 transform translate-x-0' 
-                    : 'opacity-0 transform -translate-x-8'
-                }`}
-                style={{ transitionDelay: `${600 + index * 200}ms` }}
-              >
-                <span className={`font-bold text-gray-700 w-6 h-6 rounded-full flex items-center justify-center text-sm transition-all duration-500`} style={{ animationDelay: `${800 + index * 200}ms` }}>
-                  {index + 1}
-                </span>
-                <span className="flex-1">
-                  {text}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
+          <p className="text-lg text-gray-700 mb-6">
+            Get instant support from 200+ expert mentors. Prep for interviews, 
+            startup guidance, or personalized support. Connect with mentors in 
+            under an hour and take the next step in your journey.
+          </p>
 
-        {/* Right Side - Profile Layout */}
-        <div 
-          ref={laptopRef}
-          className={`relative h-96 lg:h-[600px] px-4 md:px-12 lg:px-24 transition-all duration-1000 ${
-            laptopInView 
-              ? 'opacity-100 transform translate-x-0 scale-100' 
-              : 'opacity-0 transform translate-x-12 scale-95'
-          }`}
-          style={{ transitionDelay: '400ms' }}
-        >
-          {/* Central Post */}
-          <CentralPost isVisible={laptopInView} delay={400} />
-          
-          {/* Profile Cards */}
-          {profiles.map((profile, index) => (
-            <ProfileCard
-              key={index}
-              {...profile}
-              isVisible={laptopInView}
-            />
-          ))}
-
-          {/* Background decoration */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50 rounded-3xl -z-10"></div>
+          <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-2xl shadow-md transition">
+            Connect with a Mentor
+          </button>
         </div>
       </div>
 

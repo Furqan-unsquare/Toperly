@@ -25,11 +25,12 @@ import HomePage from "./pages/LandingPage/pages/HomePage";
 import AllCoursesPage from "./pages/LandingPage/pages/AllCoursesPage";
 import BlogPage from "./pages/LandingPage/pages/BlogPage";
 import ContactPage from "./pages/LandingPage/pages/ContactPage";
-import SubscriptionPlans from "./pages/LandingPage/pages/SubscriptionPlans";
+import SubscriptionPlans from "./components/LandingPage/components/Home/SubscriptionPlans";
 
 // 📄 Pages
-import { LoginPage } from "./pages/LoginPage";
-import { RegisterPage } from "./pages/RegisterPage";
+import LoginPage from "./Auth/LoginPage";
+import InstructorLogin from "./Auth/InstructorLogin";
+import { RegisterPage } from "./Auth/RegisterPage";
 import { Dashboard } from "./pages/Student/Dashboard";
 import NotFound from "./pages/NotFound";
 
@@ -58,17 +59,20 @@ import InstructorHelpCenter from "./pages/Instructor/InstructorHelpcenter";
 import AdminCoupons from "./pages/Admin/AdminCoupons";
 import AdminRevenueTracker from "./pages/Admin/AdminRevenueTracker";
 import AdminRealTimeAnalytics from "./pages/Admin/AdminRealTimeAnalytics";
+import AdminVerify from "./pages/Admin/Verified";
 import AdminCourseApprovalList from "./pages/Admin/AdminCourseApprovalList";
 import AdminUserManagement from "./pages/Admin/AdminUserManagement";
+import AdminQuery from "./pages/Admin/Query";
+import AdminBlog from "./pages/Admin/BlogList";
+import AdminSubadmin from "./pages/Admin/Subadmin";
 
 // ⚙️ Common Pages
-import { ProfileSettings } from "./components/ProfileSettings";
+import ProfileSettings from "./components/ProfileSettings";
 import { Notifications } from "./components/Notifications";
 import AboutPage from "./components/student/AboutPage";
 import { StudentDashboard } from "./pages/Student/StudentDashboard";
 import Revenue from "./pages/Instructor/Revenue";
 import PaymentHistory from "./pages/Student/PaymentHistory";
-import { AdminAuth } from "./pages/AdminAuth";
 
 const queryClient = new QueryClient();
 
@@ -81,26 +85,28 @@ const ProtectedRoute = ({
   allowedRoles: string[];
 }) => {
   const { user, isLoading } = useAuth();
-  console.log("ProtectedRoute user:", user);
+  console.log("ProtectedRoute - User:", user?.role, "Allowed Roles:", allowedRoles);
 
   if (isLoading) {
     return <div className="text-center mt-10">Loading...</div>;
   }
 
   if (!user) {
+    console.log("ProtectedRoute - No user, redirecting to /auth/login");
     return <Navigate to="/auth/login" replace />;
   }
 
-  // Allow admins to access all routes
-  if (user.role === "admin") {
+  if (user.role === "admin", "subadmin") {
+    console.log("ProtectedRoute - Admin user, allowing access");
     return <>{children}</>;
   }
 
-  // For non-admin users, check allowed roles
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/dashboard" replace />;
+    console.log(`ProtectedRoute - Role ${user.role} not allowed, redirecting to /admin/dashboard`);
+    return <Navigate to="/admin/dashboard" replace />;
   }
 
+  console.log("ProtectedRoute - Access granted");
   return <>{children}</>;
 };
 
@@ -116,7 +122,9 @@ const App = () => (
             {/* Auth Routes (No Layout) */}
             <Route element={<AuthLayout />}>
               <Route path="/auth/login" element={<LoginPage />} />
+              <Route path="/auth/Instructor" element={<InstructorLogin />} />
               <Route path="/auth/register" element={<RegisterPage />} />
+              
             </Route>
 
             {/* Public Routes */}
@@ -124,10 +132,7 @@ const App = () => (
               <Route path="/" element={<HomePage />} />
               <Route path="/courses" element={<AllCoursesPage />} />
               <Route path="/blogs" element={<BlogPage />} />
-              <Route
-                path="/subscription-plans"
-                element={<SubscriptionPlans />}
-              />
+              <Route path="/subscription-plans" element={<SubscriptionPlans />} />
               <Route path="/contact-us" element={<ContactPage />} />
             </Route>
 
@@ -369,7 +374,11 @@ const App = () => (
             >
               <Route path="/admin/dashboard" element={<AdminRealTimeAnalytics />} />
               <Route path="/admin/coupons" element={<AdminCoupons />} />
+              <Route path="/admin/verify" element={<AdminVerify />} />
+              <Route path="/admin/sub-admin" element={<AdminSubadmin />} />
               <Route path="/admin/revenue" element={<AdminRevenueTracker />} />
+              <Route path="/admin/blogs" element={<AdminBlog />} />
+              <Route path="/admin/query" element={<AdminQuery />} />
               <Route path="/admin/approvals" element={<AdminCourseApprovalList />} />
               <Route path="/admin/user-management" element={<AdminUserManagement />} />
               <Route path="/admin/notifications" element={<Notifications />} />

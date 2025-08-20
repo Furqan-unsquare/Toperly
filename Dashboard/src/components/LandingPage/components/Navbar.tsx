@@ -86,7 +86,7 @@ const SearchResults = ({ filtered, setQuery, setFiltered, toggleMobileMenu, isSc
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isCategoriesOpen, setIsCategoriesOpen] = useState(true);
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [courses, setCourses] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -131,14 +131,6 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Prevent body scroll when mobile menu is open
-  useEffect(() => {
-    document.body.style.overflow = isMobileMenuOpen ? 'hidden' : 'unset';
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isMobileMenuOpen]);
-
   // Debounced search handler
   const handleSearch = useCallback(
     debounce((value) => {
@@ -161,7 +153,7 @@ const Navbar = () => {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
-    setIsCategoriesOpen(true);
+    setIsCategoriesOpen(false);
     setIsProfileOpen(false);
   };
 
@@ -197,7 +189,7 @@ const Navbar = () => {
     if (!user) return null;
     switch (user.role) {
       case 'student':
-        return <BookOpen className="h-4 w-4 mr-1" /> ;
+        return <BookOpen className="h-4 w-4 mr-1" />;
       case 'instructor':
         return <User className="h-4 w-4 mr-1" />;
       case 'admin':
@@ -212,26 +204,25 @@ const Navbar = () => {
   const mainNavItems = [
     { label: 'All Courses', href: '/courses', icon: 'book' },
     { label: 'Blog', href: '/blogs', icon: 'pen' },
-    { label: 'Subscription', href: '/subscription-plans', icon: 'sparkles' },
     { label: 'Contact', href: '/contact-us', icon: 'mail' },
   ];
   const topNavItems = [
-    { label: 'Become an Instructor', href: '/dashboard' },
-    { label: 'My learning', href: '/student/dashboard' },
+    { label: 'Become an Instructor', href: '/auth/Instructor' },
+    { label: 'My learning', href: '/auth/login' },
   ];
   const languages = ['Eng', 'Hin', 'Mar'];
 
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled ? 'shadow-lg backdrop-blur-md bg-white' : 'text-black bg-white'
-      } ${isScrolled ? 'h-16' : 'h-16 sm:h-28'}`}
+        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-white'
+      }`}
     >
       {/* Top row */}
       <div
         className={`${
           isScrolled ? 'h-0 opacity-0 overflow-hidden' : 'sm:h-12 opacity-100'
-        } transition-all duration-300 `}
+        } transition-all duration-300`}
       >
         <div className="max-w-7xl mx-auto pt-1 h-full flex items-center justify-end">
           <div className="hidden md:flex items-center space-x-6 text-sm">
@@ -239,7 +230,7 @@ const Navbar = () => {
             {topNavItems.map((item, index) => (
               <a
                 key={index}
-                // href={item.href}
+                href={item.href}
                 className={`cursor-pointer underline transition-colors duration-200 text-gray-600`}
               >
                 {item.label}
@@ -250,213 +241,213 @@ const Navbar = () => {
       </div>
 
       {/* Main navbar */}
-      <div className={`${isScrolled ? 'h-16' : 'h-14 sm:h-16'} transition-all duration-300`}>
-        <div className="md:px-20 mx-auto h-full flex items-center justify-between">
-          {/* Logo & Categories */}
-          <div className="flex items-center">
-            <div className="flex items-center space-x-3">
-              <a href="/" className="hover:opacity-80 transition-opacity">
-                <img src="/logo.png" alt="Toperly Logo" className="h-10 w-auto object-contain" />
-              </a>
-              <div className="relative group hidden lg:flex">
-                <button
-                  className={`font-medium focus:outline-none flex items-center transition-colors duration-300 ${
-                    isScrolled ? 'text-gray-700 hover:text-gray-500' : 'text-gray-700 hover:text-gray-400'
-                  }`}
-                >
-                  Categories
-                  <ChevronDown className="h-4 w-4 ml-1 transition-transform duration-300 group-hover:rotate-180" />
-                </button>
-                <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out transform group-hover:scale-100 scale-95 z-50">
-                  {categories.length > 0 ? (
-                    categories.map((cat) => (
-                      <div
-                        key={cat}
-                        className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 cursor-pointer transition-colors duration-200"
-                        onClick={() => navigate(`/courses?category=${encodeURIComponent(cat)}`)}
-                      >
-                        {cat}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="px-4 py-2 text-sm text-gray-500">No categories available</div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-8">
-            {mainNavItems.map((item, index) => (
-              <a
-                key={index}
-                href={item.href}
-                className={`text-sm font-medium transition-colors duration-300 ${
-                  isScrolled ? 'text-gray-700 hover:text-gray-500' : 'text-gray-700 hover:text-gray-500'
-                }`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate(item.href);
-                }}
-              >
-                {item.label}
-              </a>
-            ))}
-          </div>
-
-          {/* Right side items */}
-          <div className="flex items-center space-x-4">
-            {/* Search bar */}
-            <div className="hidden md:flex items-center relative">
-              <input
-                type="text"
-                placeholder="Search for anything"
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  handleSearch(e.target.value);
-                }}
-                className={`w-64 px-4 py-2 rounded-md border bg-gray-100 text-gray-900 placeholder-gray-500 border-gray-200 transition-all duration-300 `}
-                aria-label="Search courses"
-              />
-              <button className="absolute right-3 top-2.5">
-                {isLoading ? (
-                  <div className="w-4 h-4 border-2 border-t-transparent border-gray-400 rounded-full animate-spin" />
-                ) : (
-                  <svg
-                    className={`w-4 h-4 transition-colors duration-300 ${isScrolled ? 'text-gray-500' : 'text-gray-400'}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                )}
-              </button>
-              {query && <SearchResults filtered={filtered} setQuery={setQuery} setFiltered={setFiltered} isScrolled={isScrolled} />}
-            </div>
-
-            {/* Login/Sign-up or Profile Dropdown */}
-            <div className="relative">
-              {user ? (
-                <div className="flex items-center space-x-2">
-                  <button
-                    className={`flex items-center text-sm font-medium transition-colors duration-300 ${
-                      isScrolled ? 'text-gray-500 hover:text-gray-700' : 'text-gray-400 hover:text-gray-300'
-                    }`}
-                    onClick={toggleProfileMenu}
-                  >
-                    {getRoleIcon()}
-                    {user.name.split(' ')[0]}
-                    <ChevronDown className="h-4 w-4 ml-1 transition-transform duration-300" />
-                  </button>
-                  <AnimatePresence>
-                    {isProfileOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50"
-                      >
-                        <a
-                          href={getDashboardPath()}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            navigate(getDashboardPath());
-                            setIsProfileOpen(false);
-                          }}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
-                        >
-                          Dashboard
-                        </a>
-                        <a
-                          href="/settings"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            navigate('/settings');
-                            setIsProfileOpen(false);
-                          }}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
-                        >
-                          Settings
-                        </a>
-                        <button
-                          onClick={handleLogout}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
-                        >
-                          Logout
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              ) : (
-                <div className="flex items-center space-x-2">
-                  <button
-                    className={`text-sm font-medium transition-colors duration-300 ${
-                      isScrolled ? 'text-gray-500 hover:text-gray-700' : 'text-gray-400 hover:text-gray-300'
-                    }`}
-                    onClick={() => navigate('/auth/login')}
-                  >
-                    Login
-                  </button>
-                  <button
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 ${
-                      isScrolled
-                        ? 'bg-gray-200 text-gray-900 hover:bg-gray-300'
-                        : 'bg-gray-700 text-white hover:bg-gray-600'
-                    }`}
-                    onClick={() => navigate('/auth/login')}
-                  >
-                    Sign Up
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Language Selector */}
-            <div className="relative group hidden md:flex">
+      <div className="h-16 flex items-center justify-between max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+        {/* Logo & Categories */}
+        <div className="flex items-center">
+          <div className="flex items-center space-x-3">
+            <a href="/" className="hover:opacity-80 transition-opacity">
+              <img src="/logo.png" alt="Toperly Logo" className="h-10 w-auto object-contain" />
+            </a>
+            <div className="relative group hidden lg:flex">
               <button
-                className={`flex items-center text-sm font-medium transition-colors duration-300 ${
-                  isScrolled ? 'text-gray-700 hover:text-gray-500' : 'text-gray-700 hover:text-gray-500'
+                className={`font-medium focus:outline-none flex items-center transition-colors duration-300 ${
+                  isScrolled ? 'text-gray-700 hover:text-gray-500' : 'text-gray-700 hover:text-gray-400'
                 }`}
               >
-                <Globe className="h-4 w-4 mr-1" />
-                {language}
+                Categories
                 <ChevronDown className="h-4 w-4 ml-1 transition-transform duration-300 group-hover:rotate-180" />
               </button>
-              <div className="absolute top-full right-0 mt-2 w-32 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out transform group-hover:scale-100 scale-95 z-50">
-                {languages.map((lang) => (
-                  <div
-                    key={lang}
-                    className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 cursor-pointer transition-colors duration-200"
-                    onClick={() => setLanguage(lang)}
-                  >
-                    {lang}
-                  </div>
-                ))}
+              <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out transform group-hover:scale-100 scale-95 z-50">
+                {categories.length > 0 ? (
+                  categories.map((cat) => (
+                    <div
+                      key={cat}
+                      className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 cursor-pointer transition-colors duration-200"
+                      onClick={() => navigate(`/courses?category=${encodeURIComponent(cat)}`)}
+                    >
+                      {cat}
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-4 py-2 text-sm text-gray-500">No categories available</div>
+                )}
               </div>
             </div>
-
-            {/* Mobile menu button */}
-            <button
-              className={`lg:hidden p-2 rounded-md transition-all relative z-[60] ${
-                isScrolled ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-700 hover:bg-gray-800'
-              }`}
-              onClick={toggleMobileMenu}
-              aria-label="Toggle Menu"
-              aria-expanded={isMobileMenuOpen}
-            >
-              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
           </div>
+        </div>
+
+        {/* Desktop Navigation */}
+        <div className="hidden lg:flex items-center space-x-8">
+          {mainNavItems.map((item, index) => (
+            <a
+              key={index}
+              href={item.href}
+              className={`text-sm font-medium transition-colors duration-300 ${
+                isScrolled ? 'text-gray-700 hover:text-gray-500' : 'text-gray-700 hover:text-gray-500'
+              }`}
+              onClick={(e) => {
+                e.preventDefault();
+                navigate(item.href);
+              }}
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+
+        {/* Right side items */}
+        <div className="flex items-center space-x-4">
+          {/* Search bar */}
+          <div className="hidden md:flex items-center relative">
+            <input
+              type="text"
+              placeholder="Search for anything"
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                handleSearch(e.target.value);
+              }}
+              className={`w-64 px-4 py-2 rounded-md border bg-gray-100 text-gray-900 placeholder-gray-500 border-gray-200 transition-all duration-300 ${
+                isScrolled ? 'focus:ring-gray-300' : 'focus:ring-blue-400'
+              }`}
+              aria-label="Search courses"
+            />
+            <button className="absolute right-3 top-2.5">
+              {isLoading ? (
+                <div className="w-4 h-4 border-2 border-t-transparent border-gray-400 rounded-full animate-spin" />
+              ) : (
+                <svg
+                  className={`w-4 h-4 transition-colors duration-300 ${isScrolled ? 'text-gray-500' : 'text-gray-400'}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              )}
+            </button>
+            {query && <SearchResults filtered={filtered} setQuery={setQuery} setFiltered={setFiltered} isScrolled={isScrolled} />}
+          </div>
+
+          {/* Login/Sign-up or Profile Dropdown */}
+          <div className="relative">
+            {user ? (
+              <div className="flex items-center space-x-2">
+                <button
+                  className={`flex items-center text-sm font-medium transition-colors duration-300 ${
+                    isScrolled ? 'text-gray-500 hover:text-gray-700' : 'text-gray-400 hover:text-gray-300'
+                  }`}
+                  onClick={toggleProfileMenu}
+                >
+                  {getRoleIcon()}
+                  {user.name.split(' ')[0]}
+                  <ChevronDown className="h-4 w-4 ml-1 transition-transform duration-300" />
+                </button>
+                <AnimatePresence>
+                  {isProfileOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50"
+                    >
+                      <a
+                        href={getDashboardPath()}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          navigate(getDashboardPath());
+                          setIsProfileOpen(false);
+                        }}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
+                      >
+                        Dashboard
+                      </a>
+                      <a
+                        href="/settings"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          navigate('/settings');
+                          setIsProfileOpen(false);
+                        }}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
+                      >
+                        Settings
+                      </a>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200"
+                      >
+                        Logout
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                {/* <button
+                  className={`text-sm font-medium transition-colors duration-300 ${
+                    isScrolled ? 'text-gray-500 hover:text-gray-700' : 'text-gray-400 hover:text-gray-300'
+                  }`}
+                  onClick={() => navigate('/auth/login')}
+                >
+                  Login
+                </button> */}
+                <button
+                  className={`px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-300 ${
+                    isScrolled
+                      ? 'bg-gray-300 text-gray-900 hover:bg-gray-300'
+                      : 'bg-purple-700 text-white hover:bg-gray-600'
+                  }`}
+                  onClick={() => navigate('/auth/login')}
+                >
+                  Login
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Language Selector */}
+          <div className="relative group hidden md:flex">
+            <button
+              className={`flex items-center text-sm font-medium transition-colors duration-300 ${
+                isScrolled ? 'text-gray-700 hover:text-gray-500' : 'text-gray-700 hover:text-gray-500'
+              }`}
+            >
+              <Globe className="h-4 w-4 mr-1" />
+              {language}
+              <ChevronDown className="h-4 w-4 ml-1 transition-transform duration-300 group-hover:rotate-180" />
+            </button>
+            <div className="absolute top-full right-0 mt-2 w-32 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out transform group-hover:scale-100 scale-95 z-50">
+              {languages.map((lang) => (
+                <div
+                  key={lang}
+                  className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 cursor-pointer transition-colors duration-200"
+                  onClick={() => setLanguage(lang)}
+                >
+                  {lang}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Mobile menu button */}
+          <button
+            className={`lg:hidden p-2 rounded-md transition-all relative z-[60] ${
+              isScrolled ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-700 hover:bg-gray-800'
+            }`}
+            onClick={toggleMobileMenu}
+            aria-label="Toggle Menu"
+            aria-expanded={isMobileMenuOpen}
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
 
         {/* Mobile Menu */}
@@ -470,7 +461,7 @@ const Navbar = () => {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
                 onClick={toggleMobileMenu}
-                className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
               />
               <motion.div
                 key="mobile-menu"
@@ -478,15 +469,8 @@ const Navbar = () => {
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                className="fixed top-0 right-0 w-full max-w-sm h-full bg-white z-50 shadow-xl overflow-y-auto"
+                className="fixed top-0 right-0 w-full h-screen bg-white z-50 shadow-xl overflow-y-auto"
               >
-                <button
-                  onClick={toggleMobileMenu}
-                  className="absolute right-5 top-4 text-gray-500 p-2 rounded-full hover:text-black hover:bg-gray-200 transition-all z-[60]"
-                  aria-label="Close Menu"
-                >
-                  <X className="w-6 h-6" />
-                </button>
                 <div className="relative flex flex-col px-6 pt-16 pb-10 min-h-screen">
                   {/* Search */}
                   <div className="relative mb-8">
@@ -748,9 +732,7 @@ const Navbar = () => {
                             }}
                           >
                             <span className="w-2 h-2 mr-3 bg-blue-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
-                            <span className="group-hover:translate-x-
-
-1 transition-transform duration-200">
+                            <span className="group-hover:translate-x-1 transition-transform duration-200">
                               Settings
                             </span>
                           </motion.a>

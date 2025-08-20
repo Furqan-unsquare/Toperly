@@ -83,23 +83,23 @@ const Footer = () => {
         </div>
          
         {/* Newsletter Section */}
-        <div className="pb-12 border-b border-gray-800 bg-white">
+        <div className="pb-12 border-b border-gray-200 bg-white">
           <div className="text-center max-w-4xl mx-auto">
-            <h3 className="text-3xl md:text-5xl md:mx-40 font-bold mb-4 text-black">
+            <h3 className="text-3xl md:text-5xl md:mx-40 font-bold mb-4 text-gray-700">
               Be the {" "}
               <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
                 First
               </span> {""}
               to Know
             </h3>
-            <p className="text-sm md:text-xl md:mx-10 text-gray-600 mb-6">
+            <p className="text-sm md:text-xl md:mx-10 text-gray-400 mb-6">
               Weekly insights in AI, ML, and beyond — curated to keep you ahead and in demand.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-2 rounded-lg border border-gray-700 bg-gray-900 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 px-4 py-2 rounded-lg border border-gray-200 bg-gray-200 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25">
                 Get Started Now
@@ -112,9 +112,9 @@ const Footer = () => {
         {/* Responsive grid/footer main */}
         <div
           className="
-            py-12
+            py-2 md:py-12
             grid
-            gap-8
+            gap-2 md:gap-8
             md:grid-cols-2
             lg:grid-cols-6
             grid-cols-1
@@ -122,14 +122,13 @@ const Footer = () => {
           ">       
           {/* Brand & contact: mobile - flex row; md+ - block */}
           <div className="lg:col-span-2 flex flex-col md:flex-row md:space-x-6 lg:flex-col lg:space-x-0">
-            
             {/* Logo */}
-            <div className="flex-shrink-0 flex items-center mb-4 md:mb-0">
+            <div className="flex-shrink-0 flex items-center md:mb-4 ">
               <img src="/logo.png" alt="" className="w-40" />
             </div>
             {/* Contact Info */}
-            <div className="space-y-2 text-sm text-gray-900 mb-6 max-w-sm">
-              <p className="mb-4 text-gray-900">
+            <div className="space-y-2 text-sm text-gray-600 mb-6 max-w-sm">
+              <p className="mb-4 text-gray-600">
                 Empowering the next generation of AI professionals with cutting-edge courses
                 and hands-on experience.
               </p>
@@ -152,13 +151,13 @@ const Footer = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 col-span-2 lg:col-span-4">
             {/* First row: Courses & Company */}
             <div>
-              <h4 className="font-semibold mb-4 text-white">Courses</h4>
+              <h4 className="font-semibold md:mb-4 text-white">Courses</h4>
               <ul className="space-y-2">
                 {footerLinks.courses.map((link) => (
                   <li key={link.name}>
                     <a
                       href={link.href}
-                      className="text-sm text-gray-900 hover:text-blue-400 transition-colors"
+                      className="text-sm text-gray-600 hover:text-blue-400 transition-colors"
                     >
                       {link.name}
                     </a>
@@ -167,13 +166,13 @@ const Footer = () => {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4 text-white">Company</h4>
+              <h4 className="font-semibold md:mb-4 text-white">Company</h4>
               <ul className="space-y-2">
                 {footerLinks.company.map((link) => (
                   <li key={link.name}>
                     <a
                       href={link.href}
-                      className="text-sm text-gray-900 hover:text-blue-400 transition-colors"
+                      className="text-sm text-gray-600 hover:text-blue-400 transition-colors"
                     >
                       {link.name}
                     </a>
@@ -183,13 +182,13 @@ const Footer = () => {
             </div>
             {/* Second row: Resources & Legal */}
             <div>
-              <h4 className="font-semibold mb-4 text-white">Resources</h4>
+              <h4 className="font-semibold md:mb-4 text-white">Resources</h4>
               <ul className="space-y-2">
                 {footerLinks.resources.map((link) => (
                   <li key={link.name}>
                     <a
                       href={link.href}
-                      className="text-sm text-gray-900 hover:text-blue-400 transition-colors"
+                      className="text-sm text-gray-600 hover:text-blue-400 transition-colors"
                     >
                       {link.name}
                     </a>
@@ -198,13 +197,13 @@ const Footer = () => {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4 text-white">Legal</h4>
+              <h4 className="font-semibold md:mb-4 text-white">Legal</h4>
               <ul className="space-y-2">
                 {footerLinks.legal.map((link) => (
                   <li key={link.name}>
                     <a
                       href={link.href}
-                      className="text-sm text-gray-900 hover:text-blue-400 transition-colors"
+                      className="text-sm text-gray-600 hover:text-blue-400 transition-colors"
                     >
                       {link.name}
                     </a>
@@ -216,8 +215,8 @@ const Footer = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="py-6 border-t border-gray-900 bg-white flex flex-col md:flex-row items-center justify-between">
-          <div className="text-sm text-gray-900 mb-4 md:mb-0">
+        <div className="py-6 border-t border-gray-200 bg-white flex flex-col md:flex-row items-center justify-between">
+          <div className="text-sm text-gray-500 mb-4 md:mb-0">
             ©2025 Unsquare Labs. All rights reserved.
           </div>
           {/* Social Links */}

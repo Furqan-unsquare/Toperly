@@ -12,7 +12,7 @@ export const RegisterPage = () => {
             <p className="text-xl text-muted-foreground max-w-md mx-auto lg:mx-0">
               Join thousands of students and instructors in our modern learning platform
             </p>
-          </div>
+          </div> 
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto lg:mx-0">
             <div className="p-4 rounded-lg bg-card shadow-card">

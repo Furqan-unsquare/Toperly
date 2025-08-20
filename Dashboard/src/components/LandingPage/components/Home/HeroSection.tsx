@@ -99,7 +99,7 @@ const DarkAIHero = () => {
       radial-gradient(circle at 20% 80%, rgba(30, 58, 138, 0.15) 0%, transparent 50%),
       radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
       radial-gradient(circle at 40% 40%, rgba(29, 78, 216, 0.1) 0%, transparent 50%),
-      linear-gradient(135deg, #000000 0%, #0f172a 100%)
+      linear-gradient(135deg, #000000 0%, #2721F7 100%)
     `,
   });
 
@@ -158,14 +158,14 @@ const DarkAIHero = () => {
 
       <div className="container mx-auto px-6 lg:px-8 relative z-10">
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 gap-16  mt-10 md:mt-12 items-left"
+          className="grid grid-cols-1 md:grid-cols-2 gap-16  mt-4 md:mt-12 items-left"
           variants={container}
         >
           {/* Left Content */}
           <div className=" mx-auto text-left">
             {/* Premium Badge */}
             <motion.div 
-              className="inline-flex items-center mt-6 px-6 py-3 backdrop-blur-sm rounded-full text-sm font-semibold mb-8 border shadow-2xl bg-blue-500/20 text-blue-400 border-blue-500/30"
+              className="inline-flex items-center md:mt-6 px-6 py-3 backdrop-blur-sm rounded-full text-xs md:text-sm font-semibold mb-8 border shadow-2xl bg-blue-500/20 text-blue-400 border-blue-500/30"
               variants={zoomOut}
             >
               <Shield className="w-4 h-4 mr-2 text-blue-400" />
@@ -184,21 +184,21 @@ const DarkAIHero = () => {
             
             {/* Main Title */}
             <motion.h1 
-              className="text-4xl sm:text-6xl lg:text-7xl font-black leading-[0.9] mb-8 tracking-tight"
+              className="text-[3.2rem] sm:text-6xl lg:text-7xl font-black leading-[0.9] mb-8 tracking-tight"
               variants={zoomOut}
             >
-              <span className="bg-gradient-to-b from-gray-900  via-gray-300 to-gray-100 text-transparent bg-clip-text leading-none">
+              <span className="bg-gradient-to-b from-gray-500 via-gray-300 to-gray-100 text-transparent bg-clip-text leading-none">
                 Making India Ready for the Future with AI
               </span>
             </motion.h1>
             
             {/* Subtitle */}
             <motion.p 
-              className="text-xs sm:text-lg mb-10 mx-auto leading-relaxed text-gray-300"
+              className="text-xs sm:text-lg mb-10 mx-auto text-justify leading-relaxed text-gray-300"
               variants={zoomOut}
               transition={{ delay: 0.3 }}
             >
-                we’re not just teaching  <span className="font-semibold text-blue-400">AI</span> — we’re shaping the next generation of innovators and job creators.
+                "we’re not just teaching  <span className="font-semibold text-blue-400">AI</span> — we’re shaping the next generation of innovators and job creators.
                 From small-town students to professionals seeking change, we make AI learning accessible in your own language."
             </motion.p>
 
@@ -219,7 +219,7 @@ const DarkAIHero = () => {
               {[
                 { value: '25K+', label: 'Languages', icon: Users },
                 { value: '20,000+', label: 'Learners', icon: Cpu },
-                { value: '25+', label: 'Industry Experts', icon: TrendingUp }
+                { value: '15+', label: 'Experts', icon: TrendingUp }
               ].map((stat, index) => (
                 <motion.div 
                   key={index}

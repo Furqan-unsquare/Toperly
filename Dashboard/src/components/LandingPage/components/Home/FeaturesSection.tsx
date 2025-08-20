@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Plus, Search, Menu } from 'lucide-react';
+import { X, Plus, Search, Menu, Languages, Power, Group, Dock } from 'lucide-react';
 
 const VirtualDevicesDashboard = () => {
   const [activeTab, setActiveTab] = useState('Languages');
@@ -9,64 +9,81 @@ const VirtualDevicesDashboard = () => {
   const contentData = {
     Languages: {
       title: "Why Is Toperly Different",
-      centralImage: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=400&h=300&fit=crop",
-      centralTitle: "Virtual Device Network",
+      centralImage: "https://i.pinimg.com/736x/2c/e5/74/2ce5743603bf90f7049bb4814d5dd95a.jpg",
+      centralTitle: "Multilingual Learning",
+      postDescription: "Our content is created and reviewed by native speakers to ensure clarity, cultural relevance, and accuracy. This helps learners grasp technical and complex topics without feeling lost.",
       comments: [
+      
+      ],
+      randomImages: [
         {
-          id: 1,
-          name: "Pablo Stanley",
-          handle: "@pablostanley",
-          message: "Vijay... you're one of the kindest, talented, and hard-working creatives I know. You're an inspiration and I'm grateful for your support. Thank you, Vijay.",
-          avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
-          verified: true,
+          src: "/hindi.png",
+          position: "top-[20%] right-[15%]",
+          size: "h-20"
         },
         {
-          id: 2,
-          name: "Martin Brown",
-          handle: "@Martin_brit",
-          message: "The virtual device integration is seamless and incredibly sophisticated.",
-          avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face",
-          verified: false,
+          src: "https://www.nicepng.com/png/full/247-2477108_vinayagar-images-png.png",
+          position: "top-[70%] left-[15%]",
+          size: " h-14"
+        },
+        {
+          src: "/eng.png",
+          position: "top-[12%] left-[22%]",
+          size: "h-10"
+        },
+        {
+          src: "/mar.png",
+          position: "bottom-[28%] right-[22%]",
+          size: "h-12"
         }
       ],
-      sideText: "The units behave like humans by monitoring the feed and liking what their behaviour type says they should like.",
-      leftDescription: "All units operate from virtual android or even real devices that are indistinguishable from a real human device."
+      sideText: "No matter where you're from, you can now access quality education without the language barrier holding you back.",
+      leftDescription: "Learning becomes easier when it's in a language you understand best. That's why we provide lessons in multiple regional languages, including Odia, so you can focus on concepts—not translations."
     },
     Skills: {
-      title: "Foundation Network Operations",
+      title: "Why Is Toperly Different",
       centralImage: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400&h=300&fit=crop",
-      centralTitle: "NFT Foundation Hub",
+      centralTitle: "Skill Hub",
+      postDescription: "Hands-on projects let you apply what you've learned in real-world scenarios, building confidence for interviews and actual job tasks.",
       comments: [
+
+      ],
+       randomImages: [
         {
-          id: 1,
-          name: "Sarah Chen",
-          handle: "@sarahchen",
-          message: "The Foundation integration has revolutionized our NFT curation process. Absolutely incredible work!",
-          avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b890?w=50&h=50&fit=crop&crop=face",
-          verified: true,
+          src: "https://images.icon-icons.com/2699/PNG/512/python_logo_icon_168886.png",
+          position: "top-[4%] left-[15%]",
+          size: "h-24"
         },
         {
-          id: 2,
-          name: "Alex Thompson",
-          handle: "@alexthompson",
-          message: "Foundation units execute perfect bidding strategies automatically.",
-          avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop&crop=face",
-          verified: false,
+          src: "https://www.liblogo.com/img-logo/ja362j7d4-java-logo-java-free-logo-icons.png",
+          position: "top-[70%] left-[25%]",
+          size: "h-20"
+        },
+        {
+          src: "https://www.freeiconspng.com/uploads/c--logo-icon-0.png",
+          position: "top-[20%] right-[15%]",
+          size: "h-20"
+        },
+        {
+          src: "https://seeklogo.com/images/T/tensorflow-logo-02FCED4F98-seeklogo.com.png",
+          position: "bottom-[25%] right-[20%]",
+          size: "h-24"
         }
       ],
-      sideText: "Foundation units manage sophisticated NFT transactions and community engagement seamlessly.",
-      leftDescription: "Advanced AI systems handle foundation-based operations with human-like precision and decision making."
+      sideText: "From beginner-friendly introductions to advanced mastery, you'll be prepared for high-demand roles across industries",
+      leftDescription: "We focus on skills that match what companies are looking for today. Every course is designed with industry experts to ensure what you learn is useful in the workplace."
     },
     Community: {
-      title: "AndroidVR Integration System",
-      centralImage: "https://images.unsplash.com/photo-1592478411213-6153e4ebc696?w=400&h=300&fit=crop",
-      centralTitle: "VR Experience Hub",
+      title: "Why Is Toperly Different",
+      centralImage: "https://i.pinimg.com/1200x/06/fa/cd/06facdcb60ea58713eafb59fb13f0dab.jpg",
+      centralTitle: "Student Community",
+      postDescription: "Ask questions, share your achievements, and get instant feedback from peers who understand your journey.",
       comments: [
         {
           id: 1,
           name: "Emma Wilson",
           handle: "@emmawilson",
-          message: "AndroidVR creates the most immersive experiences I've ever seen. The spatial awareness is incredible!",
+          message: "The community made me feel like I'm not learning alone",
           avatar: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=50&h=50&fit=crop&crop=face",
           verified: true,
         },
@@ -74,52 +91,60 @@ const VirtualDevicesDashboard = () => {
           id: 2,
           name: "Alex Thompson",
           handle: "@alexthompson",
-          message: "Foundation units execute perfect bidding strategies automatically.",
+          message: "I've made friends here who are as passionate as I am.",
           avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop&crop=face",
           verified: false,
         }
       ],
-      sideText: "VR units create immersive virtual experiences with perfect spatial interaction management.",
-      leftDescription: "Virtual reality interfaces powered by Android create seamless immersive user experiences."
+      randomImages: [
+      ],
+      sideText: "When motivation drops, the community is there to lift you up and keep you moving forward.",
+      leftDescription: "A strong community makes learning more enjoyable. Join thousands of learners and mentors who support each other at every step."
     },
     more: {
-      title: "Showtime Performance Hub",
+      title: "Why Is Toperly Different",
       centralImage: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=300&fit=crop",
-      centralTitle: "Live Performance Studio",
-      comments: [
+      centralTitle: "Certificate & much more",
+      postDescription: "Display them proudly on LinkedIn, resumes, or portfolios to stand out in a competitive job market.",
+      comments: [],
+      randomImages: [
         {
-          id: 1,
-          name: "David Kim",
-          handle: "@davidkim",
-          message: "Showtime has transformed live streaming. The audience engagement analytics are phenomenal!",
-          avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
-          verified: true,
+          src: "https://www.pngmart.com/files/8/Certificate-PNG-Image.png",
+          position: "top-[15%] left-[20%]",
+          size: "h-28"
         },
         {
-          id: 2,
-          name: "Alex Thompson",
-          handle: "@alexthompson",
-          message: "Foundation units execute perfect bidding strategies automatically.",
-          avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop&crop=face",
-          verified: false,
+          src: "https://i.pinimg.com/originals/7c/1a/e3/7c1ae3300a066213f2c247d0a03110c0.png",
+          position: "top-[15%] right-[15%]",
+          size: "h-24"
+        },
+        {
+          src: "https://www.pngmart.com/files/22/Social-Network-PNG-Free-Download.png",
+          position: "bottom-[20%] left-[10%]",
+          size: "h-40"
+        },
+        {
+          src: "https://cdn-icons-png.flaticon.com/512/10262/10262344.png",
+          position: "bottom-[25%] right-[25%]",
+          size: "h-24"
         }
       ],
-      sideText: "Showtime units orchestrate live entertainment with advanced audience engagement systems.",
-      leftDescription: "Entertainment-focused units manage live streams, performances, and real-time audience interaction."
+      sideText: "Each certificate is a recognition of your hard work and dedication, adding credibility to your professional profile.",
+      leftDescription: "Earn certificates that prove your skills and showcase your achievements to employers and clients."
     }
   };
 
-  // Navigation tabs data - now constant
-  const navTabs = [
-    { name: "Languages", color: "bg-blue-500", id: "Languages" },
-    { name: "Skills", color: "bg-purple-500", id: "Skills" },
-    { name: "Community", color: "bg-pink-500", id: "Community" },
-    { name: "Certificates & more", color: "bg-orange-500", id: "more" }
-  ];
+  // Navigation tabs data
+ const navTabs = [
+  { name: "Languages", icon: Languages, color: "bg-gradient-to-r from-blue-300 to-blue-500", activeColor: "bg-gradient-to-r from-blue-600 to-blue-800", id: "Languages" },
+  { name: "Skills",  icon: Power, color: "bg-gradient-to-r from-purple-300 to-purple-500", activeColor: "bg-gradient-to-r from-purple-600 to-purple-800", id: "Skills" },
+  { name: "Community",  icon: Group, color: "bg-gradient-to-r from-pink-300 to-pink-500", activeColor: "bg-gradient-to-r from-pink-600 to-pink-800", id: "Community" },
+  { name: "Certificates & more",  icon: Dock, color: "bg-gradient-to-r from-orange-300 to-orange-500", activeColor: "bg-gradient-to-r from-orange-600 to-orange-800", id: "more" },
+];
 
   const currentContent = contentData[activeTab];
 
-  const handleTabChange = (newTab) => {
+  const handleTabChange = (newTab: string) => {
     if (newTab === activeTab) return;
     
     setIsTransitioning(true);
@@ -130,39 +155,46 @@ const VirtualDevicesDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-200 to-purple-50 relative overflow-x-hidden">
+    <div className="min-h-full bg-gradient-to-br from-blue-50 via-blue-200 to-purple-50 relative overflow-x-hidden">
+      
       {/* Main Title */}
       <div className="text-center pt-16 md:pt-24 px-4 relative z-20">
         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light text-gray-800 tracking-tight mb-8 md:mb-10">
-          Why Is Toperly Different
+          {currentContent.title}
         </h1>
 
-        {/* Navigation Tags - now constant */}
-        <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-8 md:mb-0">
-          {navTabs.map((tab) => (
-            <button
-              key={tab.name}
-              onClick={() => handleTabChange(tab.id)}
-              className={`px-3 py-1 md:px-4 md:py-2 rounded-full text-white text-xs md:text-sm font-medium transition-all duration-300 hover:scale-105 ${
-                tab.id === activeTab ? tab.color : 'bg-gray-300'
-              }`}
-            >
-              {tab.name}
-            </button>
-          ))}
+        {/* Navigation Tags */}
+        <div className="w-full flex flex-wrap md:justify-center overflow-x-auto scrollbar-hide">
+        <div className="flex gap-2 md:gap-3 mb-8 md:mb-0 px-2 md:px-0">
+          {navTabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => handleTabChange(tab.id)}
+                className={`flex items-center gap-2 px-3 py-1 md:px-4 md:py-2 rounded-full text-white text-md md:text-normal font-medium transition-all duration-300 hover:scale-105 whitespace-nowrap ${
+                  tab.id === activeTab ? tab.activeColor : tab.color
+                }`}
+              >
+                <Icon size={16} />
+                {tab.name}
+              </button>
+            );
+          })}
         </div>
+      </div>
       </div>
 
       {/* Main Content Container */}
-      <div className={`relative h-[800px] md:h-[600px] max-w-7xl mx-auto px-4 transition-all duration-500 ${
+      <div className={`relative  h-[400px] md:h-[600px] max-w-7xl mx-auto px-4 transition-all duration-500 ${
         isTransitioning ? 'opacity-0' : 'opacity-100'
       }`}>
         
         {/* Central Glass Container */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 w-full md:w-auto px-4">
-          <div className="bg-white/20 backdrop-blur-lg rounded-3xl p-6 md:p-8 border border-white/30 shadow-2xl w-full max-w-sm mx-auto md:w-96">
+        <div className="absolute top-1/2 left-1/2 -mt-4 md:mt-0 transform -translate-x-1/2 -translate-y-1/2 z-10 w-full md:w-auto px-4">
+          <div className="bg-white/20 backdrop-blur-lg rounded-3xl p-6 md:p-6 border border-white/30 shadow-2xl w-full max-w-sm mx-auto md:w-96">
             {/* Title above image */}
-            <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-4 md:mb-6 text-center">
+            <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-2 text-left">
               {currentContent.centralTitle}
             </h3>
             
@@ -171,7 +203,7 @@ const VirtualDevicesDashboard = () => {
               <img 
                 src={currentContent.centralImage} 
                 alt={currentContent.centralTitle}
-                className="w-full h-40 md:h-48 object-cover"
+                className="w-full h-56 md:h-80 object-cover"
               />
             </div>
 
@@ -179,11 +211,23 @@ const VirtualDevicesDashboard = () => {
             <div className="space-y-2 text-sm">
               <div className="flex items-center justify-between">
                 <span className="text-xs md:text-sm text-gray-700">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe, doloribus!
+                  {currentContent.postDescription}
                 </span>
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Random Images */}
+        <div className="absolute inset-0 pointer-events-none">
+          {currentContent.randomImages.map((image, index) => (
+            <img
+              key={index}
+              src={image.src}
+              alt={`Decorative ${index + 1}`}
+              className={`absolute ${image.position} ${image.size} hidden md:block rounded-lg object-cover `}
+            />
+          ))}
         </div>
 
         {/* Left side description - hidden on mobile */}
@@ -205,7 +249,7 @@ const VirtualDevicesDashboard = () => {
         </div>
 
         {/* Comments - positioned responsively */}
-        <div className="absolute inset-0 pointer-events-none">
+        <div className="hidden md:block absolute inset-0 pointer-events-none">
           {currentContent.comments.map((comment, index) => (
             <div 
               key={comment.id}
@@ -233,20 +277,11 @@ const VirtualDevicesDashboard = () => {
                   </div>
                 </div>
                 <p className="text-xs text-gray-700 leading-relaxed mt-1">
-                  {comment.message}
-                </p>
+                      {comment.message}
+                    </p>
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Mobile side text - shown only on mobile */}
-        <div className="md:hidden absolute bottom-8 left-4 right-4">
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
-            <p className="text-gray-700 text-sm leading-relaxed">
-              {currentContent.sideText}
-            </p>
-          </div>
         </div>
       </div>
     </div>

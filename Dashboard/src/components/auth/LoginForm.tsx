@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useAuth } from "@/contexts/AuthContext";
 
 export const LoginForm = () => {
-  const { loginWithSocial } = useAuth();
+  const { loginWithSocial } = useAuth(); 
 
   return (
     <Card className="w-full max-w-md shadow-card">

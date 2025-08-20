@@ -21,6 +21,10 @@ import {
   Percent,
   TrendingUp,
   UserCheck,
+  Verified,
+  MailQuestion,
+  DockIcon,
+  User2Icon,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
@@ -75,8 +79,12 @@ export const Sidebar = ({ user, logout }: SidebarProps) => {
     // Admin-specific items
     // { name: " Admin Dashboard", path: "/admin/dashboard", icon: LayoutDashboard, roles: ["admin", "subadmin"] },
     { name: "Coupons", path: "/admin/coupons", icon: Percent, roles: ["admin", "subadmin"] },
+    { name: "Verify Instructor", path: "/admin/verify", icon: Verified, roles: ["admin", "subadmin"] },
+    { name: "Sub-admin", path: "/admin/sub-admin", icon: User2Icon, roles: ["admin", "subadmin"] },
     { name: "Revenue", path: "/admin/revenue", icon: IndianRupeeIcon, roles: ["admin"] },
     { name: "Approvals", path: "/admin/approvals", icon: CheckSquare, roles: ["admin", "subadmin"] },
+    { name: "Blog Management", path: "/admin/blogs", icon: DockIcon, roles: ["admin", "subadmin"] },
+    { name: "Query", path: "/admin/query", icon: MailQuestion, roles: ["admin", "subadmin"] },
     { name: "User Management", path: "/admin/user-management", icon: UserCheck, roles: ["admin", "subadmin"] },
   ];
 

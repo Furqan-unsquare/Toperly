@@ -1,3 +1,4 @@
+
 import Blog from '../models/Blog.js';
 
 export const createBlog = async (req, res) => {
@@ -12,7 +13,7 @@ export const createBlog = async (req, res) => {
       content,
       course,
       price,
-      author: req.admin._id
+      author: req.admin?._id || null // Use null if no admin is provided
     });
     await blog.save();
     res.status(201).json(blog);
@@ -51,10 +52,7 @@ export const updateBlog = async (req, res) => {
       return res.status(404).json({ message: 'Blog not found' });
     }
 
-    if (blog.author.toString() !== req.admin._id.toString()) {
-      return res.status(403).json({ message: 'Not authorized' });
-    }
-
+    // Removed author check to allow unauthenticated updates
     blog.title = title || blog.title;
     blog.description = description || blog.description;
     blog.category = category || blog.category;
@@ -79,10 +77,7 @@ export const deleteBlog = async (req, res) => {
       return res.status(404).json({ message: 'Blog not found' });
     }
 
-    if (blog.author.toString() !== req.admin._id.toString()) {
-      return res.status(403).json({ message: 'Not authorized' });
-    }
-
+    // Removed author check to allow unauthenticated deletes
     await Blog.deleteOne({ _id: req.params.id });
     res.json({ message: 'Blog deleted' });
   } catch (error) {

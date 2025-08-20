@@ -11,6 +11,7 @@ import Transaction from "../models/Transaction.js";
 import Wishlist from "../models/Wishlist.js";
 import { ManagementClient } from "auth0";
 import Admin from "../models/Admin.js";
+import mongoose from 'mongoose';
 
 const auth0Management = new ManagementClient({
   domain: process.env.AUTH0_DOMAIN,
@@ -38,37 +39,53 @@ const generateToken = (user) => {
 export const syncAuth0User = async (req, res) => {
   try {
     const { auth0Id, email, name, profileImage } = req.body;
-    const { sub: userSub, role } = req.auth; // From token, sub is auth0Id
+    const { sub: userSub } = req.auth; // From token, sub is auth0Id
 
     if (auth0Id !== userSub) {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
-    let userModel = role ? (role === "student" ? Student : Instructor) : null; // If role in token
-    let existingUser;
-
-    if (userModel) {
-      existingUser = await userModel.findOne({ $or: [{ auth0Id }, { email }] });
-    } else {
-      // Check both models if no role yet
-      existingUser =
-        (await Student.findOne({ $or: [{ auth0Id }, { email }] })) ||
-        (await Instructor.findOne({ $or: [{ auth0Id }, { email }] }));
-    }
+    // Check all collections (Student, Instructor, Admin) for existing user
+    const existingUser =
+      (await Student.findOne({ $or: [{ auth0Id }, { email }] })) ||
+      (await Instructor.findOne({ $or: [{ auth0Id }, { email }] })) ||
+      (await Admin.findOne({ $or: [{ auth0Id }, { email }] }));
 
     if (existingUser) {
-      // Update profile
+      // Update profile if necessary
       existingUser.name = name || existingUser.name;
       existingUser.profileImage = profileImage || existingUser.profileImage;
       await existingUser.save();
-      return res.json({ user: existingUser, needsRole: false });
+
+      // Prepare user data to return
+      const userData = {
+        id: existingUser._id,
+        auth0Id: existingUser.auth0Id,
+        name: existingUser.name,
+        email: existingUser.email,
+        role: existingUser.role,
+        profileImage: existingUser.profileImage,
+        ...(existingUser.role === "student" && {
+          phone: existingUser.phone,
+          language: existingUser.language,
+        }),
+        ...(existingUser.role === "instructor" && {
+          bio: existingUser.bio,
+          expertise: existingUser.expertise,
+        }),
+      };
+
+      return res.json({ user: userData, needsRole: false });
     } else {
       // New user, needs role
-      return res.json({ needsRole: true });
+      return res.json({
+        user: { auth0Id, email, name, profileImage },
+        needsRole: true,
+      });
     }
   } catch (err) {
     console.error("Sync error:", err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
@@ -87,7 +104,7 @@ export const assignRole = async (req, res) => {
     } = req.body;
     const { sub } = req.auth;
 
-    console.log("Assign role request body:", req.body); // Debug log
+    console.log("Assign role request body:", req.body);
 
     if (auth0Id !== sub) {
       return res.status(403).json({ message: "Unauthorized" });
@@ -104,11 +121,16 @@ export const assignRole = async (req, res) => {
       (await Instructor.findOne({ $or: [{ auth0Id }, { email }] })) ||
       (await Admin.findOne({ $or: [{ auth0Id }, { email }] }));
     if (existingUser) {
-      return res
-        .status(409)
-        .json({ message: "User already exists with this email or Auth0 ID" });
+      return res.status(409).json({
+        message: "User already exists with this email or Auth0 ID",
+        user: {
+          auth0Id: existingUser.auth0Id,
+          email: existingUser.email,
+          role: existingUser.role,
+        },
+      });
     }
-    console.log(req.body);
+
     let newUser;
     if (role === "student") {
       newUser = new Student({
@@ -134,7 +156,7 @@ export const assignRole = async (req, res) => {
       newUser = new Admin({
         auth0Id,
         email,
-        name, // Include name if required by Admin schema
+        name,
         role,
       });
     } else {
@@ -165,29 +187,24 @@ export const assignRole = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
-
-// Register handler (shared)
+ 
 export const register = async (req, res) => {
   try {
-    const { name, email, password, role, bio, expertise, phone, language } =
-      req.body;
-    console.log(name);
+    const { name, email, password, role, bio, expertise, phone, language, auth0Id } = req.body;
+
     if (!name || !email || !password || !role) {
-      return res
-        .status(400)
-        .json({ message: "Name, email, password and role are required" });
+      return res.status(400).json({ message: "Name, email, password, and role are required" });
     }
 
-    if (!["student", "instructor"].includes(role)) {
-      return res
-        .status(400)
-        .json({ message: 'Role must be either "student" or "instructor"' });
+    if (!["student", "instructor", "subadmin"].includes(role)) {
+      return res.status(400).json({ message: 'Role must be either "student", "instructor", or "subadmin"' });
     }
 
-    // Check if user already exists in either collection by email
+    // Check if user already exists in any collection by email
     const existingInstructor = await Instructor.findOne({ email });
     const existingStudent = await Student.findOne({ email });
-    if (existingInstructor || existingStudent) {
+    const existingAdmin = await Admin.findOne({ email });
+    if (existingInstructor || existingStudent || existingAdmin) {
       return res.status(409).json({ message: "Email already registered" });
     }
 
@@ -204,8 +221,7 @@ export const register = async (req, res) => {
         expertise: expertise || [],
         role,
       });
-    } else {
-      // role == student
+    } else if (role === "student") {
       newUser = new Student({
         name,
         email,
@@ -213,6 +229,15 @@ export const register = async (req, res) => {
         phone: phone || "",
         language: language || "en",
         role,
+      });
+    } else {
+      // role === "subadmin"
+      newUser = new Admin({
+        name,
+        email,
+        password: hashedPassword,
+        role: "subadmin",
+        auth0Id: auth0Id || "",
       });
     }
 
@@ -232,9 +257,18 @@ export const register = async (req, res) => {
     });
   } catch (err) {
     console.error("Register error:", err);
-    return res
-      .status(500)
-      .json({ message: "Server error during registration" });
+    return res.status(500).json({ message: "Server error during registration" });
+  }
+};
+
+// New function to fetch all admins
+export const getAllAdmins = async (req, res) => {
+  try {
+    const admins = await Admin.find().select('-password'); // Exclude password field
+    return res.status(200).json(admins);
+  } catch (err) {
+    console.error("Error fetching admins:", err);
+    return res.status(500).json({ message: "Server error while fetching admins" });
   }
 };
 
@@ -310,7 +344,7 @@ export const login = async (req, res) => {
 };
 
 // logout handler
-export const logout = async (req, res) => {
+export const logout = async (req, res) => { 
   // If using cookies for JWT, clear them. Otherwise, instruct client to remove locally stored token.
   res.status(200).json({ message: "Logout successful" });
 };
@@ -472,5 +506,37 @@ export const updateUserInfo = async (req, res) => {
   } catch (err) {
     console.error("Update error:", err);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const deleteSubadmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid subadmin ID' });
+    }
+
+    // Find the user by ID
+    const user = await Admin.findById(id);
+
+    // Check if user exists
+    if (!user) {
+      return res.status(404).json({ message: 'Subadmin not found' });
+    }
+
+    // Check if the user is a subadmin
+    if (user.role !== 'subadmin') {
+      return res.status(403).json({ message: 'Cannot delete admin users' });
+    }
+
+    // Delete the subadmin
+    await Admin.findByIdAndDelete(id);
+
+    return res.status(200).json({ message: 'Subadmin deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting subadmin:', error);
+    return res.status(500).json({ message: 'Server error while deleting subadmin' });
   }
 };

@@ -17,8 +17,8 @@ const instructorSchema = new mongoose.Schema({
     preferredMethod: { type: String, default: 'bank_transfer' }
   }
 });
-
-// Generate customId before saving
+ 
+// Generate customId before saving 
 instructorSchema.pre('save', async function (next) {
   if (!this.isNew || this.customId) return next();
 

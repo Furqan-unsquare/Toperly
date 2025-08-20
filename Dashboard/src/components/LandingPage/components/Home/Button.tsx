@@ -60,52 +60,52 @@ const Button = () => {
               
               <defs>
                 <linearGradient gradientUnits="userSpaceOnUse" y2="1.5" x2={265} y1="1.5" x1={0} id="paint0_linear_73_31">
-                  <stop stopOpacity={0} stopColor="#3a86ff" offset="0.155" />
-                  <stop stopColor="#3a86ff" offset={1} />
+                  <stop stopOpacity={0} stopColor="#534DFA" offset="0.155" />
+                  <stop stopColor="#534DFA" offset={1} />
                 </linearGradient>
                 <linearGradient gradientUnits="userSpaceOnUse" y2="33.5" x2={265} y1="33.5" x1={0} id="paint1_linear_73_31">
-                  <stop stopOpacity={0} stopColor="#3a86ff" />
-                  <stop stopColor="#3a86ff" offset={1} />
+                  <stop stopOpacity={0} stopColor="#534DFA" />
+                  <stop stopColor="#534DFA" offset={1} />
                 </linearGradient>
                 <linearGradient gradientUnits="userSpaceOnUse" y2="72.75" x2={265} y1="72.75" x1={10} id="paint2_linear_73_31">
-                  <stop stopOpacity={0} stopColor="#3a86ff" />
-                  <stop stopColor="#3a86ff" offset={1} />
+                  <stop stopOpacity={0} stopColor="#534DFA" />
+                  <stop stopColor="#534DFA" offset={1} />
                 </linearGradient>
                 <linearGradient gradientUnits="userSpaceOnUse" y2="1.5" x2="708.5" y1="1.5" x1="973.5" id="paint3_linear_73_31">
-                  <stop stopOpacity={0} stopColor="#3a86ff" offset="0.155" />
-                  <stop stopColor="#3a86ff" offset={1} />
+                  <stop stopOpacity={0} stopColor="#534DFA" offset="0.155" />
+                  <stop stopColor="#534DFA" offset={1} />
                 </linearGradient>
                 <linearGradient gradientUnits="userSpaceOnUse" y2="33.5" x2="708.5" y1="33.5" x1="973.5" id="paint4_linear_73_31">
-                  <stop stopOpacity={0} stopColor="#3a86ff" />
-                  <stop stopColor="#3a86ff" offset={1} />
+                  <stop stopOpacity={0} stopColor="#534DFA" />
+                  <stop stopColor="#534DFA" offset={1} />
                 </linearGradient>
                 <linearGradient gradientUnits="userSpaceOnUse" y2="72.75" x2="708.5" y1="72.75" x1="963.5" id="paint5_linear_73_31">
-                  <stop stopOpacity={0} stopColor="#3a86ff" />
-                  <stop stopColor="#3a86ff" offset={1} />
+                  <stop stopOpacity={0} stopColor="#534DFA" />
+                  <stop stopColor="#534DFA" offset={1} />
                 </linearGradient>
                 <linearGradient gradientUnits="userSpaceOnUse" y2={97} x2={390} y1={354} x1={390} id="paint6_linear_73_31">
-                  <stop stopOpacity={0} stopColor="#3a86ff" offset="0.105" />
-                  <stop stopColor="#3a86ff" offset={1} />
+                  <stop stopOpacity={0} stopColor="#534DFA" offset="0.105" />
+                  <stop stopColor="#534DFA" offset={1} />
                 </linearGradient>
                 <linearGradient gradientUnits="userSpaceOnUse" y2={97} x2={556} y1={355} x1={556} id="paint7_linear_73_31">
-                  <stop stopOpacity={0} stopColor="#3a86ff" offset="0.105" />
-                  <stop stopColor="#3a86ff" offset={1} />
+                  <stop stopOpacity={0} stopColor="#534DFA" offset="0.105" />
+                  <stop stopColor="#534DFA" offset={1} />
                 </linearGradient>
                 <linearGradient gradientUnits="userSpaceOnUse" y2={97} x2={526} y1={355} x1={526} id="paint8_linear_73_31">
-                  <stop stopOpacity={0} stopColor="#3a86ff" offset="0.105" />
-                  <stop stopColor="#3a86ff" offset={1} />
+                  <stop stopOpacity={0} stopColor="#534DFA" offset="0.105" />
+                  <stop stopColor="#534DFA" offset={1} />
                 </linearGradient>
                 <linearGradient gradientUnits="userSpaceOnUse" y2={97} x2={466} y1={355} x1={466} id="paint9_linear_73_31">
-                  <stop stopOpacity={0} stopColor="#3a86ff" offset="0.105" />
-                  <stop stopColor="#3a86ff" offset={1} />
+                  <stop stopOpacity={0} stopColor="#534DFA" offset="0.105" />
+                  <stop stopColor="#534DFA" offset={1} />
                 </linearGradient>
                 <linearGradient gradientUnits="userSpaceOnUse" y2={97} x2={495} y1={355} x1={495} id="paint10_linear_73_31">
-                  <stop stopOpacity={0} stopColor="#3a86ff" offset="0.105" />
-                  <stop stopColor="#3a86ff" offset={1} />
+                  <stop stopOpacity={0} stopColor="#534DFA" offset="0.105" />
+                  <stop stopColor="#534DFA" offset={1} />
                 </linearGradient>
                 <linearGradient gradientUnits="userSpaceOnUse" y2={97} x2={585} y1={305} x1={585} id="paint11_linear_73_31">
-                  <stop stopOpacity={0} stopColor="#3a86ff" offset="0.105" />
-                  <stop stopColor="#3a86ff" offset={1} />
+                  <stop stopOpacity={0} stopColor="#534DFA" offset="0.105" />
+                  <stop stopColor="#534DFA" offset={1} />
                 </linearGradient>
               </defs>
             </svg>
@@ -214,9 +214,9 @@ const StyledWrapper = styled.div`
 
   @media (max-width: 480px) {
     .button {
-      font-size: 12px;
-      width: 240px;
-      height: 50px;
+      font-size: 16px;
+      width: 280px;
+      height: 60px;
     }
     
     .circuit {
@@ -253,7 +253,7 @@ const StyledWrapper = styled.div`
   .glow {
     position: absolute;
     inset: 0;
-    box-shadow: 0 0 200px 5px rgba(58, 134, 255, 0.4);
+    box-shadow: 0 0 200px 5px rgba(83, 77, 250, 0.4); /* Updated from rgba(58, 134, 255, 0.4) */
     pointer-events: none;
     touch-action: none;
   }
@@ -262,7 +262,7 @@ const StyledWrapper = styled.div`
     content: "";
     position: absolute;
     margin: auto;
-    background: rgba(58, 134, 255, 0.05);
+    background: rgba(83, 77, 250, 0.05); /* Updated from rgba(58, 134, 255, 0.05) */
     border-radius: 50%;
     filter: blur(50px);
     inset: 0;
@@ -286,7 +286,7 @@ const StyledWrapper = styled.div`
     position: absolute;
     width: 100%;
     height: 100%;
-    border: 0.5px solid rgba(58, 134, 255, 0.4);
+    border: 0.5px solid rgba(83, 77, 250, 0.4); /* Updated from rgba(58, 134, 255, 0.4) */
     inset: 0;
     filter: blur(2px);
     border-radius: 30px;
@@ -341,18 +341,18 @@ const StyledWrapper = styled.div`
   .bg::after {
     background: #0a192f;
     box-shadow:
-      inset 0 0 0 1px rgba(58, 134, 255, 0.4),
-      inset -2px 0 0 -1px rgba(58, 134, 255, 1),
-      inset 0 -2px 0 -1px rgba(58, 134, 255, 0.1);
+      inset 0 0 0 1px rgba(83, 77, 250, 0.4), /* Updated from rgba(58, 134, 255, 0.4) */
+      inset -2px 0 0 -1px rgba(83, 77, 250, 1), /* Updated from rgba(58, 134, 255, 1) */
+      inset 0 -2px 0 -1px rgba(83, 77, 250, 0.1); /* Updated from rgba(58, 134, 255, 0.1) */
   }
 
   .bg .shine {
     transition: all 0.5s linear;
-    color: rgba(58, 134, 255, 0.85);
+    color: #3c2db7; /* Updated from #2721F7 to a darker purple */
   }
 
   .button:active .bg .shine {
-    color: rgba(42, 255, 205, 0.85);
+    color: #3c2db7; /* Updated from #2721F7 */
   }
 
   .bg .shine::before {
@@ -404,7 +404,7 @@ const StyledWrapper = styled.div`
     background: linear-gradient(
       to right,
       transparent 0%,
-      #3a86ff 50%,
+      #534DFA 50%, /* Updated from #3a86ff */
       transparent 100%
     );
     animation: spin 1.7s linear infinite;
@@ -521,10 +521,10 @@ const StyledWrapper = styled.div`
     overflow: hidden;
     height: 100%;
     padding: 2px;
-    background: linear-gradient(to bottom, #3a86ff, #2667cc);
+    background: linear-gradient(to bottom, #534DFA, #3c2db7); /* Updated from #534DFA, #534DFA */
     box-shadow:
-      inset 0 0 16px 6px #1a4b99,
-      inset 0 -10px 10px -8px #3a86ff;
+      inset 0 0 16px 6px #2a1f8c, /* Updated from #534DFA */
+      inset 0 -10px 10px -8px #534DFA; /* Updated from #534DFA */
     position: relative;
   }
 
@@ -565,11 +565,11 @@ const StyledWrapper = styled.div`
     gap: 2px;
     border-radius: calc(var(--radius) * 0.85);
     font-weight: 600;
-    background: linear-gradient(to bottom, #3a86ff, #2667cc);
+    background: linear-gradient(to bottom, #534DFA, #3c2db7); /* Updated from #534DFA, #2667cc */
     box-shadow:
-      inset 0 0 16px 6px #1a4b99,
+      inset 0 0 16px 6px #2a1f8c, /* Updated from #1a4b99 */
       0 0 10px 10px rgba(0, 0, 0, 0.2),
-      inset 0 -10px 10px -8px rgba(58, 134, 255, 0.8);
+      inset 0 -10px 10px -8px rgba(83, 77, 250, 0.8); /* Updated from rgba(58, 134, 255, 0.8) */
     transition: all 0.3s ease;
   }
 
@@ -600,7 +600,6 @@ const StyledWrapper = styled.div`
     opacity: 0;
     transform: translateY(-100%);
   }
-
 
   .text span[data-index="3"] { animation: char-in 1.2s ease backwards calc(3 * 0.03s); }
   .text span[data-index="4"] { animation: char-in 1.2s ease backwards calc(4 * 0.03s); }
@@ -703,7 +702,7 @@ const StyledWrapper = styled.div`
     60% {
       transform: translateY(5%);
       opacity: 1;
-      filter: blur(0);
+      filter: blur( QP
     }
     100% {
       transform: translateY(0);
@@ -723,5 +722,5 @@ const StyledWrapper = styled.div`
     }
   }
 `;
-
+ 
 export default Button;

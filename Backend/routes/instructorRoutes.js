@@ -5,14 +5,21 @@ import {
   getInstructorById,
   updateInstructor,
   deleteInstructor,
+  getInstructorVerification,
+  updateInstructorVerification,
 } from '../controllers/instructorController.js';
 
 const router = express.Router();
 
-router.post('/', createInstructor);  // admin: create instructor
-router.get('/', getAllInstructors);  // admin: list all
-router.get('/:id', getInstructorById);  // get by id
-router.put('/:id', updateInstructor);   // admin: update
-router.delete('/:id', deleteInstructor); // admin: delete
+// CRUD Operations for Instructors
+router.post('/', createInstructor); // Create instructor 
+router.get('/', getAllInstructors); // Read all instructors 
+router.get('/:id', getInstructorById); // Read instructor by ID
+router.put('/:id', updateInstructor); // Update instructor 
+router.delete('/:id', deleteInstructor); // Delete instructor (
+
+// Verification Routes 
+router.get('/verification/:id', getInstructorVerification); // Read verification details
+router.put('/verification/:id', updateInstructorVerification); // Update verification status
 
 export default router;

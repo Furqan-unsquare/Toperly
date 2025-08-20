@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -75,6 +75,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [needsRoleSelection, setNeedsRoleSelection] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const getRedirectPath = (role: string) => {
     switch (role) {
@@ -91,71 +92,102 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const syncUserWithBackend = useCallback(async () => {
-    if (isAuthenticated && auth0User) {
-      try {
-        const accessToken = await getAccessTokenSilently();
-        const response = await fetch(`${API_BASE}/sync`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            auth0Id: auth0User.sub,
-            email: auth0User.email || "",
-            name: auth0User.name || "Unknown",
-            profileImage: auth0User.picture || "",
-          }),
-        });
-        const data = await response.json();
-        console.log("Sync response:", data);
-        if (response.ok) {
-          if (data.needsRole) {
-            setNeedsRoleSelection(true);
-          } else {
-            setUser(data.user);
-            setToken(accessToken);
-            localStorage.setItem("user", JSON.stringify(data.user));
-            localStorage.setItem("token", accessToken);
-            setNeedsRoleSelection(false);
-            navigate(getRedirectPath(data.user.role));
+    if (!isAuthenticated || !auth0User) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const accessToken = await getAccessTokenSilently();
+      const response = await fetch(`${API_BASE}/sync`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          auth0Id: auth0User.sub,
+          email: auth0User.email || "",
+          name: auth0User.name || "Unknown",
+          profileImage: auth0User.picture || "",
+        }),
+      });
+      const data = await response.json();
+      console.log("Sync response:", data);
+      if (response.ok) {
+        if (data.needsRole) {
+          setNeedsRoleSelection(true);
+          setUser(null);
+          setToken(null);
+        } else {
+          setUser(data.user);
+          setToken(accessToken);
+          localStorage.setItem("user", JSON.stringify(data.user));
+          localStorage.setItem("token", accessToken);
+          setNeedsRoleSelection(false);
+          // Only redirect to dashboard if on root or login page
+          if (location.pathname === "/" || location.pathname === "/auth/login") {
+            navigate(getRedirectPath(data.user.role), { replace: true });
             toast({
               title: "Login Successful",
               description: `Welcome back, ${data.user.name}!`,
             });
           }
-        } else {
-          throw new Error(data.message || "Sync failed");
         }
-      } catch (error) {
-        console.error("Sync error:", error);
-        toast({
-          title: "Sync Error",
-          description: "Failed to sync user data with backend.",
-          variant: "destructive",
-        });
+      } else {
+        throw new Error(data.message || "Sync failed");
       }
+    } catch (error) {
+      console.error("Sync error:", error);
+      toast({
+        title: "Sync Error",
+        description: "Failed to sync user data with backend.",
+        variant: "destructive",
+      });
+      setUser(null);
+      setToken(null);
+      setNeedsRoleSelection(false);
+      navigate("/");
+    } finally {
+      setIsLoading(false);
     }
-  }, [isAuthenticated, auth0User, getAccessTokenSilently, navigate]);
+  }, [isAuthenticated, auth0User, getAccessTokenSilently, navigate, location.pathname]);
 
-  useEffect(() => {
-    const initializeAuth = async () => {
-      const userJson = localStorage.getItem("user");
-      const storedToken = localStorage.getItem("token");
-      if (userJson && storedToken) {
-        const parsedUser = JSON.parse(userJson);
-        setUser(parsedUser);
-        setToken(storedToken);
-        // navigate(getRedirectPath(parsedUser.role));
-      } else if (isAuthenticated) {
-        await syncUserWithBackend();
+useEffect(() => {
+  const initializeAuth = async () => {
+    if (auth0Loading) {
+      return; // Wait for Auth0 to finish loading
+    }
+
+    // Define public routes that unauthenticated users can access
+    const publicRoutes = ["/", "/courses", "/contact-us", "/subscription-plans", "/blogs", "/auth/login", "/auth/Instructor"]; // Adjust as needed
+
+    const userJson = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
+    if (userJson && storedToken) {
+      const parsedUser = JSON.parse(userJson);
+      setUser(parsedUser);
+      setToken(storedToken);
+      setNeedsRoleSelection(false);
+      // Only redirect to dashboard if on root or login page
+      if (location.pathname === "/" || location.pathname === "/auth/login") {
+        navigate(getRedirectPath(parsedUser.role), { replace: true });
       }
       setIsLoading(false);
-    };
-    if (!auth0Loading) {
-      initializeAuth();
+    } else if (isAuthenticated) {
+      await syncUserWithBackend();
+    } else {
+      setIsLoading(false);
+      setNeedsRoleSelection(false);
+      // Only redirect to "/" if the current path is not a public route
+      if (!publicRoutes.includes(location.pathname)) {
+        navigate("/", { replace: true });
+      }
     }
-  }, [auth0Loading, isAuthenticated, syncUserWithBackend, navigate]);
+  };
+
+  initializeAuth();
+}, [auth0Loading, isAuthenticated, syncUserWithBackend, navigate, location.pathname]);
 
   const loginWithSocial = (connection: string) => {
     loginWithRedirect({ authorizationParams: { connection } });
@@ -181,12 +213,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           await loginWithRedirect();
           return false;
         }
-        const accessToken = await getAccessTokenSilently();
-        console.log(auth0User);
+        const managementToken = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: `https://${import.meta.env.VITE_AUTH0_DOMAIN}/api/v2/`,
+            scope: "read:users",
+          },
+        });
         const response = await fetch(
           `https://${import.meta.env.VITE_AUTH0_DOMAIN}/api/v2/users/${auth0User.sub}`,
           {
-            headers: { Authorization: `Bearer ${accessToken}` },
+            headers: { Authorization: `Bearer ${managementToken}` },
           }
         );
         const userData = await response.json();
@@ -230,20 +266,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           title: "Role Selected",
           description: "Your role has been assigned successfully.",
         });
-        alert("Successfully logged in");
-        navigate(getRedirectPath(data.user.role));
+        navigate(getRedirectPath(data.user.role), { replace: true });
         return true;
       } else if (
         response.status === 409 &&
         data.message === "User already exists with this email or Auth0 ID"
       ) {
-        await syncUserWithBackend();
+        setUser(data.user);
+        setToken(accessToken);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("token", accessToken);
+        setNeedsRoleSelection(false);
         toast({
           title: "User Already Exists",
-          description:
-            "You already have an account. Redirecting to your dashboard.",
+          description: "Redirecting to your dashboard.",
         });
-        return false;
+        navigate(getRedirectPath(data.user.role), { replace: true });
+        return true;
       } else {
         throw new Error(data.message || "Role assignment failed");
       }
@@ -267,7 +306,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     auth0Logout({ logoutParams: { returnTo: window.location.origin } });
-    navigate("/");
+    navigate("/", { replace: true });
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out.",
@@ -390,6 +429,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                   <SelectItem value="student">Student</SelectItem>
                   <SelectItem value="instructor">Instructor</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="subadmin">Subadmin</SelectItem>
                 </SelectContent>
               </Select>
             </div>

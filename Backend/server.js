@@ -17,6 +17,7 @@ import couponRoutes from "./routes/couponRoutes.js";
 import userAdminRoutes from "./routes/userAdminRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import paymentRoutes from "./controllers/paymentRoutes.js";
+import queryRoutes from "./routes/queryRoutes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import https from "https";
@@ -461,6 +462,7 @@ app.use("/api/coupons", couponRoutes);
 app.use("/api/admin", userAdminRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/query", queryRoutes);
 
 // Error Handler
 app.use(globalErrorHandler);
@@ -482,7 +484,7 @@ async function start() {
   try {
     await connectDB();
     app.listen(PORT, () => {
-      console.log(`Server is listening on ttp://localhost:${PORT}`);
+      console.log(`Server is listening on http://localhost:${PORT}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error.message);

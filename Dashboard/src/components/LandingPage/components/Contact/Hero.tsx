@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import { MessageCircle, Mail, Phone, MapPin, X } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    name: '',
     email: '',
-    phone: '',
+    mobile: '',
     message: '',
-    services: [],
   });
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -19,19 +20,54 @@ export default function ContactForm() {
     }));
   };
 
-  const handleServiceChange = (service) => {
-    setFormData((prev) => ({
-      ...prev,
-      services: prev.services.includes(service)
-        ? prev.services.filter((s) => s !== service)
-        : [...prev.services, service],
-    }));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Handle form submission here (e.g., API call)
+    setIsSubmitting(true);
+
+    try {
+      // Log the payload to verify its contents
+      console.log('Submitting form data:', formData);
+
+      const response = await fetch('http://localhost:5000/api/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // Add Content-Type header
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        // Log response details for debugging
+        const errorText = await response.text();
+        console.error('Response status:', response.status, 'Response text:', errorText);
+        throw new Error(`Failed to submit form: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log('Form submission response:', result);
+
+      toast({
+        title: 'Message Sent',
+        description: 'Your message has been successfully submitted. We will get back to you soon!',
+      });
+
+      // Reset form after successful submission
+      setFormData({
+        name: '',
+        email: '',
+        mobile: '',
+        message: '',
+      });
+    } catch (error) {
+      console.error('Form submission error:', error);
+      toast({
+        title: 'Submission Error',
+        description: 'Failed to send your message. Please try again later.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -71,36 +107,20 @@ export default function ContactForm() {
           <div className="lg:col-span-2 w-full">
             <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm border p-6 sm:p-8 w-full">
               {/* Name Fields */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6">
+              <div className="grid grid-cols-1 gap-4 sm:gap-6 mb-6">
                 <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
-                    First name
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                    Full name
                   </label>
                   <input
                     type="text"
-                    id="firstName"
-                    name="firstName"
-                    value={formData.firstName}
+                    id="name"
+                    name="name"
+                    value={formData.name}
                     onChange={handleInputChange}
-                    placeholder="First name"
+                    placeholder="Full name"
                     required
-                    aria-label="First name"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
-                    Last name
-                  </label>
-                  <input
-                    type="text"
-                    id="lastName"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    placeholder="Last name"
-                    required
-                    aria-label="Last name"
+                    aria-label="Full name"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                   />
                 </div>
@@ -117,7 +137,7 @@ export default function ContactForm() {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  placeholder="you@company.com"
+                  placeholder="yourmail@gmail.com"
                   required
                   aria-label="Email address"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
@@ -130,21 +150,13 @@ export default function ContactForm() {
                   Phone number
                 </label>
                 <div className="flex w-full">
-                  <select
-                    className="px-3 py-3 border border-r-0 border-gray-300 rounded-l-lg bg-gray-50 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    aria-label="Country code"
-                  >
-                    <option value="US">US</option>
-                    <option value="UK">UK</option>
-                    <option value="AU">AU</option>
-                  </select>
                   <input
                     type="tel"
                     id="phone"
-                    name="phone"
-                    value={formData.phone}
+                    name="mobile"
+                    value={formData.mobile}
                     onChange={handleInputChange}
-                    placeholder="+1 (555) 000-0000"
+                    placeholder="+91 "
                     aria-label="Phone number"
                     className="flex-1 px-4 py-3 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                   />
@@ -169,38 +181,13 @@ export default function ContactForm() {
                 ></textarea>
               </div>
 
-              {/* Services */}
-              <div className="mb-8">
-                <label className="block text-sm font-medium text-gray-700 mb-4">Services</label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {[
-                    'Website design',
-                    'Content creation',
-                    'UX design',
-                    'Strategy & consulting',
-                    'User research',
-                    'Other',
-                  ].map((service) => (
-                    <label key={service} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={formData.services.includes(service)}
-                        onChange={() => handleServiceChange(service)}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        aria-label={`Select ${service}`}
-                      />
-                      <span className="ml-3 text-sm text-gray-700">{service}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
               {/* Submit Button */}
               <button
                 type="submit"
                 className="w-full bg-gray-900 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 transition-colors focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                disabled={isSubmitting}
               >
-                Send message
+                {isSubmitting ? 'Sending...' : 'Send message'}
               </button>
             </form>
           </div>

@@ -119,7 +119,7 @@ const TestimonialsSection = () => {
             headerInView ? 'animate-title-reveal' : ''
           }`}>
             Trusted by{" "}
-            <span className={`bg-gradient-primary bg-clip-text text-transparent transition-all duration-1000 delay-400 `}>
+            <span className={`bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent transition-all duration-1000 delay-400 `}>
               Industry Leaders
             </span>
           </h2>
@@ -185,7 +185,7 @@ const TestimonialsSection = () => {
                         <Avatar className={`w-10 h-10 group-hover:ring-2 group-hover:ring-primary/20 transition-all duration-500 ${
                           cardsInView ? 'animate-avatar-pop' : 'opacity-0 scale-0'
                         }`} style={{ animationDelay: `${1400 + index * 200}ms` }}>
-                          <AvatarFallback className="bg-gradient-primary text-primary-foreground font-bold">
+                          <AvatarFallback className="bg-gradient-to-r from-blue-400 to-purple-600 text-primary-foreground font-bold">
                             {testimonial.initials}
                           </AvatarFallback>
                         </Avatar>
@@ -264,7 +264,7 @@ const TestimonialsSection = () => {
                     <Avatar className={`w-12 h-12 group-hover:ring-2 group-hover:ring-primary/20 transition-all duration-500 ${
                       cardsInView ? 'animate-avatar-pop' : 'opacity-0 scale-0'
                     }`} style={{ animationDelay: `${1400 + index * 200}ms` }}>
-                      <AvatarFallback className="bg-gradient-primary text-primary-foreground font-bold text-lg">
+                      <AvatarFallback className="bg-gradient-to-r from-blue-400 to-purple-600 text-primary-foreground font-bold text-lg">
                         {testimonial.initials}
                       </AvatarFallback>
                     </Avatar>

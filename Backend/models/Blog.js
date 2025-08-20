@@ -24,12 +24,11 @@ const blogSchema = new mongoose.Schema({
   author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Admin',
-    required: true
   },
   date: {
     type: Date,
     default: Date.now
-  },
+  }, 
   readTime: {
     type: String,
     trim: true

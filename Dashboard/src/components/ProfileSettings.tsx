@@ -1,835 +1,424 @@
-import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  User,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
+import React, { useState, useEffect } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { 
+  User, 
+  MapPin, 
+  Mail, 
+  MoreHorizontal,
   Briefcase,
-  GraduationCap,
-  Globe,
-  Github,
-  Linkedin,
-  Twitter,
-  Lock,
-  Camera,
+  CreditCard,
+  Edit,
   Save,
-  Eye,
-  EyeOff,
-} from "lucide-react";
+  X
+} from 'lucide-react';
 
-const API_BASE = "http://localhost:5000/api";
-
-export const ProfileSettings = () => {
-  const { user, token } = useAuth();
-  const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    phone: user?.phone || "",
-    dateOfBirth: user?.dateOfBirth || "",
-    gender: user?.gender || "",
-    country: user?.country || "",
-    city: user?.city || "",
-    address: user?.address || "",
-    bio: user?.bio || "",
-    profession: user?.profession || "",
-    experience: user?.experience || "",
-    education: user?.education || "",
-    skills: user?.skills?.join(", ") || "",
-    expertise: user?.expertise?.join(", ") || "",
-    website: user?.website || "",
-    github: user?.github || "",
-    linkedin: user?.linkedin || "",
-    twitter: user?.twitter || "",
-    preferredLanguage: user?.preferredLanguage || "English",
-    timezone: user?.timezone || "",
-    newsletter: user?.newsletter || false,
-    profileVisibility: user?.profileVisibility || "public",
+const ProfileSettings = () => {
+  const { user, getAccessTokenSilently, isAuthenticated } = useAuth0();
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('about');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({
+    bio: '',
+    expertise: [],
+    password: '',
+    payoutDetails: {
+      razorpayAccountId: '',
+      preferredMethod: 'bank_transfer'
+    }
   });
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      fetchProfileData();
+    }
+  }, [isAuthenticated, user]);
 
-  const [showPasswords, setShowPasswords] = useState({
-    current: false,
-    new: false,
-    confirm: false,
-  });
+ const fetchProfileData = async () => {
+  try {
+    setLoading(true);
+    setError(null);
 
-  const [loading, setLoading] = useState(false);
-  const [profileLoading, setProfileLoading] = useState(false);
-
-  const countries = [
-    "United States",
-    "Canada",
-    "United Kingdom",
-    "Germany",
-    "France",
-    "Australia",
-    "Japan",
-    "South Korea",
-    "India",
-    "China",
-    "Brazil",
-    "Mexico",
-    "Spain",
-    "Italy",
-    "Netherlands",
-    "Sweden",
-    "Norway",
-    "Denmark",
-    "Switzerland",
-    "Singapore",
-    "Other",
-  ];
-
-  const timezones = [
-    "UTC-12:00",
-    "UTC-11:00",
-    "UTC-10:00",
-    "UTC-09:00",
-    "UTC-08:00",
-    "UTC-07:00",
-    "UTC-06:00",
-    "UTC-05:00",
-    "UTC-04:00",
-    "UTC-03:00",
-    "UTC-02:00",
-    "UTC-01:00",
-    "UTC+00:00",
-    "UTC+01:00",
-    "UTC+02:00",
-    "UTC+03:00",
-    "UTC+04:00",
-    "UTC+05:00",
-    "UTC+06:00",
-    "UTC+07:00",
-    "UTC+08:00",
-    "UTC+09:00",
-    "UTC+10:00",
-    "UTC+11:00",
-    "UTC+12:00",
-  ];
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value, type } = e.target;
-    setFormData({
-      ...formData,
-      [name]:
-        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+    const token = await getAccessTokenSilently();
+    const response = await fetch('http://localhost:5000/api/auth/me', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
     });
-  };
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData({
-      ...formData,
-      [name]: value,
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `API error: ${response.status}`);
+    }
+
+    const responseData = await response.json();
+
+    // ✅ use profile from API response
+    const data = responseData.profile;
+
+    setProfileData(data);
+    setEditForm({
+      bio: data.bio || '',
+      expertise: data.expertise || [],
+      password: '',
+      payoutDetails: {
+        razorpayAccountId: data.payoutDetails?.razorpayAccountId || '',
+        preferredMethod: data.payoutDetails?.preferredMethod || 'bank_transfer'
+      }
     });
-  };
+  } catch (error) {
+    console.error('Error fetching profile data:', error);
+    setError(error.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPasswordData({
-      ...passwordData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const togglePasswordVisibility = (field: string) => {
-    setShowPasswords({
-      ...showPasswords,
-      [field]: !showPasswords[field as keyof typeof showPasswords],
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleUpdateProfile = async (e) => {
     e.preventDefault();
-
+    if (editForm.password && editForm.password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
     try {
-      setProfileLoading(true);
-
-      // Convert comma-separated strings back to arrays
-      const dataToSend = {
-        ...formData,
-        skills: formData.skills
-          ? formData.skills.split(",").map((s) => s.trim())
-          : [],
-        expertise: formData.expertise
-          ? formData.expertise.split(",").map((s) => s.trim())
-          : [],
-      };
-
-      const res = await fetch(`${API_BASE}/auth/profile`, {
-        method: "PUT",
+      setError(null);
+      const token = await getAccessTokenSilently();
+      const response = await fetch('http://localhost:5000/api/instructors/me', {
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(dataToSend),
+        body: JSON.stringify(editForm),
       });
 
-      const result = await res.json();
-
-      if (!res.ok) {
-        alert(result.message || "Failed to update profile");
-      } else {
-        alert("Profile updated successfully!");
-        // Update user context or refetch user data
-        window.location.reload(); // Simple reload to update user data
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `API error: ${response.status}`);
       }
-    } catch (err) {
-      alert("An error occurred while updating the profile.");
-    } finally {
-      setProfileLoading(false);
+
+      const { data } = await response.json();
+      setProfileData(data);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      setError(error.message);
     }
   };
 
-  const handlePasswordSubmit = async () => {
-    const { currentPassword, newPassword, confirmPassword } = passwordData;
-
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      return alert("All fields are required.");
-    }
-
-    if (newPassword !== confirmPassword) {
-      return alert("New password and confirm password do not match.");
-    }
-
-    if (newPassword?.length < 6) {
-      return alert("New password must be at least 6 characters long.");
-    }
-
-    try {
-      setLoading(true);
-      const res = await fetch(`${API_BASE}/auth/change-password`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ currentPassword, newPassword }),
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name.startsWith('payoutDetails.')) {
+      const field = name.split('.')[1];
+      setEditForm({
+        ...editForm,
+        payoutDetails: {
+          ...editForm.payoutDetails,
+          [field]: value
+        }
       });
-
-      const result = await res.json();
-      if (!res.ok) {
-        alert(result.message || "Failed to change password");
-      } else {
-        alert("Password changed successfully. Please log in again.");
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        window.location.href = "/auth";
-      }
-    } catch (err) {
-      alert("An error occurred while changing the password.");
-    } finally {
-      setLoading(false);
-      setPasswordModalOpen(false);
-      setPasswordData({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
+    } else {
+      setEditForm({
+        ...editForm,
+        [name]: value
       });
     }
   };
+
+  const handleExpertiseChange = (e) => {
+    const expertiseArray = e.target.value.split(',').map(item => item.trim()).filter(item => item);
+    setEditForm({
+      ...editForm,
+      expertise: expertiseArray
+    });
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Please log in to view your profile.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600">Error: {error}</p>
+          <button
+            onClick={fetchProfileData}
+            className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profileData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Unable to load profile. Please try again later.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-gray-100 space-y-6 p-6">
-      <div className="max-w-5xl px-14 mx-auto space-y-6 p-6">
-        {/* Profile Overview Card */}
-        <Card>
-          <CardHeader className="pb-4">
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                  <span className="text-2xl font-bold text-white">
-                    {user?.name?.charAt(0)?.toUpperCase() || "U"}
-                  </span>
-                </div>
-                <button className="absolute -bottom-1 -right-1 w-8 h-8 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors">
-                  <Camera size={14} className="text-gray-600" />
-                </button>
-              </div>
-              <div>
-                <CardTitle className="text-2xl">{user?.name}</CardTitle>
-                <p className="text-gray-600 flex items-center gap-2 mt-1">
-                  <Mail size={16} />
-                  {user?.email}
-                </p>
-                <p className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full inline-block mt-2 capitalize">
-                  {user?.role}
-                </p>
-              </div>
-            </div>
-          </CardHeader>
-        </Card>
+    <div className="min-h-screen mx-auto flex max-w-5xl">
+      <div className="flex-1">
+        {/* Header with gradient background */}
+        <div className="relative">
+          <div className="h-48 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-800"></div>
+          
+          {/* Profile Section */}
+          <div className="relative px-4 sm:px-6 lg:px-8">
+            <div className="max-w-6xl mx-auto">
+              <div className="relative -mt-20 pb-6">
+                <div className="bg-white rounded-2xl shadow-lg p-6">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                    <div className="relative flex-shrink-0">
+                      <img
+                        src={profileData?.profileImage || 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=200&h=200&fit=crop&crop=face'}
+                        alt={profileData?.name}
+                        className="w-24 h-24 rounded-full border-4 border-white shadow-md"
+                      />
+                      {profileData?.isVerified && (
+                        <div className="absolute bottom-0 right-0 w-6 h-6 rounded-full flex items-center justify-center">
+                          <img src="https://static.vecteezy.com/system/resources/previews/028/084/126/original/verified-check-mark-icon-png.png" alt="Verified" />
+                        </div>
+                      )}
+                    </div>
 
-        {/* Main Profile Settings */}
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Personal Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <User size={20} />
-                  Personal Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Non-editable fields */}
-                <div>
-                  <Label htmlFor="name" className="text-gray-500">
-                    Name (Cannot be changed)
-                  </Label>
-                  <Input
-                    id="name"
-                    value={user?.name || ""}
-                    disabled
-                    className="bg-gray-50 text-gray-500"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="email" className="text-gray-500">
-                    Email (Cannot be changed)
-                  </Label>
-                  <Input
-                    id="email"
-                    value={user?.email || ""}
-                    disabled
-                    className="bg-gray-50 text-gray-500"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="+1 (555) 123-4567"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="dateOfBirth">Date of Birth</Label>
-                  <Input
-                    id="dateOfBirth"
-                    name="dateOfBirth"
-                    type="date"
-                    value={formData.dateOfBirth}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="gender">Gender</Label>
-                  <Select
-                    value={formData.gender}
-                    onValueChange={(value) =>
-                      handleSelectChange("gender", value)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select gender" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                      <SelectItem value="prefer-not-to-say">
-                        Prefer not to say
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="bio">Bio</Label>
-                  <Textarea
-                    id="bio"
-                    name="bio"
-                    value={formData.bio}
-                    onChange={handleChange}
-                    placeholder="Tell us about yourself..."
-                    rows={3}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Location Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MapPin size={20} />
-                  Location Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="country">Country</Label>
-                  <Select
-                    value={formData.country}
-                    onValueChange={(value) =>
-                      handleSelectChange("country", value)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select country" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {countries.map((country) => (
-                        <SelectItem key={country} value={country}>
-                          {country}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="city">City</Label>
-                  <Input
-                    id="city"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleChange}
-                    placeholder="Enter your city"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="address">Address</Label>
-                  <Textarea
-                    id="address"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    placeholder="Enter your full address"
-                    rows={2}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="timezone">Timezone</Label>
-                  <Select
-                    value={formData.timezone}
-                    onValueChange={(value) =>
-                      handleSelectChange("timezone", value)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select timezone" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {timezones.map((tz) => (
-                        <SelectItem key={tz} value={tz}>
-                          {tz}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="preferredLanguage">Preferred Language</Label>
-                  <Select
-                    value={formData.preferredLanguage}
-                    onValueChange={(value) =>
-                      handleSelectChange("preferredLanguage", value)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select language" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="English">English</SelectItem>
-                      <SelectItem value="Spanish">Spanish</SelectItem>
-                      <SelectItem value="French">French</SelectItem>
-                      <SelectItem value="German">German</SelectItem>
-                      <SelectItem value="Chinese">Chinese</SelectItem>
-                      <SelectItem value="Japanese">Japanese</SelectItem>
-                      <SelectItem value="Korean">Korean</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Professional Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Briefcase size={20} />
-                  Professional Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="profession">Current Profession</Label>
-                  <Input
-                    id="profession"
-                    name="profession"
-                    value={formData.profession}
-                    onChange={handleChange}
-                    placeholder="e.g., Software Engineer, Data Scientist"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="experience">Years of Experience</Label>
-                  <Select
-                    value={formData.experience}
-                    onValueChange={(value) =>
-                      handleSelectChange("experience", value)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select experience" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="0-1">0-1 years</SelectItem>
-                      <SelectItem value="2-3">2-3 years</SelectItem>
-                      <SelectItem value="4-5">4-5 years</SelectItem>
-                      <SelectItem value="6-10">6-10 years</SelectItem>
-                      <SelectItem value="10+">10+ years</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="education">Education</Label>
-                  <Input
-                    id="education"
-                    name="education"
-                    value={formData.education}
-                    onChange={handleChange}
-                    placeholder="e.g., Bachelor's in Computer Science"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="skills">Skills (comma-separated)</Label>
-                  <Textarea
-                    id="skills"
-                    name="skills"
-                    value={formData.skills}
-                    onChange={handleChange}
-                    placeholder="e.g., JavaScript, Python, React, Machine Learning"
-                    rows={2}
-                  />
-                </div>
-
-                {user?.role === "instructor" && (
-                  <div>
-                    <Label htmlFor="expertise">
-                      Teaching Expertise (comma-separated)
-                    </Label>
-                    <Textarea
-                      id="expertise"
-                      name="expertise"
-                      value={formData.expertise}
-                      onChange={handleChange}
-                      placeholder="e.g., Web Development, Data Science, Machine Learning"
-                      rows={2}
-                    />
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Social Links */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Globe size={20} />
-                  Social Links
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="website" className="flex items-center gap-2">
-                    <Globe size={16} />
-                    Website
-                  </Label>
-                  <Input
-                    id="website"
-                    name="website"
-                    type="url"
-                    value={formData.website}
-                    onChange={handleChange}
-                    placeholder="https://yourwebsite.com"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="linkedin" className="flex items-center gap-2">
-                    <Linkedin size={16} />
-                    LinkedIn
-                  </Label>
-                  <Input
-                    id="linkedin"
-                    name="linkedin"
-                    value={formData.linkedin}
-                    onChange={handleChange}
-                    placeholder="https://linkedin.com/in/yourprofile"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="github" className="flex items-center gap-2">
-                    <Github size={16} />
-                    GitHub
-                  </Label>
-                  <Input
-                    id="github"
-                    name="github"
-                    value={formData.github}
-                    onChange={handleChange}
-                    placeholder="https://github.com/yourusername"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="twitter" className="flex items-center gap-2">
-                    <Twitter size={16} />
-                    Twitter
-                  </Label>
-                  <Input
-                    id="twitter"
-                    name="twitter"
-                    value={formData.twitter}
-                    onChange={handleChange}
-                    placeholder="https://twitter.com/yourusername"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Privacy Settings */}
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Lock size={20} />
-                  Privacy & Preferences
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="profileVisibility">Profile Visibility</Label>
-                  <Select
-                    value={formData.profileVisibility}
-                    onValueChange={(value) =>
-                      handleSelectChange("profileVisibility", value)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select visibility" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="public">
-                        Public - Anyone can see your profile
-                      </SelectItem>
-                      <SelectItem value="private">
-                        Private - Only you can see your profile
-                      </SelectItem>
-                      <SelectItem value="students-only">
-                        Students Only - Only enrolled students can see
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="newsletter"
-                    name="newsletter"
-                    checked={formData.newsletter}
-                    onChange={handleChange}
-                    className="rounded border-gray-300"
-                  />
-                  <Label htmlFor="newsletter" className="text-sm">
-                    Subscribe to newsletter and updates
-                  </Label>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Action Buttons */}
-          <Card className="mt-6">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div className="flex gap-4">
-                  <Button
-                    type="submit"
-                    disabled={profileLoading}
-                    className="flex items-center gap-2"
-                  >
-                    <Save size={16} />
-                    {profileLoading ? "Saving..." : "Save Changes"}
-                  </Button>
-
-                  <Dialog
-                    open={passwordModalOpen}
-                    onOpenChange={setPasswordModalOpen}
-                  >
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        type="button"
-                        className="flex items-center gap-2"
-                      >
-                        <Lock size={16} />
-                        Change Password
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Change Password</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between">
                         <div>
-                          <Label htmlFor="currentPassword">
-                            Current Password
-                          </Label>
-                          <div className="relative">
-                            <Input
-                              id="currentPassword"
-                              name="currentPassword"
-                              type={showPasswords.current ? "text" : "password"}
-                              value={passwordData.currentPassword}
-                              onChange={handlePasswordChange}
-                            />
-                            <button
-                              type="button"
-                              onClick={() =>
-                                togglePasswordVisibility("current")
-                              }
-                              className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                            >
-                              {showPasswords.current ? (
-                                <EyeOff size={16} />
-                              ) : (
-                                <Eye size={16} />
-                              )}
-                            </button>
+                          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2">
+                            {profileData?.name}
+                          </h1>
+                          <p className="text-lg text-gray-600 mt-1">{profileData?.role}</p>
+                          <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-gray-500">
+                            <div className="flex items-center gap-1">
+                              <MapPin className="w-4 h-4" />
+                              <span>{profileData?.customId}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Mail className="w-4 h-4" />
+                              <a href={`mailto:${profileData?.email}`} className="text-blue-600 hover:underline">
+                                {profileData?.email}
+                              </a>
+                            </div>
                           </div>
                         </div>
-                        <div>
-                          <Label htmlFor="newPassword">New Password</Label>
-                          <div className="relative">
-                            <Input
-                              id="newPassword"
-                              name="newPassword"
-                              type={showPasswords.new ? "text" : "password"}
-                              value={passwordData.newPassword}
-                              onChange={handlePasswordChange}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => togglePasswordVisibility("new")}
-                              className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                            >
-                              {showPasswords.new ? (
-                                <EyeOff size={16} />
-                              ) : (
-                                <Eye size={16} />
-                              )}
-                            </button>
-                          </div>
-                        </div>
-                        <div>
-                          <Label htmlFor="confirmPassword">
-                            Confirm New Password
-                          </Label>
-                          <div className="relative">
-                            <Input
-                              id="confirmPassword"
-                              name="confirmPassword"
-                              type={showPasswords.confirm ? "text" : "password"}
-                              value={passwordData.confirmPassword}
-                              onChange={handlePasswordChange}
-                            />
-                            <button
-                              type="button"
-                              onClick={() =>
-                                togglePasswordVisibility("confirm")
-                              }
-                              className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                            >
-                              {showPasswords.confirm ? (
-                                <EyeOff size={16} />
-                              ) : (
-                                <Eye size={16} />
-                              )}
-                            </button>
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            onClick={handlePasswordSubmit}
-                            disabled={loading}
+
+                        {/* Dropdown Menu */}
+                        <div className="relative mt-4 sm:mt-0">
+                          <button
+                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                            className="p-2 text-gray-400 hover:text-gray-600"
                           >
-                            {loading ? "Changing..." : "Change Password"}
-                          </Button>
-                          <Button
-                            variant="outline"
-                            onClick={() => {
-                              setPasswordModalOpen(false);
-                              setPasswordData({
-                                currentPassword: "",
-                                newPassword: "",
-                                confirmPassword: "",
-                              });
-                            }}
-                          >
-                            Cancel
-                          </Button>
+                            <MoreHorizontal className="w-5 h-5" />
+                          </button>
+                          {isDropdownOpen && (
+                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                              <button
+                                onClick={() => {
+                                  setIsEditing(!isEditing);
+                                  setIsDropdownOpen(false);
+                                }}
+                                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                              >
+                                <Edit className="w-4 h-4 mr-2" />
+                                {isEditing ? 'Cancel Edit' : 'Edit Profile'}
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </div>
-                    </DialogContent>
-                  </Dialog>
+                    </div>
+                  </div>
                 </div>
-
-                <p className="text-sm text-gray-500">
-                  Last updated: {new Date().toLocaleDateString()}
-                </p>
               </div>
-            </CardContent>
-          </Card>
-        </form>
+            </div>
+          </div>
+        </div>
+
+        {/* Content Tabs */}
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="border-b border-gray-200">
+              <nav className="flex space-x-8">
+                <button
+                  onClick={() => setActiveTab('about')}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeTab === 'about'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  About me
+                </button>
+              </nav>
+            </div>
+
+            {/* Tab Content */}
+            <div className="py-6">
+              {activeTab === 'about' && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2 space-y-6">
+                    <div className="bg-white rounded-xl shadow-sm p-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">About me</h3>
+                      {isEditing ? (
+                        <form onSubmit={handleUpdateProfile} className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Bio</label>
+                            <textarea
+                              name="bio"
+                              value={editForm.bio}
+                              onChange={handleInputChange}
+                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                              rows="4"
+                              placeholder="Tell us about yourself"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Expertise (comma-separated)</label>
+                            <input
+                              type="text"
+                              name="expertise"
+                              value={editForm.expertise.join(', ')}
+                              onChange={handleExpertiseChange}
+                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                              placeholder="e.g., MERN, UI/UX, JavaScript"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Password</label>
+                            <input
+                              type="password"
+                              name="password"
+                              value={editForm.password}
+                              onChange={handleInputChange}
+                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                              placeholder="Enter new password (minimum 6 characters)"
+                            />
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              type="submit"
+                              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+                            >
+                              <Save className="w-4 h-4 mr-2" />
+                              Save Changes
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setIsEditing(false)}
+                              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                            >
+                              <X className="w-4 h-4 mr-2" />
+                              Cancel
+                            </button>
+                          </div>
+                          {error && <p className="text-red-600 text-sm">{error}</p>}
+                        </form>
+                      ) : (
+                        <p className="text-gray-600 leading-relaxed mb-4">{profileData?.bio || 'No bio provided'}</p>
+                      )}
+                    </div>
+
+                    {/* Payment Details Section */}
+                    <div className="bg-white rounded-xl shadow-sm p-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Details</h3>
+                      {isEditing ? (
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Razorpay Account ID</label>
+                            <input
+                              type="text"
+                              name="payoutDetails.razorpayAccountId"
+                              value={editForm.payoutDetails.razorpayAccountId}
+                              onChange={handleInputChange}
+                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                              placeholder="Enter Razorpay Account ID"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Preferred Payment Method</label>
+                            <select
+                              name="payoutDetails.preferredMethod"
+                              value={editForm.payoutDetails.preferredMethod}
+                              onChange={handleInputChange}
+                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            >
+                              <option value="bank_transfer">Bank Transfer</option>
+                              <option value="paypal">PayPal</option>
+                              <option value="stripe">Stripe</option>
+                            </select>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <p className="text-gray-600">
+                            <span className="font-medium">Razorpay Account ID:</span>{' '}
+                            {profileData?.payoutDetails?.razorpayAccountId || 'Not set'}
+                          </p>
+                          <p className="text-gray-600">
+                            <span className="font-medium">Preferred Method:</span>{' '}
+                            {profileData?.payoutDetails?.preferredMethod || 'Not set'}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="bg-white rounded-xl shadow-sm p-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Expertise</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {profileData?.expertise?.length > 0 ? (
+                          profileData.expertise.map((skill, index) => (
+                            <span
+                              key={index}
+                              className="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full"
+                            >
+                              {skill}
+                            </span>
+                          ))
+                        ) : (
+                          <p className="text-gray-600">No expertise listed</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
+
+export default ProfileSettings;
