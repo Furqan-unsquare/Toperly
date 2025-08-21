@@ -540,3 +540,107 @@ export const deleteSubadmin = async (req, res) => {
     return res.status(500).json({ message: 'Server error while deleting subadmin' });
   }
 };
+
+export const upgradeRole = async (req, res) => {
+  try {
+    const { auth0Id, newRole, bio, expertise } = req.body;
+    const { sub } = req.auth;
+
+    console.log("upgradeRole request:", { auth0Id, newRole }); // Debug log
+    if (auth0Id !== sub) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    if (newRole !== "instructor") {
+      return res.status(400).json({ message: "Can only upgrade to instructor role" });
+    }
+
+    if (!bio || !expertise || !Array.isArray(expertise)) {
+      return res.status(400).json({ message: "Bio and expertise are required" });
+    }
+
+    // Verify user is a student in the database
+    const student = await Student.findOne({ auth0Id });
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+    if (student.role !== "student") {
+      return res.status(400).json({ message: "User is not a student" });
+    }
+
+    const newInstructor = new Instructor({
+      auth0Id: student.auth0Id,
+      name: student.name,
+      email: student.email,
+      profileImage: student.profileImage || "",
+      bio,
+      expertise,
+      role: "instructor",
+      isVerified: false,
+      isSuspended: student.isSuspended,
+    });
+
+    await newInstructor.save();
+
+    await Promise.all([
+      EnrolledCourse.updateMany(
+        { student: student._id },
+        { student: newInstructor._id }
+      ),
+      Certificate.updateMany(
+        { student: student._id },
+        { student: newInstructor._id }
+      ),
+      QuizAttempt.updateMany(
+        { student: student._id },
+        { student: newInstructor._id }
+      ),
+      Review.updateMany(
+        { student: student._id },
+        { student: newInstructor._id }
+      ),
+      Transaction.updateMany(
+        { student: student._id },
+        { student: newInstructor._id }
+      ),
+      Wishlist.updateMany(
+        { student: student._id },
+        { student: newInstructor._id }
+      ),
+    ]);
+
+    await Student.findByIdAndDelete(student._id);
+
+    try {
+      await auth0Management.users.update(
+        { id: auth0Id },
+        { user_metadata: { role: "instructor" } }
+      );
+    } catch (auth0Error) {
+      console.error("Auth0 metadata update error:", auth0Error);
+      await Instructor.findByIdAndDelete(newInstructor._id);
+      await Student.create(student);
+      return res.status(500).json({
+        message: "Failed to update Auth0 metadata",
+        error: auth0Error.message,
+      });
+    }
+
+    const userData = {
+      id: newInstructor._id,
+      auth0Id: newInstructor.auth0Id,
+      name: newInstructor.name,
+      email: newInstructor.email,
+      role: newInstructor.role,
+      profileImage: newInstructor.profileImage,
+      bio: newInstructor.bio,
+      expertise: newInstructor.expertise,
+      customId: newInstructor.customId,
+    };
+
+    res.json({ user: userData });
+  } catch (err) {
+    console.error("Upgrade role error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};

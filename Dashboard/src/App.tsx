@@ -1,9 +1,8 @@
-
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useLocation, matchPath } from "react-router-dom";
 
-import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { AuthProvider, useAuth, UpgradeToInstructorForm } from "@/contexts/AuthContext";
 
 // 🧰 UI Components
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,7 +19,7 @@ import AuthLayout from "./layouts/AuthLayout";
 // 🧭 Route Wrappers
 import StudentRoutes from "./contexts/StudentContext";
 import InstructorRoutes from "./contexts/InstructorContext";
-import publicRoutes from "./contexts/public"; // adjust path
+import publicRoutes from "./contexts/public";
 
 // Landing Page
 import HomePage from "./pages/LandingPage/pages/HomePage";
@@ -33,6 +32,7 @@ import SubscriptionPlans from "./components/LandingPage/components/Home/Subscrip
 import LoginPage from "./Auth/LoginPage";
 import InstructorLogin from "./Auth/InstructorLogin";
 import { RegisterPage } from "./Auth/RegisterPage";
+import AdminLogin from "./Auth/Adminlogin";
 import { Dashboard } from "./pages/Student/Dashboard";
 import NotFound from "./pages/NotFound";
 
@@ -66,7 +66,7 @@ import AdminCourseApprovalList from "./pages/Admin/AdminCourseApprovalList";
 import AdminUserManagement from "./pages/Admin/AdminUserManagement";
 import AdminQuery from "./pages/Admin/Query";
 import AdminBlog from "./pages/Admin/BlogList";
-import AdminSubadmin from "./pages/Admin/Subadmin";
+import Subadmin from "./pages/Admin/Subadmin"
 
 // ⚙️ Common Pages
 import ProfileSettings from "./components/ProfileSettings";
@@ -77,7 +77,6 @@ import Revenue from "./pages/Instructor/Revenue";
 import PaymentHistory from "./pages/Student/PaymentHistory";
 
 const queryClient = new QueryClient();
-
 
 const ProtectedRoute = ({
   children,
@@ -99,7 +98,7 @@ const ProtectedRoute = ({
 
   if (!user) return <Navigate to="/auth/login" replace />;
 
-  if (user.role === "admin" || user.role === "subadmin") {
+  if (user.role === "admin") {
     return <>{children}</>;
   }
 
@@ -109,6 +108,7 @@ const ProtectedRoute = ({
 
   return <>{children}</>;
 };
+
 
 // 🧠 Main App Component
 const App = () => (
@@ -122,16 +122,16 @@ const App = () => (
             {/* Auth Routes (No Layout) */}
             <Route element={<AuthLayout />}>
               <Route path="/auth/login" element={<LoginPage />} />
-              <Route path="/auth/Instructor" element={<InstructorLogin />} />
+              <Route path="/auth/instructor" element={<InstructorLogin />} />
+              <Route path="/auth/admin" element={<AdminLogin />} />
               <Route path="/auth/register" element={<RegisterPage />} />
-              
             </Route>
 
             {/* Public Routes */}
             <Route element={<PublicLayout />}>
               <Route path="/" element={<HomePage />} />
               <Route path="/courses" element={<AllCoursesPage />} />
-              <Route path="/courses/:courseId" element={ <CourseDetail /> }/>
+              <Route path="/courses/:courseId" element={<CourseDetail />} />
               <Route path="/blogs" element={<BlogPage />} />
               <Route path="/subscription-plans" element={<SubscriptionPlans />} />
               <Route path="/contact-us" element={<ContactPage />} />
@@ -145,6 +145,14 @@ const App = () => (
                 </ProtectedRoute>
               }
             >
+              <Route
+                path="/become-instructor"
+                element={
+                  <StudentRoutes>
+                    <UpgradeToInstructorForm />
+                  </StudentRoutes>
+                }
+              />
               <Route
                 path="/student/dashboard"
                 element={
@@ -276,7 +284,9 @@ const App = () => (
                 }
               />
               <Route
-                path="/instructor/approvals"
+                path="/in
+
+structor/approvals"
                 element={
                   <InstructorRoutes>
                     <Approval />
@@ -376,7 +386,7 @@ const App = () => (
               <Route path="/admin/dashboard" element={<AdminRealTimeAnalytics />} />
               <Route path="/admin/coupons" element={<AdminCoupons />} />
               <Route path="/admin/verify" element={<AdminVerify />} />
-              <Route path="/admin/sub-admin" element={<AdminSubadmin />} />
+              <Route path="/admin/sub-admin" element={<Subadmin />} />
               <Route path="/admin/revenue" element={<AdminRevenueTracker />} />
               <Route path="/admin/blogs" element={<AdminBlog />} />
               <Route path="/admin/query" element={<AdminQuery />} />

@@ -95,7 +95,7 @@ const Footer: React.FC = () => {
               <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                 <BookOpen size={24} className="text-white" />
               </div>
-              <h3 className="text-2xl font-bold">EduPlatform</h3>
+              <h3 className="text-2xl font-bold">Toperly</h3>
             </div>
             
             <p className="text-gray-400 mb-6 leading-relaxed">
@@ -107,7 +107,7 @@ const Footer: React.FC = () => {
             <div className="space-y-3 mb-6">
               <div className="flex items-center gap-3 text-gray-400">
                 <Mail size={16} />
-                <span>support@eduplatform.com</span>
+                <span>support@Toperly.com</span>
               </div>
               <div className="flex items-center gap-3 text-gray-400">
                 <Phone size={16} />
@@ -155,8 +155,20 @@ const Footer: React.FC = () => {
                       className="ml-2 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-200" 
                     />
                   </button>
+                 
                 </li>
-              ))}
+              ))} 
+             <button
+  onClick={() => window.open("/become-instructor", "_self")} 
+  className="text-gray-400 hover:text-white transition-colors duration-200 flex items-center group"
+>
+  <span>Become An Instructor</span>
+  <ArrowRight 
+    size={14} 
+    className="ml-2 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-200" 
+  />
+</button>
+
             </ul>
           </div>
 
@@ -227,7 +239,7 @@ const Footer: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-gray-400 text-sm">
-              <span>© {currentYear} EduPlatform. All rights reserved.</span>
+              <span>© {currentYear} Toperly. All rights reserved.</span>
               <span>•</span>
               <span className="flex items-center gap-1">
                 Made with <Heart size={12} className="text-red-500 fill-current" /> by EduTeam
