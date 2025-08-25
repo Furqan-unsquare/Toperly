@@ -48,7 +48,8 @@ const CourseManagementSystem: FC = () => {
   const [errors, setErrors] = useState({});
   const [toastMessage, setToastMessage] = useState(null);
 
-  const API_BASE = "http://localhost:5000/api";
+  const API_BASE = `${import.meta.env.VITE_API_URL}/api`;
+
 
   const getAuthToken = () => localStorage.getItem("token");
   const getCurrentUser = () => {

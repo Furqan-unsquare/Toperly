@@ -20,6 +20,7 @@ const EnrollmentCard = ({
 }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
+  const API_BASE = import.meta.env.VITE_API_URL;
   const [showAlert, setShowAlert] = useState({
     show: false,
     message: "",
@@ -45,7 +46,7 @@ const EnrollmentCard = ({
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/wishlist/my-wishlist`,
+        `${API_BASE}/api/wishlist/my-wishlist`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -85,7 +86,7 @@ const EnrollmentCard = ({
       if (isWishlisted) {
         // Remove from wishlist
         const response = await fetch(
-          `http://localhost:5000/api/wishlist/${course._id}`,
+          `${API_BASE}/api/wishlist/${course._id}`,
           {
             method: "DELETE",
             headers: {
@@ -104,7 +105,7 @@ const EnrollmentCard = ({
       } else {
         // Add to wishlist
         const response = await fetch(
-          `http://localhost:5000/api/wishlist/${course._id}`,
+          `${API_BASE}/api/wishlist/${course._id}`,
           {
             method: "POST",
             headers: {

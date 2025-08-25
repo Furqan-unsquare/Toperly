@@ -13,10 +13,8 @@ export const createUrl = asyncWrapper(async (req, res, next) => {
     throw new ApiError(400, "URL is required");
   }
   const shortId = nanoid(5);
-  const shortedUrl = `ttp://localhost:${
-    process.env.PORT || 5000
-  }/api/${shortId}`;
-
+  const BASE_URL = process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
+  const shortedUrl = `${BASE_URL}/api/${shortId}`;
   // Create URL document for MongoDB
   const urlObj = new Url({
     shortId,

@@ -21,22 +21,25 @@ const CourseContentList = ({
   const [expandedSections, setExpandedSections] = useState({ 0: true });
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchQuizzes = async () => {
-      try {
-        const res = await axios.get(
-          `http://localhost:5000/api/quizzes/course/${course._id}`
-        );
-        if (res.data.success) {
-          setQuizzes(res.data.data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch quizzes:", error);
-      }
-    };
+const API_BASE = import.meta.env.VITE_API_URL;
 
-    if (course?._id) fetchQuizzes();
-  }, [course]);
+useEffect(() => {
+  const fetchQuizzes = async () => {
+    try {
+      const res = await axios.get(
+        `${API_BASE}/api/quizzes/course/${course._id}` // ✅ use API_BASE
+      );
+      if (res.data.success) {
+        setQuizzes(res.data.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch quizzes:", error);
+    }
+  };
+
+  if (course?._id) fetchQuizzes();
+}, [course, API_BASE]); // ✅ include API_BASE in deps
+
 
   const videoToQuizMap = quizzes.reduce((map, quiz) => {
     map[quiz.videoId] = quiz._id;

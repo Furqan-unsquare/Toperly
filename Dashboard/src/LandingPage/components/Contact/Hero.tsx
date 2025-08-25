@@ -11,6 +11,8 @@ export default function ContactForm() {
   });
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const API_BASE = import.meta.env.VITE_API_URL;
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -34,7 +36,7 @@ export default function ContactForm() {
       // Log the payload to verify its contents
       console.log('Submitting form data:', payload);
 
-      const response = await fetch('http://localhost:5000/api/query', {
+       const response = await fetch(`${API_BASE}/api/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

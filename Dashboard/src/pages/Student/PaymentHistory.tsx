@@ -14,7 +14,8 @@ const PaymentHistory = () => {
   const [receiptCourse, setReceiptCourse] = useState(null);
   const dropdownRef = useRef(null);
 
-  const API_BASE_URL = 'http://localhost:5000/api';
+
+  const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -275,7 +276,7 @@ const PaymentHistory = () => {
             Retry
           </button>
           <p className="text-sm text-gray-500 mt-4">
-            Make sure you are logged in and the API server is running on http://localhost:5000
+            Make sure you are logged in and the API server is running on LIve API
           </p>
         </div>
       </div>

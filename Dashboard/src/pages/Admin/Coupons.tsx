@@ -25,18 +25,19 @@ const AdminCoupons = () => {
     course: "",
     expiryDate: "",
     usageLimit: "",
-  });
+  }); 
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState({ message: "", type: "" });
+  const API_BASE = import.meta.env.VITE_API_URL;
 
-  const fetchCourses = async () => {
-    const res = await axios.get("http://localhost:5000/api/courses");
+const fetchCourses = async () => {
+    const res = await axios.get(`${API_BASE}/api/courses`);
     setCourses(res.data);
   };
 
   const fetchCoupons = async () => {
-    const res = await axios.get("http://localhost:5000/api/coupons");
+    const res = await axios.get(`${API_BASE}/api/coupons`);
     setCoupons(res.data);
   };
 
@@ -54,7 +55,7 @@ const AdminCoupons = () => {
     setLoading(true);
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/coupons/${editingId}`, {
+        await axios.put(`${API_BASE}/api/coupons/${editingId}`, {
           ...form,
           course: form.course === "all" ? null : form.course,
         });
@@ -63,7 +64,7 @@ const AdminCoupons = () => {
           type: "success",
         });
       } else {
-        await axios.post("http://localhost:5000/api/coupons", {
+        await axios.post(`${API_BASE}/api/coupons`, {
           ...form,
           course: form.course === "all" ? null : form.course,
         });
@@ -105,7 +106,7 @@ const AdminCoupons = () => {
     if (confirm("Are you sure you want to delete this coupon?")) {
       setLoading(true);
       try {
-        await axios.delete(`http://localhost:5000/api/coupons/${id}`);
+        await axios.delete(`${API_BASE}/api/coupons/${id}`);
         setNotification({
           message: "Coupon deleted successfully!",
           type: "success",

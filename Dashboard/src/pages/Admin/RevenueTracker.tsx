@@ -75,6 +75,7 @@ const AdminRevenueTracker = () => {
     revenue: number;
   } | null>(null);
   const [loading, setLoading] = useState(true);
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   const COLORS = [
     "#8884d8",
@@ -87,12 +88,12 @@ const AdminRevenueTracker = () => {
 
   useEffect(() => {
     fetchEnrollments();
-  }, []);
+  }, [API_BASE]);
 
   const fetchEnrollments = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`http://localhost:5000/api/enroll`, {
+      const res = await fetch(`${API_BASE}/api/enroll`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,

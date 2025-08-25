@@ -9,12 +9,14 @@ const VdoPlayer: React.FC<VdoPlayerProps> = ({ videoId }) => {
   const [otp, setOtp] = useState("");
   const [playbackInfo, setPlaybackInfo] = useState("");
   const [error, setError] = useState("");
+  
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchOtp = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/vdocipher/otp/${videoId}`
+          `${API_BASE}/api/vdocipher/otp/${videoId}`
         );
         setOtp(response.data.otp);
         setPlaybackInfo(response.data.playbackInfo);

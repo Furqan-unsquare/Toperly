@@ -12,12 +12,14 @@ const BlogListPage = () => {
   const [selectedBlog, setSelectedBlog] = useState(null);
 const [loading, setLoading] = useState(true); // Add loading state
   const [error, setError] = useState('');
+  const API_BASE = import.meta.env.VITE_API_URL;
+
 
   // Fetch blogs from API
 useEffect(() => {
   const fetchBlogs = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/blogs');
+      const response = await axios.get(`${API_BASE}/api/blogs`);
       console.log('Raw API Response:', response.data);
       
       // Check if response.data is an array

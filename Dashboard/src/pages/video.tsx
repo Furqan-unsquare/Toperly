@@ -24,6 +24,8 @@ const MediaManagementSystem = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 
   // Mock authentication
   const authenticate = (role) => {
@@ -42,9 +44,7 @@ const MediaManagementSystem = () => {
     const fetchMedia = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(
-          "http://localhost:5000/unsquare-toperly/images",
-          {
+        const res = await fetch(`${API_BASE_URL}/unsquare-toperly/images`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -91,7 +91,7 @@ const MediaManagementSystem = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/url/upload", {
+      const res = await fetch(`${API_BASE_URL}/api/url/upload`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

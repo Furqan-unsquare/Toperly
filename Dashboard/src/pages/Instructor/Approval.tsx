@@ -12,14 +12,16 @@ import {
 const CourseApprovalList = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const API_BASE = import.meta.env.VITE_API_URL;
+
 
   useEffect(() => {
     fetchCourses();
-  }, []);
+  }, [API_BASE]);
 
   const fetchCourses = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/courses", {
+      const res = await fetch(`${API_BASE}/api/courses`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -41,9 +43,7 @@ const CourseApprovalList = () => {
 
   const updateCourseStatus = async (courseId, newStatus) => {
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/courses/${courseId}/status`,
-        {
+        const res = await fetch(`${API_BASE}/api/courses/${courseId}/status`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",

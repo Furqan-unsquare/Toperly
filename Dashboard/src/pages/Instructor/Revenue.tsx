@@ -36,7 +36,7 @@ const InstructorRevenueDashboard = () => {
   const [lastRefresh, setLastRefresh] = useState(new Date());
 
   // API Base URL
-  const API_BASE_URL = 'http://localhost:5000/api';
+  const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
 
   // Fetch data
   const fetchData = async () => {
@@ -329,7 +329,7 @@ const InstructorRevenueDashboard = () => {
             Retry Connection
           </button>
           <p className="text-sm text-gray-500 mt-4">
-            Make sure you are logged in and the API server is running on http://localhost:5000
+            Make sure you are logged in and the API server is running on Live API
           </p>
         </div>
       </div>

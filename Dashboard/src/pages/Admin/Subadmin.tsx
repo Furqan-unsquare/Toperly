@@ -22,15 +22,17 @@ const AdminDashboard = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [adminToDelete, setAdminToDelete] = useState<{id: string, email: string, role: string} | null>(null);
 
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     fetchAdmins();
-  }, []);
+  }, []); 
 
   const fetchAdmins = async () => {
     setLoading(true);
     setListError('');
     try {
-      const response = await fetch('http://localhost:5000/api/auth/users', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/users`, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -67,7 +69,7 @@ const AdminDashboard = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/admin/invite', {
+      const response = await fetch(`${API_BASE_URL}/api/admin/invite`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -107,7 +109,7 @@ const AdminDashboard = () => {
     setShowDeleteConfirm(false);
     
     try {
-      const response = await fetch(`http://localhost:5000/api/auth/users/${adminToDelete.id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/users/${adminToDelete.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

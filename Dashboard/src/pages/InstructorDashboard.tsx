@@ -23,14 +23,15 @@ const InstructorDashboard = () => {
   const [data, setData] = useState<InstructorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     fetchInstructorData();
-  }, []);
+  }, [API_BASE]);
 
   const fetchInstructorData = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/auth/me", {
+      const response = await fetch(`${API_BASE}/api/auth/me`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           "Content-Type": "application/json",

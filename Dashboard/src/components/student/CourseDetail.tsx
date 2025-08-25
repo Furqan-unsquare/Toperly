@@ -28,7 +28,7 @@ import PaymentForm from "../Payment/PaymentForm";
 import PaymentModal from "../Payment/PaymentModal";
 import { usePayment } from "../../hooks/usePayment";
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = `${import.meta.env.VITE_API_URL}/api`;
 
 const CourseDetail = () => {
   const { courseId } = useParams();

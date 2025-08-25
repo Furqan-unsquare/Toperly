@@ -13,6 +13,7 @@ const ContactTable = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { toast } = useToast();
+  const API_BASE_URL = import.meta.env.VITE_API_URL
 
   const totalPages = Math.ceil(total / limit);
 
@@ -22,7 +23,7 @@ const ContactTable = () => {
       setError(null);
       try {
         const response = await fetch(
-          `http://localhost:5000/api/query?page=${page}&limit=${limit}&search=${encodeURIComponent(searchTerm)}&status=${encodeURIComponent(statusFilter)}`
+          `${API_BASE_URL}/api/query?page=${page}&limit=${limit}&search=${encodeURIComponent(searchTerm)}&status=${encodeURIComponent(statusFilter)}`
         );
         if (!response.ok) {
           throw new Error('Failed to fetch contacts');
@@ -57,7 +58,7 @@ const ContactTable = () => {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/query/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/query/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

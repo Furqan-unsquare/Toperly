@@ -13,19 +13,21 @@ const InstructorProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('about');
+  
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (id) {
       fetchProfileData();
     }
-  }, [id]);
+  }, [id, API_BASE]);
 
   const fetchProfileData = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`http://localhost:5000/api/instructors/${id}`, {
+       const response = await fetch(`${API_BASE}/api/instructors/${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

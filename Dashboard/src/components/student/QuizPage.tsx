@@ -12,16 +12,16 @@ const QuizPage = () => {
   const [answers, setAnswers] = useState({});
   const [attempted, setAttempted] = useState(null);
   const [loading, setLoading] = useState(true);
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-  // Fetch quiz + check if already attempted
+
+  // Fetch quiz + check if already attempted 
   useEffect(() => {
     const loadQuizAndAttempt = async () => {
       try {
-        const quizRes = await axios.get(
-          `http://localhost:5000/api/quizzes/${quizId}`
-        );
-        const attemptRes = await axios.get(
-          `http://localhost:5000/api/quiz-attempts`,
+        const quizRes = await axios.get(`${API_BASE_URL}/api/quizzes/${quizId}`);
+        const attemptRes = await axios.get
+         (`${API_BASE_URL}/api/quiz-attempts`, 
           {
             params: {
               studentId: user.id,
@@ -35,9 +35,7 @@ const QuizPage = () => {
       } catch (err) {
         if (err.response?.status === 404) {
           // Quiz not yet attempted
-          const quizRes = await axios.get(
-            `http://localhost:5000/api/quizzes/${quizId}`
-          );
+          const quizRes = await axios.get(`${API_BASE_URL}/api/quizzes/${quizId}`);
           setQuiz(quizRes.data.data);
         } else {
           console.error("Error loading quiz or attempt:", err);
@@ -63,9 +61,7 @@ const QuizPage = () => {
     }));
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/quiz-attempts",
-        {
+      const res = await axios.post(`${API_BASE_URL}/api/quiz-attempts`, {
           student: user.id,
           studentCustomId: user.id,
           course: courseId,

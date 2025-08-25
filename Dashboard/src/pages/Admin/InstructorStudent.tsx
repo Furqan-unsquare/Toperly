@@ -22,6 +22,7 @@ const EnrolledStudents = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("all");
   const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'table'
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -32,7 +33,7 @@ const EnrolledStudents = () => {
 
         // Simulating your existing API call structure
         const res = await axios.post(
-          "http://localhost:5000/api/students/get-mystudents",
+           `${API_BASE}/api/students/get-mystudents`,
           {},
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -47,7 +48,7 @@ const EnrolledStudents = () => {
       }
     };
     fetchStudents();
-  }, []);
+  }, [API_BASE]);
 
   // Calculate analytics
   const calculateAnalytics = () => {

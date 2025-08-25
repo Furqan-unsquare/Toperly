@@ -31,6 +31,8 @@ const AdminProfile = () => {
   const [showSaveConfirm, setShowSaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
+  
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -44,7 +46,7 @@ const AdminProfile = () => {
       setError(null);
 
       const token = await getAccessTokenSilently();
-      const response = await fetch('http://localhost:5000/api/auth/me', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -83,7 +85,7 @@ const AdminProfile = () => {
     try {
       setError(null);
       const token = await getAccessTokenSilently();
-      const response = await fetch(`http://localhost:5000/api/students/${profileData._id}`, {
+       const response = await fetch(`${API_BASE_URL}/api/students/${profileData._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -118,7 +120,7 @@ const AdminProfile = () => {
   const handleDeleteAccount = async () => {
     try {
       const token = await getAccessTokenSilently();
-      const response = await fetch(`http://localhost:5000/api/students/${profileData._id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/students/${profileData._id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

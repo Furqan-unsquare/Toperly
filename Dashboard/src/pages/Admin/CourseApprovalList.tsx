@@ -31,15 +31,16 @@ const AdminCourseApprovalList = () => {
   const navigate = useNavigate();
   const { token } = useAuth();
   const { toast } = useToast();
+  const API_BASE = import.meta.env.VITE_API_URL
 
   useEffect(() => {
     fetchCourses();
-  }, []);
+  }, []); 
 
   const fetchCourses = async () => {
     try {
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const res = await fetch("http://localhost:5000/api/courses", {
+      const res = await fetch(`${API_BASE}/api/courses`, {
         headers,
       });
 
@@ -65,7 +66,7 @@ const AdminCourseApprovalList = () => {
         throw new Error("Authentication required to update course status");
       }
       const res = await fetch(
-        `http://localhost:5000/api/courses/${courseId}/status`,
+        `${API_BASE}/api/courses/${courseId}/status`,
         {
           method: "PUT",
           headers: {
@@ -129,7 +130,7 @@ const AdminCourseApprovalList = () => {
         }
       }
 
-      const res = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
+     const res = await fetch(`${API_BASE}/api/courses/${courseId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -1,4 +1,3 @@
-// pages/QuizManagement.tsx
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -44,6 +43,8 @@ interface Course {
   }>;
 }
 
+const API_BASE = import.meta.env.VITE_API_URL; // Define API base URL
+
 const QuizManagement = () => {
   const [quizzes, setQuizzes] = useState<Quiz[]>([]); // Initialize as empty array
   const [courses, setCourses] = useState<Course[]>([]); // Initialize as empty array
@@ -52,11 +53,7 @@ const QuizManagement = () => {
   const [selectedCourse, setSelectedCourse] = useState<string>("");
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingQuiz, setEditingQuiz] = useState<Quiz | null>(null);
-  const [expandedCourses, setExpandedCourses] = useState<Set<string>>(
-    new Set()
-  );
-
-  // Form states
+  const [expandedCourses, setExpandedCourses] = useState<Set<string>>(new Set());
   const [formData, setFormData] = useState({
     title: "",
     courseId: "",
@@ -88,7 +85,7 @@ const QuizManagement = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/quizzes", {
+      const response = await axios.get(`${API_BASE}/api/quizzes`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -115,7 +112,7 @@ const QuizManagement = () => {
   const fetchCourses = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/courses", {
+      const response = await axios.get(`${API_BASE}/api/courses`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -145,17 +142,13 @@ const QuizManagement = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `http://localhost:5000/api/courses/${courseId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.get(`${API_BASE}/api/courses/${courseId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       // Extract lessons/videos from the response
       let lessons = [];
       const data = response.data;
-      console.log(data);
 
       if (data?.data?.videos) {
         lessons = data.data.videos;
@@ -208,7 +201,6 @@ const QuizManagement = () => {
 
     await fetchCourseLessons(quiz.course._id); // Wait for lessons
 
-    console.log(quiz);
     setFormData({
       title: quiz.title,
       courseId: quiz.course._id,
@@ -222,7 +214,7 @@ const QuizManagement = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/quizzes/${quizId}`, {
+      await axios.delete(`${API_BASE}/api/quizzes/${quizId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       await fetchQuizzes();
@@ -367,16 +359,12 @@ const QuizManagement = () => {
       const token = localStorage.getItem("token");
 
       if (editingQuiz) {
-        await axios.put(
-          `http://localhost:5000/api/quizzes/${editingQuiz._id}`,
-          payload,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        await axios.put(`${API_BASE}/api/quizzes/${editingQuiz._id}`, payload, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         alert("Quiz updated successfully!");
       } else {
-        await axios.post("http://localhost:5000/api/quizzes", payload, {
+        await axios.post(`${API_BASE}/api/quizzes`, payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
         alert("Quiz created successfully!");
@@ -442,7 +430,7 @@ const QuizManagement = () => {
     <div className="min-h-screen bg-gray-100">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className=" border-b border-gray-200 sticky top-0 z-40">
+        <div className="border-b border-gray-200 sticky top-0 z-40">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center">

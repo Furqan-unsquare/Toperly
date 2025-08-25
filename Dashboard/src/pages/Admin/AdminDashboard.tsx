@@ -130,6 +130,8 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const API_BASE = import.meta.env.VITE_API_URL;
+
   const COLORS = [
     "#8884d8",
     "#82ca9d",
@@ -146,14 +148,14 @@ const AdminDashboard = () => {
     // Set up real-time updates every 30 seconds
     const interval = setInterval(fetchAnalytics, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [API_BASE]);
 
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const res = await fetch("http://localhost:5000/api", {
+      const res = await fetch(`${API_BASE}/api`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,

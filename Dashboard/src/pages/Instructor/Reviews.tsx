@@ -20,41 +20,40 @@ const AdminCoursesReviews = () => {
   const [filteredData, setFilteredData] = useState([]);
 
   // Fetch courses and reviews
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
+const API_BASE = import.meta.env.VITE_API_URL;
 
-      try {
-        // Fetch all courses
-        const coursesResponse = await fetch(
-          "http://localhost:5000/api/courses/"
-        );
-        const coursesData = await coursesResponse.json();
-        setCourses(coursesData);
+useEffect(() => {
+  const fetchData = async () => {
+    setLoading(true);
 
-        // Fetch all reviews once
-        const reviewsResponse = await fetch(
-          "http://localhost:5000/api/reviews/all"
-        );
-        const allReviews = await reviewsResponse.json();
+    try {
+      // Fetch all courses
+      const coursesResponse = await fetch(`${API_BASE}/api/courses/`);
+      const coursesData = await coursesResponse.json();
+      setCourses(coursesData);
 
-        // Group reviews by courseId
-        const reviewsByCourse = allReviews.reduce((acc, review) => {
-          const courseId = review.course?._id || review.course; // Handle both populated and ObjectId cases
-          if (!acc[courseId]) acc[courseId] = [];
-          acc[courseId].push(review);
-          return acc;
-        }, {});
-        setReviews(reviewsByCourse);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      // Fetch all reviews once
+      const reviewsResponse = await fetch(`${API_BASE}/api/reviews/all`);
+      const allReviews = await reviewsResponse.json();
 
-    fetchData();
-  }, []);
+      // Group reviews by courseId
+      const reviewsByCourse = allReviews.reduce((acc: any, review: any) => {
+        const courseId = review.course?._id || review.course; // Handle both populated and ObjectId cases
+        if (!acc[courseId]) acc[courseId] = [];
+        acc[courseId].push(review);
+        return acc;
+      }, {});
+      setReviews(reviewsByCourse);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, [API_BASE]); // ✅ include API_BASE in deps
+
 
   // Filter courses and reviews based on search term
   useEffect(() => {

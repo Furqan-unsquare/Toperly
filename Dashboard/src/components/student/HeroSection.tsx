@@ -24,15 +24,16 @@ const HeroSection = () => {
   });
   const navigate = useNavigate();
   const { user } = useAuth();
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    fetchStats();
-  }, []);
+  fetchStats();
+ }, [API_BASE]);
 
   const fetchStats = async () => {
     try {
       // You can create an endpoint for stats or use existing data
-      const response = await fetch("http://localhost:5000/api/courses");
+      const response = await fetch(`${API_BASE}/api/courses`);
       if (response.ok) {
         const courses = await response.json();
         setStats({

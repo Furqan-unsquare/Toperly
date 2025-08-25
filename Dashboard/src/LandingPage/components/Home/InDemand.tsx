@@ -64,6 +64,7 @@ const ProfessionalCourseSection: React.FC = () => {
   const swiperRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const navigate = useNavigate();
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   const handleCourseClick = (courseId: string) => {
     navigate(`/courses/${courseId}`);
@@ -96,7 +97,7 @@ const ProfessionalCourseSection: React.FC = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/courses/');
+        const response = await fetch(`${API_BASE}/api/courses/`);
         if (!response.ok) throw new Error('Failed to fetch courses');
         const result = await response.json();
         const mappedCourses = result?.map((course: any) => ({
@@ -128,7 +129,7 @@ const ProfessionalCourseSection: React.FC = () => {
     };
     fetchCourses();
     // eslint-disable-next-line
-  }, []);
+  }, [API_BASE]);
 
   // Intersection Observer to trigger animation when section enters viewport
   useEffect(() => {

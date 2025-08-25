@@ -60,7 +60,7 @@ export const Sidebar = ({ user, logout }: SidebarProps) => {
   const [pendingCount, setPendingCount] = useState(0);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  const API_BASE = "http://localhost:5000/api/auth";
+  const API_BASE = `${import.meta.env.VITE_API_URL}/api/auth`;
 
   // Fetch pending upgrade requests count for admin/subadmin
   useEffect(() => {

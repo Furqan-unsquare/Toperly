@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { Play, Star, Clock, BookOpen, Heart, X } from "lucide-react";
 import VdoPlayer from "../VdoPlayer";
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = import.meta.env.VITE_API_URL;
+
 
 const Wishlist = () => {
   const { user, token } = useAuth();
@@ -24,7 +25,7 @@ const Wishlist = () => {
 
   const fetchWishlist = async () => {
     try {
-      const res = await fetch(`${API_BASE}/wishlist/my-wishlist`, {
+      const res = await fetch(`${API_BASE}/api/wishlist/my-wishlist`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -81,43 +81,44 @@ const ProfessionalCourseSection = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('http://localhost:5000/api/courses/');
-        if (!response.ok) throw new Error('Failed to fetch courses');
-        const result = await response.json();
-        const mappedCourses = result?.map((course: Course) => ({
-          _id: course._id,
-          title: course.title,
-          description: course.description,
-          instructor: course.instructor || 'Unknown Instructor',
-          category: course.category || 'Other',
-          level: course.level || 'Beginner',
-          price: course.price,
-          duration: course.duration,
-          isPublished: course.isPublished,
-          rating: course.rating || 0,
-          totalReviews: course.totalReviews || 0,
-          createdAt: course.createdAt,
-          updatedAt: course.updatedAt,
-          customId: course.customId || 'N/A',
-          thumbnail: course.thumbnail || { url: 'https://via.placeholder.com/480x360.png?text=Course' },
-          materials: course.materials || [],
-          videos: course.videos || [],
-          __v: course.__v
-        }));
-        setCourses(mappedCourses);
-        setFilteredCourses(mappedCourses);
-        setLoading(false);
-      } catch (err: any) {
-        setError(err.message);
-        setLoading(false);
-      }
-    };
-    fetchCourses();
-  }, []);
+useEffect(() => {
+  const fetchCourses = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/courses/`);
+      if (!response.ok) throw new Error('Failed to fetch courses');
+      const result = await response.json();
+      const mappedCourses = result?.map((course: Course) => ({
+        _id: course._id,
+        title: course.title,
+        description: course.description,
+        instructor: course.instructor || 'Unknown Instructor',
+        category: course.category || 'Other',
+        level: course.level || 'Beginner',
+        price: course.price,
+        duration: course.duration,
+        isPublished: course.isPublished,
+        rating: course.rating || 0,
+        totalReviews: course.totalReviews || 0,
+        createdAt: course.createdAt,
+        updatedAt: course.updatedAt,
+        customId: course.customId || 'N/A',
+        thumbnail: course.thumbnail || { url: 'https://via.placeholder.com/480x360.png?text=Course' },
+        materials: course.materials || [],
+        videos: course.videos || [],
+        __v: course.__v
+      }));
+      setCourses(mappedCourses);
+      setFilteredCourses(mappedCourses);
+      setLoading(false);
+    } catch (err: any) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+  fetchCourses();
+}, []);
+
 
   // Filter and sort courses
   useEffect(() => {

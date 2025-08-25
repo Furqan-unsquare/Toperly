@@ -30,6 +30,7 @@ const AdminUserManagement = () => {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const API_BASE = import.meta.env.VITE_API_URL; // Define API base URL
   const [modal, setModal] = useState<{
     isOpen: boolean;
     action: string;
@@ -59,7 +60,7 @@ const AdminUserManagement = () => {
       setLoading(true);
       setError(null);
 
-      const res = await axios.get("http://localhost:5000/api/admin/users", {
+      const res = await axios.get(`${API_BASE}/api/admin/users`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -92,7 +93,7 @@ const AdminUserManagement = () => {
       setError(null);
 
       const response = await axios.put(
-        `http://localhost:5000/api/instructors/verification/${id}`,
+        `${API_BASE}/api/instructors/verification/${id}`,
         { isVerified },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -125,7 +126,7 @@ const AdminUserManagement = () => {
       setError(null);
 
       await axios.put(
-        "http://localhost:5000/api/admin/user/suspend",
+        `${API_BASE}/api/admin/user/suspend`,
         {
           userId: user._id,
           userType: user.role,
@@ -763,13 +764,14 @@ export const StudentProfile = () => {
   const [student, setStudent] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchStudent = async () => {
       try {
         setLoading(true);
         setError(null);
-        const res = await axios.get(`http://localhost:5000/api/admin/user/${id}`, {
+        const res = await axios.get(`${API_BASE}/api/admin/user/${id}`, {
           params: { role: 'student' },
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -898,13 +900,14 @@ export const InstructorProfile = () => {
   const [instructor, setInstructor] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchInstructor = async () => {
       try {
         setLoading(true);
         setError(null);
-        const res = await axios.get(`http://localhost:5000/api/admin/user/${id}`, {
+        const res = await axios.get(`${API_BASE}/api/admin/user/${id}`, {
           params: { role: 'instructor' },
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

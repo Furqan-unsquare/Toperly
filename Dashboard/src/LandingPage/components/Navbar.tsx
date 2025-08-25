@@ -98,31 +98,42 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  
+const API_BASE = import.meta.env.VITE_API_URL;
 
-  // Fetch courses and derive categories
-  useEffect(() => {
-    const fetchCourses = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const res = await axios.get('http://localhost:5000/api/courses/');
-        const courseData = Array.isArray(res.data) ? res.data : [res.data];
-        if (courseData.every((course) => course._id && course.title && course.price)) {
-          setCourses(courseData);
-          const uniqueCategories = [...new Set(courseData.map((course) => course.category))].filter(Boolean);
-          setCategories(uniqueCategories);
-        } else {
-          setError('Invalid course data format');
-        }
-      } catch (err) {
-        setError('Failed to fetch courses. Please try again later.');
-        console.error('Failed to fetch courses:', err);
-      } finally {
-        setIsLoading(false);
+// Fetch courses and derive categories
+useEffect(() => {
+  const fetchCourses = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await axios.get(`${API_BASE}/api/courses/`); // ✅ use API_BASE
+      const courseData = Array.isArray(res.data) ? res.data : [res.data];
+
+      if (
+        courseData.every(
+          (course) => course._id && course.title && course.price
+        )
+      ) {
+        setCourses(courseData);
+
+        const uniqueCategories = [
+          ...new Set(courseData.map((course) => course.category)),
+        ].filter(Boolean);
+
+        setCategories(uniqueCategories);
+      } else {
+        setError("Invalid course data format");
       }
-    };
-    fetchCourses();
-  }, []);
+    } catch (err) {
+      setError("Failed to fetch courses. Please try again later.");
+      console.error("Failed to fetch courses:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  fetchCourses();
+}, []);
 
   // Handle scroll for navbar styling
   useEffect(() => {

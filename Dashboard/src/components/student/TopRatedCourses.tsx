@@ -28,7 +28,8 @@ const TopRatedCourses = () => {
   const [wishlist, setWishlist] = useState([]);
   const navigate = useNavigate();
   const { user, token } = useAuth();
-  const API_BASE = "http://localhost:5000/api";
+
+  const API_BASE = `${import.meta.env.VITE_API_URL}/api`;
 
   useEffect(() => {
     fetchTopRatedCourses();

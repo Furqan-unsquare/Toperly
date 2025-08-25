@@ -17,7 +17,8 @@ export default function BlogsManager() {
   const [confirmMessage, setConfirmMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const API_BASE = 'http://localhost:5000/api/blogs';
+
+  const API_BASE = `${import.meta.env.VITE_API_URL}/api/blogs`;
 
   useEffect(() => {
     fetchBlogs();

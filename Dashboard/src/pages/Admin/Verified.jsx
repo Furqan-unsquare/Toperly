@@ -9,7 +9,8 @@ const App = () => {
   const [error, setError] = useState(null);
   const [isAdminUser, setIsAdminUser] = useState(false);
 
-  const API_URL = 'http://localhost:5000/api/instructors';
+  
+  const API_URL = `${import.meta.env.VITE_API_URL}/api/instructors`;
 
   // Check if user is admin
   const checkAdminStatus = async () => {

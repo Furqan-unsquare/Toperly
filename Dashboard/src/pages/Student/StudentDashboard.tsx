@@ -34,15 +34,17 @@ export const StudentDashboard = () => {
   const [data, setData] = useState<any>(null);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const navigate = useNavigate();
+  const API_BASE = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
-    fetch("http://localhost:5000/api/auth/me", {
+    fetch(`${API_BASE}/api/auth/me`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     })
       .then((res) => res.json())
       .then(setData);
-  }, []);
+  }, [API_BASE]);
 
   if (!data) {
     return (

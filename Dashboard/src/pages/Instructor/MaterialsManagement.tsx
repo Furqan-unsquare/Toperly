@@ -1,4 +1,3 @@
-// pages/MaterialsManagement.tsx
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -11,16 +10,15 @@ import {
   FileText,
   Image,
   File,
-  Download,
-  Upload,
-  ChevronDown,
-  ChevronRight,
-  X,
-  Save,
   Loader,
   Eye,
-  AlertCircle,
+  X,
+  Save,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
+
+const API_BASE = import.meta.env.VITE_API_URL;
 
 interface Material {
   _id?: string;
@@ -76,11 +74,10 @@ const MaterialsManagement = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/courses", {
+      const response = await axios.get(`${API_BASE}/api/courses`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Filter courses that have materials
       const coursesData = Array.isArray(response.data)
         ? response.data
         : response.data?.data || [];
@@ -99,7 +96,7 @@ const MaterialsManagement = () => {
   const fetchAllCourses = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/courses", {
+      const response = await axios.get(`${API_BASE}/api/courses`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -113,39 +110,13 @@ const MaterialsManagement = () => {
     }
   };
 
-  const handleCreateMaterial = () => {
-    setEditingMaterial(null);
-    setFormData({
-      title: "",
-      courseId: "",
-      type: "pdf",
-      content: "",
-    });
-    setSelectedFile(null);
-    setUploadProgress(0);
-    setShowCreateForm(true);
-  };
-
-  const handleEditMaterial = (material: Material, courseId: string) => {
-    setEditingMaterial({ material, courseId });
-    setFormData({
-      title: material.title,
-      courseId,
-      type: material.type,
-      content: material.content || "",
-    });
-    setSelectedFile(null);
-    setUploadProgress(0);
-    setShowCreateForm(true);
-  };
-
   const handleDeleteMaterial = async (courseId: string, materialId: string) => {
     if (!confirm("Are you sure you want to delete this material?")) return;
 
     try {
       const token = localStorage.getItem("token");
       await axios.delete(
-        `http://localhost:5000/api/courses/${courseId}/materials/${materialId}`,
+        `${API_BASE}/api/courses/${courseId}/materials/${materialId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -167,7 +138,7 @@ const MaterialsManagement = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        "http://localhost:5000/api/url/upload",
+        `${API_BASE}/api/url/upload`,
         formData,
         {
           headers: {
@@ -202,7 +173,6 @@ const MaterialsManagement = () => {
     try {
       let fileData = null;
 
-      // Upload file if selected
       if (selectedFile) {
         fileData = await uploadFile(selectedFile);
       } else if (!editingMaterial) {
@@ -219,7 +189,6 @@ const MaterialsManagement = () => {
           url: fileData.url,
           bunnyFileId: `material_${Date.now()}`,
         }),
-        // For editing, keep existing file data if no new file
         ...(editingMaterial &&
           !fileData && {
             filename: editingMaterial.material.filename,
@@ -232,14 +201,14 @@ const MaterialsManagement = () => {
 
       if (editingMaterial) {
         await axios.put(
-          `http://localhost:5000/api/courses/${formData.courseId}/materials/${editingMaterial.material.bunnyFileId}`,
+          `${API_BASE}/api/courses/${formData.courseId}/materials/${editingMaterial.material.bunnyFileId}`,
           payload,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         alert("Material updated successfully!");
       } else {
         await axios.post(
-          `http://localhost:5000/api/courses/${formData.courseId}/materials`,
+          `${API_BASE}/api/courses/${formData.courseId}/materials`,
           payload,
           { headers: { Authorization: `Bearer ${token}` } }
         );
