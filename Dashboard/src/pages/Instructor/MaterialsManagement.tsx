@@ -307,7 +307,7 @@ const MaterialsManagement = () => {
               </div>
 
               <button
-                onClick={handleCreateMaterial}
+                onClick={handleDeleteMaterial}
                 className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -417,7 +417,7 @@ const MaterialsManagement = () => {
                     Get started by adding your first material
                   </p>
                   <button
-                    onClick={handleCreateMaterial}
+                    onClick={handleDeleteMaterial}
                     className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                   >
                     <Plus className="w-4 h-4 mr-2" />

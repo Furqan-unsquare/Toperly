@@ -85,7 +85,7 @@ useEffect(() => {
   const fetchCourses = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/courses/`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/courses/`);
       if (!response.ok) throw new Error('Failed to fetch courses');
       const result = await response.json();
       const mappedCourses = result?.map((course: Course) => ({

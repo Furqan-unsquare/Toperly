@@ -1,3 +1,4 @@
+
 import React, { FC, useState, useEffect } from "react";
 import CourseDashboard from "./CourseDashboard";
 import CourseForm from "./CourseForm";
@@ -117,7 +118,7 @@ const CourseManagementSystem: FC = () => {
       lessons:
         course.videos?.length > 0
           ? course.videos.map((video: any, index: number) => ({
-              _id: video._id || undefined,
+              _id: video?._id || undefined,
               name: video.title || "",
               description: video.description || "",
               video: null,
@@ -127,7 +128,7 @@ const CourseManagementSystem: FC = () => {
               chapters:
                 video.chapters?.length > 0
                   ? video.chapters.map((chapter: any) => ({
-                      _id: chapter._id || undefined,
+                      _id: chapter?._id || undefined,
                       title: chapter.title || "",
                       startTime: {
                         hours: chapter.startTime?.hours ?? 0,
@@ -184,8 +185,8 @@ const CourseManagementSystem: FC = () => {
           currentUser?.role === "instructor"
             ? data.filter(
                 (course: any) =>
-                  course.instructor?._id === currentUser._id ||
-                  course.instructor?.id === currentUser._id
+                  course.instructor?._id === currentUser?._id ||
+                  course.instructor?.id === currentUser?._id
               )
             : data;
         setCourses(instructorCourses || []);
@@ -378,13 +379,13 @@ const CourseManagementSystem: FC = () => {
     const lessonToDelete = courseData.lessons[index];
     console.log(lessonToDelete);
 
-    if (lessonToDelete._id) {
+    if (lessonToDelete?._id) {
       const confirmed = window.confirm(
         "Do you really want to delete this lesson?"
       );
       if (!confirmed) return;
 
-      await deleteLessonFromServer(editingCourse._id, lessonToDelete._id);
+      await deleteLessonFromServer(editingCourse?._id, lessonToDelete?._id);
     }
 
     const updatedLessons = courseData.lessons.filter((_, i) => i !== index);
@@ -553,11 +554,11 @@ const CourseManagementSystem: FC = () => {
   };
 
   const updateLessonOnServer = async (courseId: string, lesson: any) => {
-    if (!lesson._id) return;
+    if (!lesson?._id) return;
 
     try {
       const response = await fetch(
-        `${API_BASE}/courses/${courseId}/videos/${lesson._id}`,
+        `${API_BASE}/courses/${courseId}/videos/${lesson?._id}`,
         {
           method: "PUT",
           headers: {
@@ -625,7 +626,7 @@ const CourseManagementSystem: FC = () => {
         .map((tag) => tag.trim())
         .filter(Boolean),
       isPublished: courseData.isPublished,
-      instructorId: currentUser._id,
+      instructorId: currentUser?._id,
       certificate: courseData.certificate,
     };
 
@@ -633,7 +634,7 @@ const CourseManagementSystem: FC = () => {
     let courseId;
 
     if (isEdit && editingCourse) {
-      response = await fetch(`${API_BASE}/courses/${editingCourse._id}`, {
+      response = await fetch(`${API_BASE}/courses/${editingCourse?._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -641,7 +642,7 @@ const CourseManagementSystem: FC = () => {
         },
         body: JSON.stringify(coursePayload),
       });
-      courseId = editingCourse._id;
+      courseId = editingCourse?._id;
     } else {
       response = await fetch(`${API_BASE}/courses`, {
         method: "POST",
@@ -652,7 +653,7 @@ const CourseManagementSystem: FC = () => {
         body: JSON.stringify(coursePayload),
       });
       const courseResult = await response.json();
-      courseId = courseResult.course._id;
+      courseId = courseResult.course?._id;
     }
 
     // ...Handle errors as above (with .text() check, defensive with json parsing)
@@ -679,13 +680,13 @@ const CourseManagementSystem: FC = () => {
         const lesson = courseData.lessons[i];
 
         // If lesson._id exists and user changed content => update
-        if (lesson._id) {
-          await updateLessonOnServer(editingCourse._id, lesson);
+        if (lesson?._id) {
+          await updateLessonOnServer(editingCourse?._id, lesson);
         }
 
         // If lesson doesn't have an _id => it's a new one, add via POST
         else if (lesson.name.trim() && lesson.videoUrl && lesson.video) {
-          await fetch(`${API_BASE}/courses/${editingCourse._id}/videos`, {
+          await fetch(`${API_BASE}/courses/${editingCourse?._id}/videos`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -765,3 +766,4 @@ const CourseManagementSystem: FC = () => {
 };
 
 export default CourseManagementSystem;
+ 

@@ -213,7 +213,7 @@ const AdminProfile = () => {
             <div className="relative flex-shrink-0">
               <div className="relative">
                 <img
-                  src={profileData?.profileImage || 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=200&h=200&fit=crop&crop=face'}
+                  src={profileData?.profileImage || 'https://imgcdn.stablediffusionweb.com/2024/12/15/da7dbd9e-05c8-4f81-bf42-1392a84aa7ce.jpg'}
                   alt={profileData?.name}
                   className="w-24 h-24 rounded-full border-4 border-white shadow-lg"
                 />
@@ -249,7 +249,7 @@ const AdminProfile = () => {
                 <div className="mt-4 sm:mt-0">
                   <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                     <Shield className="w-4 h-4 mr-1" />
-                    Student Account
+                    Admni Account
                   </div>
                 </div>
               </div>

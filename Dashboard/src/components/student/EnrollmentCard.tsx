@@ -174,11 +174,12 @@ const EnrollmentCard = ({
 
       <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
         {/* Preview Video Thumbnail */}
-        <div className="relative h-48 bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center">
-          <div className="text-center text-white">
+        <div className="relative h-48 overflow-hidden bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center">
+          <img src={course.thumbnail.url} alt="" className=""/>
+          {/* <div className="text-center text-white">
             <PlayCircle size={48} className="mx-auto mb-2 opacity-80" />
-            <p className="text-sm font-medium">Preview this course</p>
-          </div>
+            <p className="text-sm font-medium">Preview course</p>
+          </div> */}
         </div>
 
         <div className="p-6">

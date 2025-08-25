@@ -260,7 +260,7 @@ const ProfessionalCourseSection: React.FC = () => {
                   {/* Image */}
                   <div className="relative">
                     <img
-                      src='https://toperly.com/wp-content/uploads/2025/07/Machine_learning_thumbnail-480x360.webp'
+                      src={course.thumbnail.url}
                       alt={course.title}
                       className="w-full h-48 object-cover transition-transform duration-300"
                     />

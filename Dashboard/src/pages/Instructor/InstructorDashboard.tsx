@@ -305,4 +305,4 @@ const InstructorDashboard = () => {
   );
 };
 
-export { InstructorDashboard };
+export default InstructorDashboard;

@@ -17,7 +17,7 @@ export default function InstructorLogin() {
       >
         {/* Top Section */}
         <div>
-          <p className="text-gray-900 text-md font-semibold opacity-75 mb-6">Our partners</p>
+          <p className="text-gray-900 text-md font-semibold opacity-75 mb-6">In Partnership with Gov of India</p>
         </div>  
 
         {/* Bottom Section */}

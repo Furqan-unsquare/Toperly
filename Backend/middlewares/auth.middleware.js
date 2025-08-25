@@ -20,27 +20,36 @@ export const verifyAuth0Token = jwt({
 
 export const commonVerification = async (req, res, next) => {
   try {
-    const student = await Student.find({auth0Id: req.auth.sub});
-    const instructor = await Instructor.find({auth0Id: req.auth.sub});
-    const admin = await Admin.find({auth0Id: req.auth.sub});
-    console.log(student)
-    if (student[0]) {
-      req.user = student[0];
-      next();
+    const auth0Id = req.auth.sub;
+
+    // Check for user in collections
+    const student = await Student.findOne({ auth0Id });
+    if (student) {
+      req.user = { ...student.toObject(), role: "student" };
+      return next();
     }
-    if (instructor[0]) {
-      req.user = instructor[0];
-      next();
+
+    const instructor = await Instructor.findOne({ auth0Id });
+    if (instructor) {
+      req.user = { ...instructor.toObject(), role: "instructor" };
+      return next();
     }
-    if (admin[0]) {
-      req.user = admin[0];
-      next();
+
+    const admin = await Admin.findOne({ auth0Id });
+    if (admin) {
+      req.user = { ...admin.toObject(), role: admin.role || "admin" }; 
+      return next();
     }
+
+    // If no user found
+    return res.status(404).json({ message: "User not found" });
+
   } catch (err) {
-    console.error(err);
+    console.error("commonVerification error:", err);
     res.status(500).json({ message: "Server error" });
   }
-}
+};
+
 
 export const isStudent = async (req, res, next) => {
   try {

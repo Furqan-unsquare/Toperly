@@ -45,6 +45,8 @@ import Wishlist from "./components/student/Wishlist";
 import HelpCenter from "./components/student/Helpcenter";
 
 // 🎓 Instructor Components
+
+import InstructorDashboard from "./pages/Instructor/InstructorDashboard";
 import CourseManagementSystem from "./pages/Instructor/Course";
 import EnrolledStudents from "./pages/Instructor/EnrolledStudents";
 import AdminCoursesReviews from "./pages/Instructor/Reviews";
@@ -142,7 +144,7 @@ const App = () => (
             <Route element={<ProtectedRoute allowedRoles={["student"]}><StudentLayout /></ProtectedRoute>}>
               <Route path="/student/dashboard" element={<StudentRoutes><Dashboard /></StudentRoutes>}/>
               <Route path="/student/courses" element={<StudentRoutes><CoursesCatalog /></StudentRoutes>}/>
-              <Route path="/student/courses/:courseId" element={<StudentRoutes><CourseDetail /></StudentRoutes>}/>
+              <Route path="/student/courses/:courseId" element={<StudentRoutes><div className="-mt-28"><CourseDetail /></div></StudentRoutes>}/>
               <Route path="/student/courses/:courseId/quiz/:quizId" element={<StudentRoutes><QuizPage /></StudentRoutes>}/>
               <Route path="/student/enrolled-courses" element={<StudentRoutes><EnrolledCourses /></StudentRoutes>}/>
               <Route path="/student/wishlist" element={<StudentRoutes><Wishlist /></StudentRoutes>}/>
@@ -157,7 +159,7 @@ const App = () => (
 
             {/* Instructor Routes */}
             <Route element={ <ProtectedRoute allowedRoles={["instructor"]}><InstructorLayout /></ProtectedRoute>} >
-              <Route path="/dashboard" element={<InstructorRoutes><Dashboard /></InstructorRoutes>}/>
+              <Route path="/dashboard" element={<InstructorRoutes><InstructorDashboard /></InstructorRoutes>}/>
               <Route path="/instructor/all-courses" element={<InstructorRoutes><CourseManagementSystem /></InstructorRoutes>}/>
               <Route path="/instructor/create-course" element={<InstructorRoutes><Createcourse /></InstructorRoutes>}/>
               <Route

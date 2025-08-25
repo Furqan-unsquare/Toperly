@@ -456,7 +456,20 @@ export const getUserDetails = async (req, res) => {
         reviews,
         certificatesIssued: certificates,
       });
-    } else {
+    } else if (role === "admin" || role === "subadmin") {
+  const admin = await Admin.findOne({ auth0Id }).lean();
+  if (!admin) return res.status(404).json({ message: "Admin not found" });
+
+  return res.json({
+    profile: admin,
+    managedUsersCount: {
+      students: await Student.countDocuments(),
+      instructors: await Instructor.countDocuments(),
+      courses: await Course.countDocuments(),
+    },
+  });
+}
+ else {
       return res.status(400).json({ message: "Invalid user role" });
     }
   } catch (err) {
