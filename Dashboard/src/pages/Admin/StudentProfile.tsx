@@ -28,23 +28,49 @@ import {
   Target,
   Clock,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-export const StudentDashboard = () => {
-  const [data, setData] = useState<any>(null);
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
-  const navigate = useNavigate();
+const StudentProfile = () => {
+  const { id } = useParams(); // Get student _id from URL
+  const [data, setData] = useState(null);
+  const [hoveredCard, setHoveredCard] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
-    fetch("http://localhost:5000/api/auth/me", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((res) => res.json())
-      .then(setData);
-  }, []);
+    if (id) {
+      fetchProfileData();
+    }
+  }, [id]);
 
-  if (!data) {
+  const fetchProfileData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch(`http://localhost:5000/api/students/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `API error: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      setData(responseData.data); // Use data field from response
+    } catch (error) {
+      console.error('Error fetching student data:', error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="animate-pulse flex space-x-4">
@@ -58,55 +84,72 @@ export const StudentDashboard = () => {
     );
   }
 
-  const totalCourses = data.enrolledCourses?.length;
-  const totalCertificates = data.certificates?.length;
-  const totalReviews = data.reviews?.length;
+  if (error || !data) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center text-red-600">
+          <p className="text-lg font-medium">{error || "Student not found"}</p>
+          <button
+            onClick={fetchProfileData}
+            className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const totalCourses = data.enrolledCourses?.length || 0;
+  const totalCertificates = data.certificates?.length || 0;
+  const totalReviews = data.reviews?.length || 0;
   const totalScore = data.quizAttempts?.reduce(
-    (acc: number, q: any) => acc + (q.score || 0),
+    (acc, q) => acc + (q.score || 0),
     0
-  );
+  ) || 0;
   const avgScore = data.quizAttempts?.length
     ? (totalScore / data.quizAttempts?.length).toFixed(1)
     : "0";
 
   // Course Progress Chart Data
-  const progressChartData = data.enrolledCourses?.map((c: any, idx: number) => ({
-    name:
-      c.course.title?.length > 15
+  const progressChartData = data.enrolledCourses?.map((c, idx) => ({
+    name: c.course?.title
+      ? c.course.title.length > 15
         ? c.course.title.substring(0, 15) + "..."
-        : c.course.title,
-    fullName: c.course.title,
+        : c.course.title
+      : `Course ${idx + 1}`,
+    fullName: c.course?.title || `Course ${idx + 1}`,
     progress: c.progress || 0,
     completed: c.progress >= 100,
-  }));
+  })) || [];
 
   // Quiz Performance Data
-  const quizData = data.quizAttempts?.slice(-5)?.map((q: any, idx: number) => ({
+  const quizData = data.quizAttempts?.slice(-5)?.map((q, idx) => ({
     quiz: `Quiz ${idx + 1}`,
     score: q.score || 0,
-    date: new Date(q.createdAt).toLocaleDateString(),
-  }));
+    date: q.createdAt ? new Date(q.createdAt).toLocaleDateString() : "N/A",
+  })) || [];
 
   // Course Status Distribution
   const courseStatusData = [
     {
       name: "In Progress",
-      value: data.enrolledCourses?.filter((c: any) => c.progress < 100)?.length,
+      value: data.enrolledCourses?.filter((c) => c.progress < 100)?.length || 0,
       color: "#6366f1",
     },
     {
       name: "Completed",
-      value: data.enrolledCourses?.filter((c: any) => c.progress >= 100)?.length,
+      value: data.enrolledCourses?.filter((c) => c.progress >= 100)?.length || 0,
       color: "#10b981",
     },
     {
       name: "Not Started",
-      value: data.enrolledCourses?.filter((c: any) => c.progress === 0)?.length,
+      value: data.enrolledCourses?.filter((c) => c.progress === 0)?.length || 0,
       color: "#f59e0b",
     },
   ];
 
-  // Monthly Activity Data (mock data - you can replace with real data)
+  // Monthly Activity Data (mock data - replace with real data if available)
   const monthlyActivity = [
     { month: "Jan", courses: 2, certificates: 0, quizzes: 3 },
     { month: "Feb", courses: 1, certificates: 1, quizzes: 5 },
@@ -136,15 +179,6 @@ export const StudentDashboard = () => {
       changeType: "increase",
     },
     {
-      id: "reviews",
-      title: "Reviews Given",
-      value: totalReviews,
-      icon: Star,
-      color: "bg-yellow-50 text-yellow-600",
-      change: "+5%",
-      changeType: "increase",
-    },
-    {
       id: "score",
       title: "Avg Quiz Score",
       value: `${avgScore}%`,
@@ -155,13 +189,13 @@ export const StudentDashboard = () => {
     },
   ];
 
-  // Custom tooltip components
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  // Custom tooltip component
+  const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload?.length) {
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
           <p className="font-medium text-gray-900">{`${label}`}</p>
-          {payload?.map((entry: any, index: number) => (
+          {payload?.map((entry, index) => (
             <p key={index} className="text-sm" style={{ color: entry.color }}>
               {`${entry.dataKey}: ${entry.value}${
                 entry.dataKey === "progress" ? "%" : ""
@@ -175,48 +209,34 @@ export const StudentDashboard = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-8 min-h-screen">
+    <div className="max-w-5xl mx-auto p-6 space-y-8 min-h-screen">
       {/* Header */}
       <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
-              <User className="w-8 h-8 text-gray-600" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Welcome back, {data.profile?.name || "Student"}!
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Continue your learning journey and track your progress
-              </p>
-            </div>
+        <div className="flex items-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
+            <User className="w-8 h-8 text-gray-600" />
           </div>
-          <div>
-            <button
-              className="w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-800 active:bg-gray-700 transition-all duration-200 font-medium text-sm transform hover:scale-[1.02] active:scale-[0.98] px-4"
-              onClick={() => {
-                navigate("/student/user-profile");
-              }}
-            >
-              Edit Profile
-            </button>
+          <div className="ml-4">
+            <h1 className="text-2xl font-bold text-gray-900">
+              {data.name || "Student"}
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Student Profile and Progress
+            </p>
           </div>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {statCards?.map((stat) => {
           const Icon = stat.icon;
           return (
             <Card
               key={stat.id}
-              className={`cursor-pointer transition-all duration-300 border-0 shadow-sm hover:shadow-md ${
+              className={`cursor-pointer transition-all duration-300 border-0 shadow-sm ${
                 hoveredCard === stat.id ? "scale-105 ring-2 ring-gray-200" : ""
               }`}
-              onMouseEnter={() => setHoveredCard(stat.id)}
-              onMouseLeave={() => setHoveredCard(null)}
             >
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -233,7 +253,7 @@ export const StudentDashboard = () => {
                         {stat.change}
                       </span>
                       <span className="text-sm text-gray-500 ml-1">
-                        from last month
+                        last month
                       </span>
                     </div>
                   </div>
@@ -336,106 +356,8 @@ export const StudentDashboard = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Secondary Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Course Status Distribution */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center space-x-2 text-lg font-semibold text-gray-900">
-              <Clock className="w-5 h-5 text-blue-600" />
-              <span>Course Status</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={courseStatusData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {courseStatusData?.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip content={<CustomTooltip />} />
-                <Legend
-                  verticalAlign="bottom"
-                  height={36}
-                  formatter={(value) => (
-                    <span className="text-sm text-gray-700">{value}</span>
-                  )}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Monthly Activity */}
-        <Card className="lg:col-span-2 border-0 shadow-sm">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center space-x-2 text-lg font-semibold text-gray-900">
-              <Calendar className="w-5 h-5 text-orange-600" />
-              <span>Monthly Activity</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={monthlyActivity}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis
-                  dataKey="month"
-                  tick={{ fontSize: 12, fill: "#64748b" }}
-                  axisLine={{ stroke: "#e2e8f0" }}
-                />
-                <YAxis
-                  tick={{ fontSize: 12, fill: "#64748b" }}
-                  axisLine={{ stroke: "#e2e8f0" }}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Line
-                  type="monotone"
-                  dataKey="courses"
-                  stroke="#3b82f6"
-                  strokeWidth={3}
-                  dot={{ r: 5 }}
-                  activeDot={{ r: 7 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="certificates"
-                  stroke="#10b981"
-                  strokeWidth={3}
-                  dot={{ r: 5 }}
-                  activeDot={{ r: 7 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="quizzes"
-                  stroke="#f59e0b"
-                  strokeWidth={3}
-                  dot={{ r: 5 }}
-                  activeDot={{ r: 7 }}
-                />
-                <Legend
-                  verticalAlign="bottom"
-                  height={36}
-                  formatter={(value) => (
-                    <span className="text-sm text-gray-700 capitalize">
-                      {value}
-                    </span>
-                  )}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 };
+
+export default StudentProfile;

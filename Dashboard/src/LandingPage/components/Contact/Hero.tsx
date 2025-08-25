@@ -25,19 +25,24 @@ export default function ContactForm() {
     setIsSubmitting(true);
 
     try {
+      // Prepare payload with default status
+      const payload = {
+        ...formData,
+        status: 'pending', // Add default status
+      };
+
       // Log the payload to verify its contents
-      console.log('Submitting form data:', formData);
+      console.log('Submitting form data:', payload);
 
       const response = await fetch('http://localhost:5000/api/query', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json', // Add Content-Type header
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        // Log response details for debugging
         const errorText = await response.text();
         console.error('Response status:', response.status, 'Response text:', errorText);
         throw new Error(`Failed to submit form: ${response.status} ${response.statusText}`);
@@ -175,10 +180,15 @@ export default function ContactForm() {
                   onChange={handleInputChange}
                   placeholder="Leave us a message..."
                   rows={5}
+                  maxLength={200} 
                   required
                   aria-label="Message"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors resize-vertical"
                 ></textarea>
+                 {/* Character counter */}
+  <p className="text-sm text-gray-500 mt-1">
+    {formData.message.length}/200 characters
+  </p>
               </div>
 
               {/* Submit Button */}

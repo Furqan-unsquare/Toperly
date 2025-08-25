@@ -67,12 +67,14 @@ export const createCourse = async (req, res) => {
 
 export const getAllCourses = async (req, res) => {
   try {
-    const { category, level, instructor } = req.query;
+    const { category, level, instructor, topRated, inDemand } = req.query;
     const filter = {};
 
     if (category) filter.category = category;
     if (level) filter.level = level;
     if (instructor) filter.instructor = instructor;
+    if (topRated) filter.topRated = topRated === 'true';
+    if (inDemand) filter.inDemand = inDemand === 'true';
 
     const courses = await Course.find(filter)
       .populate("instructor", "name email bio expertise")
@@ -102,14 +104,27 @@ export const getCourseById = async (req, res) => {
 
 export const updateCourse = async (req, res) => {
   try {
-    const { title, description, category, level, price, duration, videos } =
-      req.body;
+    const { title, description, category, level, price, duration, videos, topRated, inDemand } = req.body;
     const course = await Course.findById(req.params.id);
 
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
-    console.log(videos);
+
+    if (topRated !== undefined && topRated && !course.topRated) {
+      const topRatedCount = await Course.countDocuments({ topRated: true });
+      if (topRatedCount >= 3) {
+        return res.status(400).json({ message: "Cannot set more than 3 courses as Top Rated" });
+      }
+    }
+
+    if (inDemand !== undefined && inDemand && !course.inDemand) {
+      const inDemandCount = await Course.countDocuments({ inDemand: true });
+      if (inDemandCount >= 10) {
+        return res.status(400).json({ message: "Cannot set more than 10 courses as In Demand" });
+      }
+    }
+
     if (title) course.title = title;
     if (description) course.description = description;
     if (category) course.category = category;
@@ -117,6 +132,8 @@ export const updateCourse = async (req, res) => {
     if (price !== undefined) course.price = price;
     if (duration !== undefined) course.duration = duration;
     if (videos) course.videos = videos;
+    if (topRated !== undefined) course.topRated = topRated;
+    if (inDemand !== undefined) course.inDemand = inDemand;
 
     course.updatedAt = new Date();
     await course.save();
@@ -186,7 +203,6 @@ export const updateVideoInCourse = async (req, res) => {
     if (title) video.title = title;
     if (description) video.description = description;
     if (order !== undefined) video.order = order;
-    // if (chapters) video.chapters = chapters;
     if (duration !== undefined) video.duration = duration;
 
     course.updatedAt = new Date();
@@ -208,7 +224,6 @@ export const deleteVideoFromCourse = async (req, res) => {
       return res.status(404).json({ message: "Course not found" });
     }
 
-    // Filter out the video with the matching ID
     const initialLength = course.videos.length;
     course.videos = course.videos.filter(
       (video) => video._id.toString() !== videoId
@@ -305,7 +320,6 @@ export const addMaterialToCourse = async (req, res) => {
         });
     }
 
-    // ✅ Check for duplicate material (based on url or filename)
     const exists = course.materials.some(
       (m) => m.filename === filename || m.url === url
     );
@@ -342,7 +356,7 @@ export const addMaterialToCourse = async (req, res) => {
 
 export const updateMaterial = async (req, res) => {
   try {
-    const { materialId } = req.params; // This is bunnyFileId
+    const { materialId } = req.params;
     const { title, filename, url, bunnyFileId, type, content } = req.body;
     const course = await Course.findById(req.params.id);
 
@@ -350,7 +364,6 @@ export const updateMaterial = async (req, res) => {
       return res.status(404).json({ message: "Course not found" });
     }
 
-    // ✅ Find material by bunnyFileId
     const material = course.materials.find((m) => m.bunnyFileId === materialId);
     if (!material) {
       return res.status(404).json({ message: "Material not found" });
@@ -359,7 +372,7 @@ export const updateMaterial = async (req, res) => {
     if (title) material.title = title;
     if (filename) material.filename = filename;
     if (url) material.url = url;
-    if (bunnyFileId) material.bunnyFileId = bunnyFileId; // Optional update
+    if (bunnyFileId) material.bunnyFileId = bunnyFileId;
     if (type) material.type = type;
     if (content && type === "document") material.content = content;
 
@@ -377,14 +390,13 @@ export const updateMaterial = async (req, res) => {
 
 export const deleteMaterial = async (req, res) => {
   try {
-    const { materialId } = req.params; // This is bunnyFileId
+    const { materialId } = req.params;
     const course = await Course.findById(req.params.id);
 
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
 
-    // ✅ Find material by bunnyFileId
     const index = course.materials.findIndex(
       (m) => m.bunnyFileId === materialId
     );
@@ -392,7 +404,6 @@ export const deleteMaterial = async (req, res) => {
       return res.status(404).json({ message: "Material not found" });
     }
 
-    // ✅ Remove from array
     course.materials.splice(index, 1);
     course.updatedAt = new Date();
     await course.save();
@@ -408,12 +419,11 @@ export const deleteMaterial = async (req, res) => {
 
 export const addChapterToVideo = async (req, res) => {
   try {
-    const { id, videoId } = req.params; // courseId and video bunnyFileId
+    const { id, videoId } = req.params;
     const { title, startTime, endTime } = req.body;
 
     const course = await Course.findById(id);
     if (!course) return res.status(404).json({ message: "Course not found" });
-    console.log(course.videos);
     const video = course.videos.find((v) => v._id == videoId);
     if (!video) return res.status(404).json({ message: "Video not found" });
 
@@ -437,7 +447,7 @@ export const addChapterToVideo = async (req, res) => {
 
 export const updateChapter = async (req, res) => {
   try {
-    const { id, videoId, chapterId } = req.params; // chapterId as index or _id
+    const { id, videoId, chapterId } = req.params;
     const { title, startTime, endTime } = req.body;
 
     const course = await Course.findById(id);
@@ -473,7 +483,7 @@ export const updateChapter = async (req, res) => {
 
 export const deleteChapter = async (req, res) => {
   try {
-    const { id, videoId, chapterId } = req.params; // chapterId = index
+    const { id, videoId, chapterId } = req.params;
 
     const course = await Course.findById(id);
     if (!course) return res.status(404).json({ message: "Course not found" });
@@ -527,7 +537,6 @@ export const updateCourseStatus = async (req, res) => {
   }
 };
 
-// Add an include
 export const addCourseInclude = async (req, res) => {
   try {
     const { id } = req.params;
@@ -549,7 +558,6 @@ export const addCourseInclude = async (req, res) => {
   }
 };
 
-// Update an existing include (by index)
 export const updateCourseInclude = async (req, res) => {
   try {
     const { id, index } = req.params;
@@ -571,7 +579,6 @@ export const updateCourseInclude = async (req, res) => {
   }
 };
 
-// Delete an include (by index)
 export const deleteCourseInclude = async (req, res) => {
   try {
     const { id, index } = req.params;

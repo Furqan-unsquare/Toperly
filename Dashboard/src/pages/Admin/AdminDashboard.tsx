@@ -106,7 +106,7 @@ interface CourseAnalytics {
   avgMarks: number;
 }
 
-const AdminRealTimeAnalytics = () => {
+const AdminDashboard = () => {
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(
     null
   );
@@ -941,4 +941,4 @@ const AdminRealTimeAnalytics = () => {
   );
 };
 
-export default AdminRealTimeAnalytics;
+export default AdminDashboard;

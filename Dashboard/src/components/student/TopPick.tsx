@@ -257,7 +257,7 @@ const TopPick: React.FC = () => {
                     <div className="w-24 h-24 bg-white rounded-full border-4 border-white shadow-lg overflow-hidden">
                       <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
                         <span className="text-gray-600 font-bold text-lg">
-                          {topCourse.instructor.name.charAt(0).toUpperCase()}
+                          {topCourse.instructor?.name.charAt(0).toUpperCase()}
                         </span>
                       </div>
                     </div>
@@ -300,7 +300,7 @@ const TopPick: React.FC = () => {
                 <p className="text-sm text-gray-500">
                   By{" "}
                   <span className="font-medium text-gray-700">
-                    {topCourse.instructor.name}
+                    {topCourse.instructor?.name}
                   </span>
                   <span className="text-gray-500">
                     , {staticData.instructorTitle}

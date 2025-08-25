@@ -3,8 +3,8 @@ import Contact from '../models/Query.js';
 // Create a new contact
 export const createContact = async (req, res) => {
   try {
-    const { name, email, mobile, message } = req.body;
-    const newContact = new Contact({ name, email, mobile, message });
+    const { name, email, mobile, message, status } = req.body;
+    const newContact = new Contact({ name, email, mobile, message, status });
     await newContact.save();
     res.status(201).json(newContact);
   } catch (error) {
@@ -15,8 +15,24 @@ export const createContact = async (req, res) => {
 // Read all contacts
 export const getAllContacts = async (req, res) => {
   try {
-    const contacts = await Contact.find();
-    res.status(200).json(contacts);
+    const { page = 1, limit = 10, search = '', status } = req.query;
+    const query = {};
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+        { mobile: { $regex: search, $options: 'i' } },
+        { message: { $regex: search, $options: 'i' } },
+      ];
+    }
+    if (status) {
+      query.status = status;
+    }
+    const contacts = await Contact.find(query)
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
+    const total = await Contact.countDocuments(query);
+    res.status(200).json({ contacts, total });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
@@ -38,10 +54,10 @@ export const getContactById = async (req, res) => {
 // Update a contact by ID
 export const updateContact = async (req, res) => {
   try {
-    const { name, email, mobile, message } = req.body;
+    const { name, email, mobile, message, status } = req.body;
     const updatedContact = await Contact.findByIdAndUpdate(
       req.params.id,
-      { name, email, mobile, message },
+      { name, email, mobile, message, status },
       { new: true, runValidators: true }
     );
     if (!updatedContact) {

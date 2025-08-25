@@ -22,8 +22,8 @@ export const getMyStudents = async (req, res) => {
         select: "name email profileImage",
       })
       .populate({
-        path: 'course',
-        select: 'title customId category rating'
+        path: "course",
+        select: "title customId category rating",
       });
 
     res.status(200).json({
@@ -58,14 +58,40 @@ export const getAllStudents = async (req, res) => {
 
 // READ student by ID
 export const getStudentById = async (req, res) => {
-  const student = await Student.findById(req.params.id)
-    .populate({
-      path: "enrolledCourses.courseId",
-      populate: { path: "instructor" }, // To get instructor name
-    })
-    .lean();
-  if (!student) return res.status(404).json({ message: "Student Not Found" });
-  res.json(student);
+  try {
+    const student = await Student.findById(req.params.id).lean();
+    if (!student) {
+      return res.status(404).json({ message: "Student Not Found", success: false });
+    }
+
+    // Fetch enrollments for the student
+    const enrollments = await EnrolledCourse.find({ student: req.params.id })
+      .populate({
+        path: "course",
+        select: "title customId category rating instructor",
+        populate: { path: "instructor", select: "name" }, // Populate instructor name
+      })
+      .lean();
+
+    // Combine student data with enrollments
+    const studentData = {
+      ...student,
+      enrolledCourses: enrollments.map((enrollment) => ({
+        course: enrollment.course, // Populated course object
+        progress: enrollment.progress,
+        completedLessons: enrollment.completedLessons,
+        certificateIssued: enrollment.certificateIssued,
+        enrolledAt: enrollment.enrolledAt,
+        paymentDetails: enrollment.paymentDetails,
+        videoProgress: enrollment.videoProgress,
+      })),
+    };
+
+    res.json({ success: true, data: studentData });
+  } catch (error) {
+    console.error("Error fetching student:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
 // UPDATE student (admin use)
@@ -97,9 +123,10 @@ export const enrollCourse = async (req, res) => {
     }
 
     // Check if already enrolled
-    const alreadyEnrolled = student.enrolledCourses.some(
-      (enrollment) => enrollment.courseId.toString() === courseId
-    );
+    const alreadyEnrolled = await EnrolledCourse.findOne({
+      student: studentId,
+      course: courseId,
+    });
 
     if (alreadyEnrolled) {
       return res
@@ -107,9 +134,12 @@ export const enrollCourse = async (req, res) => {
         .json({ message: "Already enrolled in this course" });
     }
 
-    // Add course to student's enrolledCourses
-    student.enrolledCourses.push({ courseId });
-    await student.save();
+    // Create new enrollment
+    const enrollment = new EnrolledCourse({
+      student: studentId,
+      course: courseId,
+    });
+    await enrollment.save();
 
     // Add student to course's enrolledStudents
     course.enrolledStudents.push(studentId);

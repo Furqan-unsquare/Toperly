@@ -16,7 +16,7 @@ import {
   Edit3
 } from 'lucide-react';
 
-const StudentProfileSettings = () => {
+const AdminProfile = () => {
   const { user, getAccessTokenSilently, isAuthenticated } = useAuth0();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -493,4 +493,4 @@ const StudentProfileSettings = () => {
   );
 };
 
-export default StudentProfileSettings;
+export default AdminProfile;

@@ -1,16 +1,17 @@
-import { useAuth } from "@/contexts/AuthContext";
-import { InstructorDashboard } from "../InstructorDashboard";
-import { StudentDashboard } from "./StudentDashboard";
-import StudentsMainPage from "@/components/student/StudentsMainPage";
+import RecommendedCourses from '../../components/student/RecommendedCourses'
+import TopPick from '../../components/student/TopPick'
+import TopRatedCourses from '../../components/student/TopRatedCourses'
+import HeroSection from '../../components/student/HeroSection'
 
-export const Dashboard = () => {
-  const { user } = useAuth();
-
-  if (!user) return <div>Loading...</div>;
-
+const StudentsMainPage = () => {
   return (
     <div>
-      {user.role === "instructor" ? <InstructorDashboard /> : <StudentsMainPage />}
+      <HeroSection/>
+      <RecommendedCourses/>
+      <TopPick/>
+      <TopRatedCourses/>
     </div>
-  );
-};
+  )
+}
+
+export default StudentsMainPage

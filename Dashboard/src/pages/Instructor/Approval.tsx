@@ -183,7 +183,7 @@ const CourseApprovalList = () => {
                             {course.title}
                           </h3>
                           <p className="text-gray-600">
-                            by {course.instructor.name}
+                            by {course.instructor?.name}
                           </p>
                         </div>
                         <div className="mt-2 sm:mt-0 sm:ml-4">

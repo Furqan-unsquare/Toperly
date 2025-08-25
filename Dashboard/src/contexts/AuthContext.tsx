@@ -7,35 +7,15 @@ import React, {
 } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import publicRoutes from "./public"; // adjust path
 import { matchPath } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 
 export interface User {
   id: string;
   name: string;
   email: string;
-  role: "student" | "instructor" | "admin"; // Removed subadmin as per previous request
+  role: "student" | "instructor" | "admin";
   profileImage?: string;
   phone?: string;
   language?: string;
@@ -51,7 +31,7 @@ interface AuthContextType {
   logout: () => void;
   isLoading: boolean;
   token: string | null;
-  upgradeToInstructor: (additionalData: { bio: string; expertise: string[] }) => Promise<boolean>;
+  requestInstructorUpgrade: (additionalData: { bio: string; expertise: string[] }) => Promise<boolean>;
   assignAdminRole: () => Promise<boolean>;
 }
 
@@ -155,7 +135,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return false;
       }
     },
-    [auth0User, getAccessTokenSilently, navigate]
+    [auth0User, getAccessTokenSilently, navigate, toast]
   );
 
   const syncUserWithBackend = useCallback(async () => {
@@ -188,7 +168,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           localStorage.removeItem("intendedRole");
           await assignRole(roleToAssign, additionalData);
         } else {
-          console.log("Sync response:", data); // Debug log
           setUser(data.user);
           setToken(accessToken);
           localStorage.setItem("user", JSON.stringify(data.user));
@@ -217,7 +196,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [isAuthenticated, auth0User, getAccessTokenSilently, navigate, location.pathname, assignRole]);
+  }, [isAuthenticated, auth0User, getAccessTokenSilently, navigate, location.pathname, assignRole, toast]);
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -228,7 +207,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (userJson && storedToken) {
         const parsedUser = JSON.parse(userJson);
-        console.log("Loaded user from localStorage:", parsedUser); // Debug log
         setUser(parsedUser);
         setToken(storedToken);
         if (location.pathname === "/" || location.pathname.startsWith("/auth/")) {
@@ -267,15 +245,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
-  const upgradeToInstructor = async (additionalData: { bio: string; expertise: string[] }) => {
-    console.log("upgradeToInstructor called with user:", user); // Debug log
-    if (!user ) {
-      console.error("Upgrade failed: user =", user, "role =", user?.role);
-      throw new Error("Only students can upgrade to instructor");
+  const requestInstructorUpgrade = async (additionalData: { bio: string; expertise: string[] }) => {
+    if (!user || user.role !== "student") {
+      throw new Error("Only students can request an instructor upgrade");
     }
     try {
       const accessToken = await getAccessTokenSilently();
-      const response = await fetch(`${API_BASE}/upgrade-role`, {
+      const response = await fetch(`${API_BASE}/request-instructor-upgrade`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -283,30 +259,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         },
         body: JSON.stringify({
           auth0Id: auth0User?.sub,
-          newRole: "instructor",
+          userId: user.id,
           ...additionalData,
         }),
       });
       const data = await response.json();
-      console.log("Upgrade response:", data); // Debug log
       if (response.ok) {
-        const updatedUser = { ...user, role: "instructor", bio: additionalData.bio, expertise: additionalData.expertise };
-        setUser(updatedUser);
-        localStorage.setItem("user", JSON.stringify(updatedUser));
         toast({
-          title: "Upgrade Successful",
-          description: "You are now an instructor!",
+          title: "Request Submitted",
+          description: "Your instructor upgrade request has been sent to the admin for approval.",
         });
-        navigate(getRedirectPath("instructor"), { replace: true });
         return true;
       } else {
-        throw new Error(data.message || "Upgrade failed");
+        throw new Error(data.message || "Failed to submit upgrade request");
       }
     } catch (error) {
-      console.error("Upgrade error:", error);
+      console.error("Upgrade request error:", error);
       toast({
-        title: "Upgrade Error",
-        description: error instanceof Error ? error.message : "Failed to upgrade role.",
+        title: "Request Error",
+        description: error instanceof Error ? error.message : "Failed to submit instructor upgrade request.",
         variant: "destructive",
       });
       return false;
@@ -340,7 +311,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         logout,
         isLoading: isLoading || auth0Loading,
         token,
-        upgradeToInstructor,
+        requestInstructorUpgrade,
         assignAdminRole,
       }}
     >
@@ -360,134 +331,4 @@ export const useAuth = () => {
   if (context === undefined)
     throw new Error("useAuth must be used within AuthProvider");
   return context;
-};
-
-export const UpgradeToInstructorForm = () => {
-  const { upgradeToInstructor, user } = useAuth();
-  const [formData, setFormData] = useState({
-    bio: "",
-    expertise: [] as string[],
-  });
-  const [expertiseInput, setExpertiseInput] = useState("");
-  const { toast } = useToast();
-
-  console.log("UpgradeToInstructorForm user:", user); // Debug log
-  if (user?.role !== "student") {
-    return <div>You must be a student to upgrade.</div>;
-  }
-
-  const addExpertise = () => {
-    if (expertiseInput.trim() && !formData.expertise.includes(expertiseInput.trim())) {
-      setFormData((prev) => ({
-        ...prev,
-        expertise: [...prev.expertise, expertiseInput.trim()],
-      }));
-      setExpertiseInput("");
-    } else if (formData.expertise.includes(expertiseInput.trim())) {
-      toast({
-        title: "Duplicate Expertise",
-        description: "This skill is already added.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const removeExpertise = (item: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      expertise: prev.expertise.filter((exp) => exp !== item),
-    }));
-  };
-
-  const handleSubmit = async () => {
-    if (!formData.bio.trim()) {
-      toast({
-        title: "Missing Bio",
-        description: "Please provide a bio.",
-        variant: "destructive",
-      });
-      return;
-    }
-    console.log("Submitting upgrade with formData:", formData); // Debug log
-    await upgradeToInstructor(formData);
-  };
-
-  return (
-    <div className="space-y-4 p-4 bg-secondary/10 rounded-lg">
-      <h3 className="font-medium text-primary">Upgrade to Instructor</h3>
-      <div className="space-y-2">
-        <Label htmlFor="bio">Bio *</Label>
-        <Textarea
-          id="bio"
-          placeholder="Tell us about yourself and your teaching experience"
-          value={formData.bio}
-          onChange={(e) => setFormData((prev) => ({ ...prev, bio: e.target.value }))}
-          className="min-h-[100px] transition-smooth"
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="expertise">Areas of Expertise</Label>
-        <div className="flex gap-2">
-          <Input
-            id="expertise"
-            type="text"
-            placeholder="Add your skills (e.g., JavaScript, Python)"
-            value={expertiseInput}
-            onChange={(e) => setExpertiseInput(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addExpertise())}
-            className="transition-smooth"
-          />
-          <Button type="button" onClick={addExpertise} variant="outline" size="sm">
-            Add
-          </Button>
-        </div>
-        {formData.expertise.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-2">
-            {formData.expertise.map((item, index) => (
-              <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                {item}
-                <X className="w-3 h-3 cursor-pointer hover:text-destructive" onClick={() => removeExpertise(item)} />
-              </Badge>
-            ))}
-          </div>
-        )}
-      </div>
-      <Button onClick={handleSubmit} className="w-full bg-gradient-primary hover:opacity-90 transition-smooth">
-        Upgrade to Instructor
-      </Button>
-    </div>
-  );
-};
-
-export const AdminRoleForm = () => {
-  const { assignAdminRole } = useAuth();
-  const { toast } = useToast();
-
-  const handleSubmit = async () => {
-    const success = await assignAdminRole();
-    if (success) {
-      toast({
-        title: "Role Assigned",
-        description: "You are now an admin!",
-      });
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-subtle flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-card">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl bg-gradient-primary bg-clip-text text-transparent">
-            Assign Admin Role
-          </CardTitle>
-          <CardDescription>Confirm to assign admin role.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Button onClick={handleSubmit} className="w-full bg-gradient-primary hover:opacity-90 transition-smooth">
-            Confirm Admin Role
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
-  );
 };

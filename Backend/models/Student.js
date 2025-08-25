@@ -6,7 +6,7 @@ const studentSchema = new mongoose.Schema({
   customId: { type: String, unique: true },
   name: { type: String, required: true },
   email: { type: String, unique: true, required: true },
-  passwordHash: { type: String }, // Optional now for social
+  passwordHash: { type: String }, 
   profileImage: { type: String },
   phone: { type: String },
   language: { type: String, default: "en" },

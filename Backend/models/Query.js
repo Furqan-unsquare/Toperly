@@ -17,10 +17,15 @@ const contactSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  status: {
+    type: String,
+    enum: ['pending', 'under review', 'solved'],
+    default: 'pending',
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
 });
 
-export default mongoose.model('Contact', contactSchema);
+export default mongoose.model('query', contactSchema);

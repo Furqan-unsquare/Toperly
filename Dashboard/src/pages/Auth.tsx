@@ -1,9 +1,7 @@
-// Modified: src/pages/Auth.tsx (assuming the Auth component is in a page file)
-// Changes: Add check for needsRoleSelection from context, show RoleSelectionForm if true.
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { RegisterForm } from '@/components/auth/RegisterForm';
+import { RegisterForm } from '@/components/auth/SubAdmin';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { RoleSelectionForm } from '@/components/auth/RoleSelectionForm'; // New import
 import { useAuth } from '@/contexts/AuthContext';

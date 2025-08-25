@@ -17,7 +17,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 // Import Swiper styles
 import "swiper/css";
-import "swiper/css/navigation";
+import "swiper/css/navigation"; 
 import "swiper/css/pagination";
 
 const RecommendedCourses = () => {

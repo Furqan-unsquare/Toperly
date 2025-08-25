@@ -2,6 +2,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bell, BookOpen, Users } from "lucide-react";
 import { useEffect, useState } from "react";
+import Request from "../pages/Admin/request"
 
 // Define notification type
 interface Notification {
@@ -67,7 +68,7 @@ export const Notifications = () => {
   }, [user]);
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-5xl mx-auto space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -75,29 +76,16 @@ export const Notifications = () => {
             <span>Notifications</span>
           </CardTitle>
         </CardHeader>
+
         <CardContent>
-          {notifications.length === 0 ? (
-            <p className="text-muted-foreground">No notifications available.</p>
-          ) : (
-            <ul className="space-y-4">
-              {notifications.map((notification) => (
-                <li
-                  key={notification.id}
-                  className="flex items-start space-x-3 p-3 bg-accent/10 rounded-md"
-                >
-                  <notification.icon className="w-5 h-5 mt-1 text-primary" />
-                  <div>
-                    <p className="text-sm">{notification.message}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {notification.timestamp}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+         
+        <Request />
         </CardContent>
+
       </Card>
+
+      <div>
+      </div>
     </div>
   );
 };

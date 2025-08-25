@@ -1,27 +1,19 @@
 import React from "react";
-import HeroSection from "@/components/LandingPage/components/Home/HeroSection";
-import FeaturesSection from "@/components/LandingPage/components/Home/FeaturesSection";
-import CoursesSection from "@/components/LandingPage/components/Home/TopRated";
-import TestimonialsSection from "@/components/LandingPage/components/Home/TestimonialsSection";
-import MentorAccessSection from "@/components/LandingPage/components/Home/MentorAccessSection";
-import TrustedCoursesBrand from "@/components/Home/TrustedCoursesBrand";
-import AdmissionsSection from "@/components/LandingPage/components/Home/CourseSection";
-import VideoPitchSection from "@/components/LandingPage/components/Home/VideoPitchSection";
-import About from "@/components/LandingPage/components/Home/About"
-import AICommunityCards from "@/components/LandingPage/components/Home/AIcard";
-import SubscriptionPlans from "@/components/LandingPage/components/Home/SubscriptionPlans";
+import HeroSection from "@/LandingPage/components/Home/HeroSection";
+import FeaturesSection from "@/LandingPage/components/Home/FeaturesSection";
+import TestimonialsSection from "@/LandingPage/components/Home/TestimonialsSection";
+import MentorAccessSection from "@/LandingPage/components/Home/MentorAccessSection";
+import InDemand from "@/LandingPage/components/Home/InDemand";
+import TopRated from "@/LandingPage/components/Home/TopRated";
+import SubscriptionPlans from "@/LandingPage/components/Home/SubscriptionPlans";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <HeroSection />
-      {/* <CoursesSection /> */}
-      <VideoPitchSection />
-      {/* <About /> */}
-      <AdmissionsSection />
+      <TopRated />
+      <InDemand />
       <FeaturesSection />
-      {/* <AICommunityCards /> */}
-      {/* <TrustedCoursesBrand /> */}
       <MentorAccessSection />
       <SubscriptionPlans />
       <TestimonialsSection />

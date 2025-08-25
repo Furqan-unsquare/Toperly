@@ -19,7 +19,7 @@ const VirtualDevicesDashboard = () => {
         {
           src: "/hindi.png",
           position: "top-[20%] right-[15%]",
-          size: "h-20"
+          size: "h-16"
         },
         {
           src: "https://www.nicepng.com/png/full/247-2477108_vinayagar-images-png.png",

@@ -18,14 +18,14 @@ import {
   Play,
 } from "lucide-react";
 
-import VideoPlayer from "./VideoPlayer";
-import EnrollmentCard from "./EnrollmentCard";
-import CourseContentList from "./CourseContentList";
-import Material from "./Material";
-import Toast from "./Toast";
-import CourseReviewSection from "./CourseReviewSection";
-import PaymentForm from "../Payment/PaymentForm";
-import PaymentModal from "../Payment/PaymentModal";
+import VideoPlayer from "../../components/student/VideoPlayer";
+import EnrollmentCard from "../../components/student/EnrollmentCard";
+import CourseContentList from "../../components/student/CourseContentList";
+import Material from "../../components/student/Material";
+import Toast from "../../components/student/Toast";
+import CourseReviewSection from "../../components/student/CourseReviewSection";
+import PaymentForm from "../../components/Payment/PaymentForm";
+import PaymentModal from "../../components/Payment/PaymentModal";
 import { usePayment } from "../../hooks/usePayment";
 
 const API_BASE = "http://localhost:5000/api";

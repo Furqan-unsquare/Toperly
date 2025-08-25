@@ -7,6 +7,7 @@ import Certificate from "../models/Certificate.js";
 import EnrolledCourse from "../models/EnrolledCourse.js";
 import QuizAttempt from "../models/QuizAttempt.js";
 import Review from "../models/Review.js";
+import InstructorUpgradeRequest from "../models/InstructorUpgradeRequest.js"; // New model
 import Transaction from "../models/Transaction.js";
 import Wishlist from "../models/Wishlist.js";
 import { ManagementClient } from "auth0";
@@ -541,106 +542,178 @@ export const deleteSubadmin = async (req, res) => {
   }
 };
 
-export const upgradeRole = async (req, res) => {
+export const requestInstructorUpgrade = async (req, res) => {
   try {
-    const { auth0Id, newRole, bio, expertise } = req.body;
-    const { sub } = req.auth;
-
-    console.log("upgradeRole request:", { auth0Id, newRole }); // Debug log
-    if (auth0Id !== sub) {
-      return res.status(403).json({ message: "Unauthorized" });
-    }
-
-    if (newRole !== "instructor") {
-      return res.status(400).json({ message: "Can only upgrade to instructor role" });
-    }
-
-    if (!bio || !expertise || !Array.isArray(expertise)) {
-      return res.status(400).json({ message: "Bio and expertise are required" });
-    }
-
-    // Verify user is a student in the database
-    const student = await Student.findOne({ auth0Id });
-    if (!student) {
-      return res.status(404).json({ message: "Student not found" });
-    }
-    if (student.role !== "student") {
-      return res.status(400).json({ message: "User is not a student" });
-    }
-
-    const newInstructor = new Instructor({
-      auth0Id: student.auth0Id,
-      name: student.name,
-      email: student.email,
-      profileImage: student.profileImage || "",
-      bio,
-      expertise,
-      role: "instructor",
-      isVerified: false,
-      isSuspended: student.isSuspended,
+    console.log("Incoming request:", {
+      headers: req.headers,
+      body: req.body,
+      method: req.method,
+      url: req.url,
     });
 
-    await newInstructor.save();
-
-    await Promise.all([
-      EnrolledCourse.updateMany(
-        { student: student._id },
-        { student: newInstructor._id }
-      ),
-      Certificate.updateMany(
-        { student: student._id },
-        { student: newInstructor._id }
-      ),
-      QuizAttempt.updateMany(
-        { student: student._id },
-        { student: newInstructor._id }
-      ),
-      Review.updateMany(
-        { student: student._id },
-        { student: newInstructor._id }
-      ),
-      Transaction.updateMany(
-        { student: student._id },
-        { student: newInstructor._id }
-      ),
-      Wishlist.updateMany(
-        { student: student._id },
-        { student: newInstructor._id }
-      ),
-    ]);
-
-    await Student.findByIdAndDelete(student._id);
-
-    try {
-      await auth0Management.users.update(
-        { id: auth0Id },
-        { user_metadata: { role: "instructor" } }
-      );
-    } catch (auth0Error) {
-      console.error("Auth0 metadata update error:", auth0Error);
-      await Instructor.findByIdAndDelete(newInstructor._id);
-      await Student.create(student);
-      return res.status(500).json({
-        message: "Failed to update Auth0 metadata",
-        error: auth0Error.message,
-      });
+    if (!req.body) {
+      console.error("Request body is undefined");
+      return res.status(400).json({ message: "Request body is required" });
     }
 
-    const userData = {
-      id: newInstructor._id,
-      auth0Id: newInstructor.auth0Id,
-      name: newInstructor.name,
-      email: newInstructor.email,
-      role: newInstructor.role,
-      profileImage: newInstructor.profileImage,
-      bio: newInstructor.bio,
-      expertise: newInstructor.expertise,
-      customId: newInstructor.customId,
-    };
+    const { email, name, bio, expertise } = req.body;
 
-    res.json({ user: userData });
+    if (!email || !name || !bio || !expertise || !Array.isArray(expertise)) {
+      console.error("Invalid request body:", req.body);
+      return res.status(400).json({ message: "Email, name, bio, and expertise (as an array) are required" });
+    }
+
+    const student = await Student.findOne({ email });
+    if (!student) {
+      console.error("Student not found for email:", email);
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    const existingRequest = await InstructorUpgradeRequest.findOne({
+      studentId: student._id,
+      status: "pending",
+    });
+    if (existingRequest) {
+      console.log("Existing pending request found:", existingRequest);
+      return res.status(409).json({ message: "You already have a pending instructor upgrade request" });
+    }
+
+    const upgradeRequest = new InstructorUpgradeRequest({
+      studentId: student._id,
+      auth0Id: student.auth0Id || "",
+      email,
+      name,
+      bio,
+      expertise,
+      status: "pending",
+    });
+
+    await upgradeRequest.save();
+    console.log("Upgrade request saved:", upgradeRequest);
+
+    res.status(201).json({ message: "Instructor upgrade request submitted successfully" });
   } catch (err) {
-    console.error("Upgrade role error:", err);
+    console.error("Instructor upgrade request error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+export const getPendingUpgradeRequests = async (req, res) => {
+  try {
+    const { sub: auth0Id } = req.auth;
+    console.log("Fetching pending requests for admin with auth0Id:", auth0Id);
+
+    const requests = await InstructorUpgradeRequest.find({ status: "pending" })
+      .populate("studentId", "name email")
+      .lean();
+    console.log("Pending requests fetched:", requests);
+
+    res.json(requests);
+  } catch (err) {
+    console.error("Get pending upgrade requests error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+export const manageInstructorUpgrade = async (req, res) => {
+  try {
+    const { requestId, action } = req.body;
+    const { sub: auth0Id } = req.auth;
+
+    if (!mongoose.Types.ObjectId.isValid(requestId)) {
+      return res.status(400).json({ message: "Invalid request ID" });
+    }
+
+    if (!["approved", "rejected"].includes(action)) {
+      return res.status(400).json({ message: "Action must be 'approve' or 'reject'" });
+    }
+
+    const admin = await Admin.findOne({ auth0Id });
+    if (!admin || (admin.role !== "admin" && admin.role !== "subadmin")) {
+      return res.status(403).json({ message: "Admin access required" });
+    }
+
+    const upgradeRequest = await InstructorUpgradeRequest.findById(requestId);
+    if (!upgradeRequest) {
+      return res.status(404).json({ message: "Upgrade request not found" });
+    }
+
+    if (upgradeRequest.status !== "pending") {
+      return res.status(400).json({ message: "Request already processed" });
+    }
+
+    upgradeRequest.status = action;
+    upgradeRequest.updatedAt = new Date();
+    await upgradeRequest.save();
+
+    if (action === "approved") {
+      const student = await Student.findById(upgradeRequest.studentId);
+      if (!student) {
+        return res.status(404).json({ message: "Student not found" });
+      }
+
+      const newInstructor = new Instructor({
+        auth0Id: student.auth0Id,
+        name: student.name,
+        email: student.email,
+        profileImage: student.profileImage || "",
+        bio: upgradeRequest.bio,
+        expertise: upgradeRequest.expertise,
+        role: "instructor",
+        isVerified: false,
+        isSuspended: student.isSuspended,
+      });
+
+      await newInstructor.save();
+
+      await Promise.all([
+        EnrolledCourse.updateMany(
+          { student: student._id },
+          { student: newInstructor._id }
+        ),
+        Certificate.updateMany(
+          { student: student._id },
+          { student: newInstructor._id }
+        ),
+        QuizAttempt.updateMany(
+          { student: student._id },
+          { student: newInstructor._id }
+        ),
+        Review.updateMany(
+          { student: student._id },
+          { student: newInstructor._id }
+        ),
+        Transaction.updateMany(
+          { student: student._id },
+          { student: newInstructor._id }
+        ),
+        Wishlist.updateMany(
+          { student: student._id },
+          { student: newInstructor._id }
+        ),
+      ]);
+
+      await Student.findByIdAndDelete(student._id);
+
+      try {
+        await auth0Management.users.update(
+          { id: student.auth0Id },
+          { user_metadata: { role: "instructor" } }
+        );
+      } catch (auth0Error) {
+        console.error("Auth0 metadata update error:", auth0Error);
+        await Instructor.findByIdAndDelete(newInstructor._id);
+        await Student.create(student);
+        return res.status(500).json({
+          message: "Failed to update Auth0 metadata",
+          error: auth0Error.message,
+        });
+      }
+    }
+
+    res.json({ message: `Request ${action}ed successfully` });
+  } catch (err) {
+    console.error("Manage instructor upgrade error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };

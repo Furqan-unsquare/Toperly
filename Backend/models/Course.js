@@ -40,16 +40,18 @@ const courseSchema = new mongoose.Schema({
     type: { type: String, enum: ['pdf', 'image', 'document'] }
   }],
   isPublished: {
-  type: String,
-  enum: ['pending', 'approved', 'rejected'],
-  default: 'pending',
-},
-courseIncludes: [{
-  type: String,
-  trim: true
-}],
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending',
+  },
+  courseIncludes: [{
+    type: String,
+    trim: true
+  }],
   rating: { type: Number, default: 0, min: 0, max: 5 },
   totalReviews: { type: Number, default: 0 },
+  topRated: { type: Boolean, default: false },
+  inDemand: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
@@ -85,7 +87,7 @@ courseSchema.pre('save', function (next) {
         for (let i = 0; i < video.chapters.length; i++) {
           const chapter = video.chapters[i];
           const startSeconds = (chapter.startTime.hours * 3600) + (chapter.startTime.minutes * 60) + chapter.startTime.seconds;
-          const endSeconds = (chapter.endTime.hours * 3600) + (chapter.endTime.minutes * 60) + chapter.startTime.seconds;
+          const endSeconds = (chapter.endTime.hours * 3600) + (chapter.endTime.minutes * 60) + chapter.endTime.seconds;
           
           if (endSeconds <= startSeconds) {
             return next(new Error(`End time must be greater than start time for chapter: ${chapter.title} in video: ${video.title}`));
@@ -106,6 +108,23 @@ courseSchema.pre('save', function (next) {
           }
         }
       }
+    }
+  }
+  next();
+});
+
+// Validation for topRated and inDemand limits
+courseSchema.pre('save', async function (next) {
+  if (this.isModified('topRated') && this.topRated) {
+    const topRatedCount = await this.constructor.countDocuments({ topRated: true });
+    if (topRatedCount >= 3 && !this.topRated) {
+      return next(new Error('Cannot set more than 3 courses as Top Rated'));
+    }
+  }
+  if (this.isModified('inDemand') && this.inDemand) {
+    const inDemandCount = await this.constructor.countDocuments({ inDemand: true });
+    if (inDemandCount >= 10 && !this.inDemand) {
+      return next(new Error('Cannot set more than 10 courses as In Demand'));
     }
   }
   next();

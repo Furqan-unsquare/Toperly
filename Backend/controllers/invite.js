@@ -38,7 +38,7 @@ export async function inviteSubadmin(req, res) {
     });
 
     // Create a custom signup link
-    const inviteLink = `http://localhost:3000/signup?email=${encodeURIComponent(email)}&token=${inviteToken}`;
+    const inviteLink = `https://93457825b16d.ngrok-free.app/signup?email=${encodeURIComponent(email)}&token=${inviteToken}`;
 
     // Send email with inviteLink using Nodemailer
     const transporter = nodemailer.createTransport({

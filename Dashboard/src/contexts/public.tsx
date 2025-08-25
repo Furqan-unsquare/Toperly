@@ -8,7 +8,8 @@ const publicRoutes = [
   "/blogs",
   "/auth/login",
   "/auth/instructor",
-  "/auth/admin"
+  "/auth/admin",
+  "auth/subadmin"
 ];
 
 export default publicRoutes;

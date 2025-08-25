@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Course } from '../types/payment';
+import { Course } from '../../types/payment';
 
 interface PaymentFormProps {
   course: Course;

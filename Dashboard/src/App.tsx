@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useLocation, matchPath } from "react-router-dom";
 
-import { AuthProvider, useAuth, UpgradeToInstructorForm } from "@/contexts/AuthContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 
 // 🧰 UI Components
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -26,18 +26,18 @@ import HomePage from "./pages/LandingPage/pages/HomePage";
 import AllCoursesPage from "./pages/LandingPage/pages/AllCoursesPage";
 import BlogPage from "./pages/LandingPage/pages/BlogPage";
 import ContactPage from "./pages/LandingPage/pages/ContactPage";
-import SubscriptionPlans from "./components/LandingPage/components/Home/SubscriptionPlans";
+import SubscriptionPlans from "./LandingPage/components/Home/SubscriptionPlans";
 
 // 📄 Pages
 import LoginPage from "./Auth/LoginPage";
-import InstructorLogin from "./Auth/InstructorLogin";
-import { RegisterPage } from "./Auth/RegisterPage";
+import SubAdminLogin from "./components/auth/SubAdmin";
 import AdminLogin from "./Auth/Adminlogin";
-import { Dashboard } from "./pages/Student/Dashboard";
 import NotFound from "./pages/NotFound";
 
 // 🎓 Student Components
-import CoursesCatalog from "./components/student/CoursesCatalog";
+import Dashboard from "./pages/Student/Dashboard";
+import CoursesCatalog from "./pages/Student/CoureseCatalog";
+import InstructorRole from "./pages/Student/InstructorRole";
 import CourseDetail from "./components/student/CourseDetail";
 import QuizPage from "./components/student/QuizPage";
 import EnrolledCourses from "./components/student/EnrolledCourses";
@@ -53,20 +53,22 @@ import Createcourse from "./pages/Instructor/Createcourse";
 import Quizz from "./pages/Instructor/Quizz";
 import Materials from "./pages/Instructor/materials";
 import ChangePassword from "./pages/Instructor/ChangePassword";
-import Profile from "./pages/Instructor/Profile";
 import Security from "./pages/Instructor/Security";
 import InstructorHelpCenter from "./pages/Instructor/InstructorHelpcenter";
 
 // ⚙️ Admin Components
-import AdminCoupons from "./pages/Admin/AdminCoupons";
-import AdminRevenueTracker from "./pages/Admin/AdminRevenueTracker";
-import AdminRealTimeAnalytics from "./pages/Admin/AdminRealTimeAnalytics";
+import AdminCoupons from "./pages/Admin/Coupons";
+import AdminRevenueTracker from "./pages/Admin/RevenueTracker";
+import AdminRealTimeAnalytics from "./pages/Admin/AdminDashboard";
 import AdminVerify from "./pages/Admin/Verified";
-import AdminCourseApprovalList from "./pages/Admin/AdminCourseApprovalList";
-import AdminUserManagement from "./pages/Admin/AdminUserManagement";
+import AdminCourseApprovalList from "./pages/Admin/CourseApprovalList";
+import AdminUserManagement from "./pages/Admin/UserManagement";
+import AdminInstructor from "./pages/Admin/InstructorProfile"
+import AdminStudent from "./pages/Admin/StudentProfile"
 import AdminQuery from "./pages/Admin/Query";
 import AdminBlog from "./pages/Admin/BlogList";
-import Subadmin from "./pages/Admin/Subadmin"
+import AdminProfile from "./pages/Admin/AdminProfile";
+import AdminSubadmin from "./pages/Admin/Subadmin"
 
 // ⚙️ Common Pages
 import ProfileSettings from "./components/ProfileSettings";
@@ -122,10 +124,9 @@ const App = () => (
             {/* Auth Routes (No Layout) */}
             <Route element={<AuthLayout />}>
               <Route path="/auth/login" element={<LoginPage />} />
-              <Route path="/auth/instructor" element={<InstructorLogin />} />
               <Route path="/auth/admin" element={<AdminLogin />} />
-              <Route path="/auth/register" element={<RegisterPage />} />
-            </Route>
+              <Route path="/auth/subadmin" element={<SubAdminLogin />} />
+            </Route> 
 
             {/* Public Routes */}
             <Route element={<PublicLayout />}>
@@ -138,155 +139,29 @@ const App = () => (
             </Route>
 
             {/* Student Routes */}
-            <Route
-              element={
-                <ProtectedRoute allowedRoles={["student"]}>
-                  <StudentLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route
-                path="/become-instructor"
-                element={
-                  <StudentRoutes>
-                    <UpgradeToInstructorForm />
-                  </StudentRoutes>
-                }
-              />
-              <Route
-                path="/student/dashboard"
-                element={
-                  <StudentRoutes>
-                    <Dashboard />
-                  </StudentRoutes>
-                }
-              />
-              <Route
-                path="/student/courses"
-                element={
-                  <StudentRoutes>
-                    <CoursesCatalog />
-                  </StudentRoutes>
-                }
-              />
-              <Route
-                path="/student/courses/:courseId"
-                element={
-                  <StudentRoutes>
-                    <CourseDetail />
-                  </StudentRoutes>
-                }
-              />
-              <Route
-                path="/student/courses/:courseId/quiz/:quizId"
-                element={
-                  <StudentRoutes>
-                    <QuizPage />
-                  </StudentRoutes>
-                }
-              />
-              <Route
-                path="/student/enrolled-courses"
-                element={
-                  <StudentRoutes>
-                    <EnrolledCourses />
-                  </StudentRoutes>
-                }
-              />
-              <Route
-                path="/student/wishlist"
-                element={
-                  <StudentRoutes>
-                    <Wishlist />
-                  </StudentRoutes>
-                }
-              />
-              <Route
-                path="/student/profile"
-                element={
-                  <StudentRoutes>
-                    <StudentDashboard />
-                  </StudentRoutes>
-                }
-              />
-              <Route
-                path="/student/user-profile"
-                element={
-                  <StudentRoutes>
-                    <ProfileSettings />
-                  </StudentRoutes>
-                }
-              />
-              <Route
-                path="/student/about"
-                element={
-                  <StudentRoutes>
-                    <AboutPage />
-                  </StudentRoutes>
-                }
-              />
-              <Route
-                path="/student/notifications"
-                element={
-                  <StudentRoutes>
-                    <Notifications />
-                  </StudentRoutes>
-                }
-              />
-              <Route
-                path="/student/helpcenter"
-                element={
-                  <StudentRoutes>
-                    <HelpCenter />
-                  </StudentRoutes>
-                }
-              />
-              <Route
-                path="/student/payment-history"
-                element={
-                  <StudentRoutes>
-                    <PaymentHistory />
-                  </StudentRoutes>
-                }
-              />
+            <Route element={<ProtectedRoute allowedRoles={["student"]}><StudentLayout /></ProtectedRoute>}>
+              <Route path="/student/dashboard" element={<StudentRoutes><Dashboard /></StudentRoutes>}/>
+              <Route path="/student/courses" element={<StudentRoutes><CoursesCatalog /></StudentRoutes>}/>
+              <Route path="/student/courses/:courseId" element={<StudentRoutes><CourseDetail /></StudentRoutes>}/>
+              <Route path="/student/courses/:courseId/quiz/:quizId" element={<StudentRoutes><QuizPage /></StudentRoutes>}/>
+              <Route path="/student/enrolled-courses" element={<StudentRoutes><EnrolledCourses /></StudentRoutes>}/>
+              <Route path="/student/wishlist" element={<StudentRoutes><Wishlist /></StudentRoutes>}/>
+              <Route path="/student/profile" element={<StudentRoutes><StudentDashboard /></StudentRoutes>}/>
+              <Route path="/student/user-profile" element={<StudentRoutes><ProfileSettings /></StudentRoutes>}/>
+              <Route path="/student/about" element={<StudentRoutes><AboutPage /></StudentRoutes>}/>
+              <Route path="/student/notifications" element={<StudentRoutes><Notifications /></StudentRoutes>}/>
+              <Route path="/student/helpcenter" element={<StudentRoutes><HelpCenter /></StudentRoutes>}/>
+              <Route path="/student/payment-history" element={<StudentRoutes><PaymentHistory /></StudentRoutes>}/>
+              <Route path="/become-instructor" element={<StudentRoutes><InstructorRole /></StudentRoutes>}/>
             </Route>
 
             {/* Instructor Routes */}
-            <Route
-              element={
-                <ProtectedRoute allowedRoles={["instructor"]}>
-                  <InstructorLayout />
-                </ProtectedRoute>
-              }
-            >
+            <Route element={ <ProtectedRoute allowedRoles={["instructor"]}><InstructorLayout /></ProtectedRoute>} >
+              <Route path="/dashboard" element={<InstructorRoutes><Dashboard /></InstructorRoutes>}/>
+              <Route path="/instructor/all-courses" element={<InstructorRoutes><CourseManagementSystem /></InstructorRoutes>}/>
+              <Route path="/instructor/create-course" element={<InstructorRoutes><Createcourse /></InstructorRoutes>}/>
               <Route
-                path="/dashboard"
-                element={
-                  <InstructorRoutes>
-                    <Dashboard />
-                  </InstructorRoutes>
-                }
-              />
-              <Route
-                path="/instructor/all-courses"
-                element={
-                  <InstructorRoutes>
-                    <CourseManagementSystem />
-                  </InstructorRoutes>
-                }
-              />
-              <Route
-                path="/instructor/create-course"
-                element={
-                  <InstructorRoutes>
-                    <Createcourse />
-                  </InstructorRoutes>
-                }
-              />
-              <Route
-                path="/in
-
-structor/approvals"
+                path="/instructor/approvals"
                 element={
                   <InstructorRoutes>
                     <Approval />
@@ -376,23 +251,20 @@ structor/approvals"
             </Route>
 
             {/* Admin Routes */}
-            <Route
-              element={
-                <ProtectedRoute allowedRoles={["admin"]}>
-                  <AdminLayout />
-                </ProtectedRoute>
-              }
-            >
+            <Route element={<ProtectedRoute allowedRoles={["admin", "subadmin"]}><AdminLayout /></ProtectedRoute>}>
               <Route path="/admin/dashboard" element={<AdminRealTimeAnalytics />} />
               <Route path="/admin/coupons" element={<AdminCoupons />} />
               <Route path="/admin/verify" element={<AdminVerify />} />
-              <Route path="/admin/sub-admin" element={<Subadmin />} />
+              <Route path="/admin/sub-admin" element={<AdminSubadmin />} />
               <Route path="/admin/revenue" element={<AdminRevenueTracker />} />
               <Route path="/admin/blogs" element={<AdminBlog />} />
               <Route path="/admin/query" element={<AdminQuery />} />
-              <Route path="/admin/approvals" element={<AdminCourseApprovalList />} />
+              <Route path="/admin/course-management" element={<AdminCourseApprovalList />} />
               <Route path="/admin/user-management" element={<AdminUserManagement />} />
-              <Route path="/admin/notifications" element={<Notifications />} />
+              <Route path="/student/Profile/:id" element={<AdminStudent />} />
+              <Route path="/instructor/Profile/:id" element={<AdminInstructor />} />
+              <Route path="/admin/notification" element={<Notifications />} />
+              <Route path="/admin/Profile/" element={<AdminProfile />} />
             </Route>
 
             {/* Fallback Route */}

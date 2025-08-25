@@ -1,8 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import axios from 'axios';
-import BlogCard from '../../../components/LandingPage/components/Blog/BlogCard';
-import BlogDetailPage from '../../../components/LandingPage/components/Blog/DetailBlogs';
-import FilterSidebar from '../../../components/LandingPage/components/Blog/FilterSidebar';
+import BlogCard from '../../../LandingPage/components/Blog/BlogCard';
+import BlogDetailPage from '../../../LandingPage/components/Blog/DetailBlogs';
+import FilterSidebar from '../../../LandingPage/components/Blog/FilterSidebar';
 
 const BlogListPage = () => {
   const [blogs, setBlogs] = useState([]);
