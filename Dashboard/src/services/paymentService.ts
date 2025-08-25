@@ -1,3 +1,4 @@
+// paymentService.ts
 import axios from "axios";
 import { PaymentResponse } from "../types/payment";
 
@@ -14,7 +15,12 @@ export const paymentService = {
     try {
       const response = await axios.post(
         `${API_BASE_URL}/payment/create-order`,
-        orderData
+        orderData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("auth0_token")}`,
+          },
+        }
       );
       return response.data;
     } catch (error: any) {
@@ -29,13 +35,16 @@ export const paymentService = {
     razorpay_payment_id: string;
     razorpay_signature: string;
     courseId: string;
-    userEmail: string;
-    userId: string;
   }) => {
     try {
       const response = await axios.post(
         `${API_BASE_URL}/payment/verify`,
-        verificationData
+        verificationData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("auth0_token")}`,
+          },
+        }
       );
       return response.data;
     } catch (error: any) {
@@ -47,7 +56,11 @@ export const paymentService = {
 
   getPaymentDetails: async (paymentId: string) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/payment/${paymentId}`);
+      const response = await axios.get(`${API_BASE_URL}/payment/${paymentId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("auth0_token")}`,
+        },
+      });
       return response.data;
     } catch (error: any) {
       throw new Error(

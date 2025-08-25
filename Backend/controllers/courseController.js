@@ -12,30 +12,27 @@ export const createCourse = async (req, res) => {
       price,
       duration,
       thumbnail,
-      instructorId,
       videos,
       materials,
     } = req.body;
 
-    let instructorObjectId;
+    // Get the Auth0 user ID from the request (set by Auth0 middleware)
+    const { sub: auth0Id } = req.auth;
 
-    if (instructorId) {
-      let instructor = await Instructor.findOne({ customId: instructorId });
-      if (!instructor && mongoose.Types.ObjectId.isValid(instructorId)) {
-        instructor = await Instructor.findById(instructorId);
-      }
-      if (!instructor) {
-        return res.status(404).json({
-          message:
-            "Instructor not found. Please provide a valid instructor customId or ObjectId.",
-        });
-      }
-      instructorObjectId = instructor._id;
-    } else if (req.user?.id) {
-      instructorObjectId = req.user.id;
-    } else {
-      return res.status(400).json({ message: "Instructor ID is required" });
+    if (!auth0Id) {
+      return res.status(401).json({ message: "Unauthorized: No Auth0 user ID provided" });
     }
+
+    // Find the instructor by their Auth0 ID
+    const instructor = await Instructor.findOne({ auth0Id });
+    if (!instructor) {
+      return res.status(404).json({
+        message: "Instructor not found. Please ensure you are registered as an instructor.",
+      });
+    }
+
+    // Use the instructor's MongoDB _id for the course
+    const instructorObjectId = instructor._id;
 
     const course = new Course({
       title,
@@ -71,7 +68,7 @@ export const getAllCourses = async (req, res) => {
     const filter = {};
 
     if (category) filter.category = category;
-    if (level) filter.level = level;
+    if (level) filter.level = level; 
     if (instructor) filter.instructor = instructor;
     if (topRated) filter.topRated = topRated === 'true';
     if (inDemand) filter.inDemand = inDemand === 'true';

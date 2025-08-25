@@ -29,15 +29,10 @@ import {
 const router = express.Router();
 
 // router.post('/', verifyAuth0Token, isInstructor, createCourse);
-router.post("/", createCourse);
+router.post("/", verifyAuth0Token, createCourse);
 router.get("/", getAllCourses);
 router.get("/:id", getCourseById);
-router.get(
-  "/instructor/myCourses",
-  verifyAuth0Token,
-  isInstructor,
-  getInstructorsCourses
-);
+router.get("/instructor/myCourses", verifyAuth0Token, isInstructor, getInstructorsCourses);
 router.put("/:id", verifyAuth0Token, isInstructor, updateCourse);
 router.post("/:id/videos", verifyAuth0Token, isInstructor, addVideoToCourse);
 router.put(

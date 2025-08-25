@@ -16,7 +16,7 @@ import reviewRoutes from "./routes/reviewRoutes.js";
 import couponRoutes from "./routes/couponRoutes.js";
 import userAdminRoutes from "./routes/userAdminRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
-import paymentRoutes from "./controllers/paymentRoutes.js";
+import paymentRoutes from "./routes/PaymentRoutes.js";
 import queryRoutes from "./routes/queryRoutes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";

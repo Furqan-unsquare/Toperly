@@ -101,7 +101,7 @@ const CourseDashboard: FC<CourseDashboardProps> = ({
         </div>
         <div className="flex justify-between items-center text-sm text-gray-500 mb-3">
           <span>{course.lessons?.length || course.videos?.length || 0} lessons</span>
-          <span className="font-bold text-green-600">${course.price}</span>
+          <span className="font-bold text-green-600">₹{course.price}</span>
         </div>
         <div className="flex gap-2">
           <button
