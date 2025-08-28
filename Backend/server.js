@@ -16,7 +16,7 @@ import reviewRoutes from "./routes/reviewRoutes.js";
 import couponRoutes from "./routes/couponRoutes.js";
 import userAdminRoutes from "./routes/userAdminRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
-import paymentRoutes from "./routes/PaymentRoutes.js";
+// import paymentRoutes from "./routes/PaymentRoutes.js";
 import queryRoutes from "./routes/queryRoutes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -72,271 +72,280 @@ app.use(urlencoded({ extended: true, limit: "20mb" }));
 app.use(cookieParser());
 app.use(express.static("public"));
 
-// const razorpay = new Razorpay({
-//   key_id: process.env.RAZORPAY_KEY_ID,
-//   key_secret: process.env.RAZORPAY_KEY_SECRET,
-// });
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
-// app.get("/", (req, res) => {
-//   res.json({ message: "Razorpay Payment Server is running!" });
-// });
+app.get("/", (req, res) => {
+  res.json({ message: "Razorpay Payment Server is running!" });
+});
 
-// // Create order endpoint
-// app.post("/api/payment/create-order", async (req, res) => {
-//   try {
-//     const {
-//       amount,
-//       currency = "INR",
-//       courseId,
-//       courseName,
-//       userEmail,
-//     } = req.body;
+// Create order endpoint
+app.post("/api/payment/create-order", async (req, res) => {
+  try {
+    const { amount, currency = "INR", courseId, courseName, userEmail } = req.body;
 
-//     if (!amount || !courseId || !courseName || !userEmail) {
-//       return res.status(400).json({
-//         success: false,
-//         message:
-//           "Missing required fields: amount, courseId, courseName, userEmail",
-//       });
-//     }
+    if (!amount || !courseId || !courseName || !userEmail) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields: amount, courseId, courseName, userEmail",
+      });
+    }
 
-//     // Safe receipt generation - guaranteed under 40 chars
-//     const generateSafeReceipt = (courseId) => {
-//       const timestamp = Date.now().toString(36); // Base36 for shorter string
-//       const courseShort = courseId.slice(-6); // Last 6 chars of courseId
-//       return `c_${courseShort}_${timestamp}`.substring(0, 40); // Ensure max 40 chars
-//     };
+    // Validate student exists
+    const student = await Student.findOne({ email: userEmail });
+    if (!student) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid userEmail: Student not found",
+      });
+    }
 
-//     const receipt = generateSafeReceipt(courseId);
+    // Convert amount into smallest currency unit (paise for INR)
+    const fixedAmount = Math.round(amount);
 
-//     const options = {
-//       amount: amount,
-//       currency: currency,
-//       receipt: receipt,
-//       notes: {
-//         courseId: courseId,
-//         courseName: courseName,
-//         userEmail: userEmail,
-//         originalCourseId: courseId, // Full courseId for reference
-//       },
-//     };
+    const generateSafeReceipt = (courseId) => {
+      const timestamp = Date.now().toString(36);
+      const courseShort = courseId.slice(-6);
+      return `c_${courseShort}_${timestamp}`.substring(0, 40);
+    };
 
-//     console.log(
-//       "Creating order with receipt:",
-//       receipt,
-//       "(length:",
-//       receipt.length,
-//       ")"
-//     );
+    const receipt = generateSafeReceipt(courseId);
 
-//     const order = await razorpay.orders.create(options);
+    const options = {
+      amount: fixedAmount, // Razorpay expects amount in paise
+      currency,
+      receipt,
+      notes: { courseId, courseName, userEmail, originalCourseId: courseId },
+    };
 
-//     res.json({
-//       success: true,
-//       order: {
-//         id: order.id,
-//         amount: order.amount,
-//         currency: order.currency,
-//         receipt: order.receipt,
-//         status: order.status,
-//         created_at: order.created_at,
-//       },
-//       key_id: process.env.RAZORPAY_KEY_ID,
-//     });
-//   } catch (error) {
-//     console.error("Error creating order:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Failed to create order",
-//       error: error.message,
-//     });
-//   }
-// });
+    console.log(`Creating order for amount: ₹${amount} (${fixedAmount} paise)`);
 
-// // Verify payment endpoint
-// app.post("/api/payment/verify", async (req, res) => {
-//   try {
-//     const {
-//       razorpay_order_id,
-//       razorpay_payment_id,
-//       razorpay_signature,
-//       courseId,
-//       userEmail,
-//       userId, // Add userId to the verification
-//     } = req.body;
+    const order = await razorpay.orders.create(options);
 
-//     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Missing payment verification parameters",
-//       });
-//     }
+    res.json({
+      success: true,
+      order: {
+        id: order.id,
+        amount: order.amount / 100, // convert back to rupees for frontend clarity
+        currency: order.currency,
+        receipt: order.receipt,
+        status: order.status,
+        created_at: order.created_at,
+      },
+      key_id: process.env.RAZORPAY_KEY_ID,
+    });
+  } catch (error) {
+    console.error("Error creating order:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to create order",
+      error: error.message,
+    });
+  }
+});
 
-//     // Verify signature
-//     const body = razorpay_order_id + "|" + razorpay_payment_id;
-//     const expectedSignature = crypto
-//       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-//       .update(body.toString())
-//       .digest("hex");
+// Verify payment endpoint
+app.post("/api/payment/verify", async (req, res) => {
+  try {
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+      courseId,
+      userEmail,
+    } = req.body;
 
-//     const isAuthentic = expectedSignature === razorpay_signature;
+    // Validate required fields
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !courseId || !userEmail) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields: razorpay_order_id, razorpay_payment_id, razorpay_signature, courseId, or userEmail",
+      });
+    }
 
-//     if (isAuthentic) {
-//       // Payment verified successfully - Now enroll the student
-//       try {
-//         // Fetch payment details from Razorpay API
-//         const paymentResponse = await axios.get(
-//           `https://api.razorpay.com/v1/payments/${razorpay_payment_id}`,
-//           {
-//             auth: {
-//               username: process.env.RAZORPAY_KEY_ID,
-//               password: process.env.RAZORPAY_KEY_SECRET,
-//             },
-//           }
-//         );
+    console.log("Received request body:", req.body); // Debug log
 
-//         // Extract amount and currency
-//         const amount = paymentResponse.data.amount; // in paise
-//         const currency = paymentResponse.data.currency;
+    // Verify signature
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(body.toString())
+      .digest("hex");
 
-//         // Check if already enrolled
-//         const existingEnrollment = await EnrolledCourse.findOne({
-//           student: userId,
-//           course: courseId,
-//         });
+    const isAuthentic = expectedSignature === razorpay_signature;
 
-//         if (!existingEnrollment) {
-//           // Create enrollment
-//           const enrollment = new EnrolledCourse({
-//             student: userId,
-//             course: courseId,
-//             paymentDetails: {
-//               paymentId: razorpay_payment_id,
-//               orderId: razorpay_order_id,
-//               signature: razorpay_signature,
-//               amount: amount * 100, // You can get this from the order details
-//               currency: "INR",
-//               status: "completed",
-//             },
-//           });
+    if (isAuthentic) {
+      try {
+        // Fetch payment details from Razorpay API
+        const paymentResponse = await axios.get(
+          `https://api.razorpay.com/v1/payments/${razorpay_payment_id}`,
+          {
+            auth: {
+              username: process.env.RAZORPAY_KEY_ID,
+              password: process.env.RAZORPAY_KEY_SECRET,
+            },
+          }
+        );
 
-//           await enrollment.save();
+        const amount = paymentResponse.data.amount; // in paise
+        const currency = paymentResponse.data.currency;
 
-//           // Update course enrolled students count
-//           await Course.findByIdAndUpdate(courseId, {
-//             $addToSet: { enrolledStudents: userId },
-//           });
-//         }
+        // Find student by email
+        const student = await Student.findOne({ email: userEmail });
+        if (!student) {
+          return res.status(400).json({
+            success: false,
+            message: "Invalid userEmail: Student not found",
+          });
+        }
 
-//         res.json({
-//           success: true,
-//           message: "Payment verified and enrollment completed successfully",
-//           paymentDetails: {
-//             orderId: razorpay_order_id,
-//             paymentId: razorpay_payment_id,
-//             courseId: courseId,
-//             userEmail: userEmail,
-//           },
-//         });
-//       } catch (enrollmentError) {
-//         console.error("Enrollment error after payment:", enrollmentError);
-//         // Payment was successful but enrollment failed
-//         res.json({
-//           success: true,
-//           message:
-//             "Payment verified successfully. Enrollment will be processed shortly.",
-//           paymentDetails: {
-//             orderId: razorpay_order_id,
-//             paymentId: razorpay_payment_id,
-//             courseId: courseId,
-//             userEmail: userEmail,
-//           },
-//         });
-//       }
-//     } else {
-//       res.status(400).json({
-//         success: false,
-//         message: "Invalid payment signature",
-//       });
-//     }
-//   } catch (error) {
-//     console.error("Error verifying payment:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Payment verification failed",
-//       error: error.message,
-//     });
-//   }
-// });
+        // Validate courseId exists
+        const course = await Course.findById(courseId);
+        if (!course) {
+          return res.status(400).json({
+            success: false,
+            message: "Invalid courseId: Course not found",
+          });
+        }
 
-// // Get payment details endpoint
-// app.get("/api/payment/:paymentId", async (req, res) => {
-//   try {
-//     const { paymentId } = req.params;
-//     const payment = await razorpay.payments.fetch(paymentId);
+        // Check if already enrolled
+        const existingEnrollment = await EnrolledCourse.findOne({
+          student: student._id,
+          course: courseId,
+        });
 
-//     res.json({
-//       success: true,
-//       payment: {
-//         id: payment.id,
-//         amount: payment.amount,
-//         currency: payment.currency,
-//         status: payment.status,
-//         order_id: payment.order_id,
-//         method: payment.method,
-//         created_at: payment.created_at,
-//         notes: payment.notes,
-//       },
-//     });
-//   } catch (error) {
-//     console.error("Error fetching payment:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Failed to fetch payment details",
-//       error: error.message,
-//     });
-//   }
-// });
+        if (!existingEnrollment) {
+          // Create enrollment
+          const enrollment = new EnrolledCourse({
+            student: student._id, // Use student._id from email lookup
+            course: courseId,
+            paymentDetails: {
+              paymentId: razorpay_payment_id,
+              orderId: razorpay_order_id,
+              signature: razorpay_signature,
+              amount: amount / 100, // store in ₹
+              currency: "INR",
+              status: "completed",
+            },
+          });
 
-// // Webhook endpoint for Razorpay events
-// app.post("/api/webhook/razorpay", (req, res) => {
-//   try {
-//     const webhookSignature = req.headers["x-razorpay-signature"];
-//     const webhookBody = JSON.stringify(req.body);
+          await enrollment.save();
 
-//     const expectedSignature = crypto
-//       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-//       .update(webhookBody)
-//       .digest("hex");
+          // Update course enrolled students count
+          await Course.findByIdAndUpdate(courseId, {
+            $addToSet: { enrolledStudents: student._id },
+          });
+        }
 
-//     if (webhookSignature === expectedSignature) {
-//       const event = req.body;
+        res.json({
+          success: true,
+          message: "Payment verified and enrollment completed successfully",
+          paymentDetails: {
+            orderId: razorpay_order_id,
+            paymentId: razorpay_payment_id,
+            courseId: courseId,
+            userEmail: userEmail,
+          },
+        });
+      } catch (enrollmentError) {
+        console.error("Enrollment error after payment:", enrollmentError);
+        res.json({
+          success: true,
+          message: "Payment verified successfully. Enrollment will be processed shortly.",
+          paymentDetails: {
+            orderId: razorpay_order_id,
+            paymentId: razorpay_payment_id,
+            courseId: courseId,
+            userEmail: userEmail,
+          },
+        });
+      }
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "Invalid payment signature",
+      });
+    }
+  } catch (error) {
+    console.error("Error verifying payment:", error);
+    res.status(500).json({
+      success: false,
+      message: "Payment verification failed",
+      error: error.message,
+    });
+  }
+});
 
-//       // Handle different webhook events
-//       switch (event.event) {
-//         case "payment.captured":
-//           console.log("Payment captured:", event.payload.payment.entity);
-//           // Handle successful payment
-//           break;
-//         case "payment.failed":
-//           console.log("Payment failed:", event.payload.payment.entity);
-//           // Handle failed payment
-//           break;
-//         default:
-//           console.log("Unhandled webhook event:", event.event);
-//       }
+// Get payment details endpoint
+app.get("/api/payment/:paymentId", async (req, res) => {
+  try {
+    const { paymentId } = req.params;
+    const payment = await razorpay.payments.fetch(paymentId);
 
-//       res.status(200).json({ success: true });
-//     } else {
-//       res
-//         .status(400)
-//         .json({ success: false, message: "Invalid webhook signature" });
-//     }
-//   } catch (error) {
-//     console.error("Webhook error:", error);
-//     res.status(500).json({ success: false, error: error.message });
-//   }
-// });
+    res.json({
+      success: true,
+      payment: {
+        id: payment.id,
+        amount: payment.amount,
+        currency: payment.currency,
+        status: payment.status,
+        order_id: payment.order_id,
+        method: payment.method,
+        created_at: payment.created_at,
+        notes: payment.notes,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching payment:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch payment details",
+      error: error.message,
+    });
+  }
+});
+
+// Webhook endpoint for Razorpay events
+app.post("/api/webhook/razorpay", (req, res) => {
+  try {
+    const webhookSignature = req.headers["x-razorpay-signature"];
+    const webhookBody = JSON.stringify(req.body);
+
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(webhookBody)
+      .digest("hex");
+
+    if (webhookSignature === expectedSignature) {
+      const event = req.body;
+
+      // Handle different webhook events
+      switch (event.event) {
+        case "payment.captured":
+          console.log("Payment captured:", event.payload.payment.entity);
+          // Handle successful payment
+          break;
+        case "payment.failed":
+          console.log("Payment failed:", event.payload.payment.entity);
+          // Handle failed payment
+          break;
+        default:
+          console.log("Unhandled webhook event:", event.event);
+      }
+
+      res.status(200).json({ success: true });
+    } else {
+      res
+        .status(400)
+        .json({ success: false, message: "Invalid webhook signature" });
+    }
+  } catch (error) {
+    console.error("Webhook error:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
 // Middleware to validate AccessKey
 const validateAccessKey = (req, res, next) => {
@@ -463,7 +472,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/admin", userAdminRoutes);
 app.use("/api/blogs", blogRoutes);
-app.use("/api/payment", paymentRoutes);
+// app.use("/api/payment", paymentRoutes);
 app.use("/api/query", queryRoutes);
 app.use('/api/learning-points', learningPointsRoutes);
 app.use('/api/requirements', requirementsRoutes);

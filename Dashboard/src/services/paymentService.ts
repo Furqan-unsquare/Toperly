@@ -1,4 +1,3 @@
-// paymentService.ts
 import axios from "axios";
 import { PaymentResponse } from "../types/payment";
 
@@ -35,6 +34,7 @@ export const paymentService = {
     razorpay_payment_id: string;
     razorpay_signature: string;
     courseId: string;
+    userEmail: string;
   }) => {
     try {
       const response = await axios.post(

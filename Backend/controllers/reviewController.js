@@ -1,6 +1,5 @@
 import Review from '../models/Review.js';
 import Course from '../models/Course.js';
-import { GiConsoleController } from 'react-icons/gi';
 
 export const addReview = async (req, res) => {
   try {
@@ -53,7 +52,7 @@ export const getReviewsForCourse = async (req, res) => {
 export const deleteReview = async (req, res) => {
   try {
     const { courseId, reviewId } = req.params;
-    const studentId = req.user.id;
+    const studentId = req.user._id;
 
     const review = await Review.findOne({ _id: reviewId, student: studentId, course: courseId });
     if (!review) return res.status(404).json({ message: 'Review not found or not authorized' });

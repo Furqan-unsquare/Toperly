@@ -366,7 +366,7 @@ const AdminCourseApprovalList = () => {
               {/* Course Image */}
               <div className="relative ">
                 <img
-                  src={course.image || "/api/placeholder/400/250"}
+                  src={course.thumbnail.url}
                   alt={course.title}
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
@@ -453,7 +453,11 @@ const AdminCourseApprovalList = () => {
                 </h3>
                 <p className="text-sm text-gray-600 mb-3">by {course.instructor?.name}</p>
 
-                <p className="text-gray-700 text-sm mb-4 line-clamp-2">{course.description}</p>
+                <div
+  className="text-gray-700 text-sm mb-4 line-clamp-2"
+  dangerouslySetInnerHTML={{ __html: course.description }}
+/>
+
 
                 <div className="flex items-center text-xs text-gray-500 mb-4">
                   <Calendar className="w-4 h-4 mr-1" />

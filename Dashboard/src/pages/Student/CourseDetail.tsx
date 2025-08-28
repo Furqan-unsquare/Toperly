@@ -643,7 +643,7 @@ const CourseDetail = () => {
                     {/* Header */}
                     <div className="p-6 border-b border-gray-200">
                       <h3 className="text-xl font-semibold text-gray-900">
-                        About the Instructor
+                        About the Instructor 
                       </h3>
                     </div>
 

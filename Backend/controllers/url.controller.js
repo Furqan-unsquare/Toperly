@@ -103,14 +103,18 @@ export const uploadMedia = asyncWrapper(async (req, res, next) => {
 
   console.log("Uploading file to Bunny CDN:", req.file);
 
-  const uploadResult = await uploadFileOnBunny("images", req.file); // Store all media under folder
+  // Specify folder based on file type (e.g., 'videos' for video files)
+  const folder = req.file.mimetype.startsWith("video/") ? "videos" : "images";
+  const uploadResult = await uploadFileOnBunny(folder, req.file);
+
   if (!uploadResult) {
     throw new ApiError(500, "Failed to upload file to Bunny CDN");
   }
 
-  return res
-    .status(201)
-    .json(
-      new ApiRes(201, { url: uploadResult.url }, "Media uploaded successfully")
-    );
+  return res.status(201).json(
+    new ApiRes(201, {
+      url: uploadResult.url,
+      bunnyFileId: uploadResult.public_id, // Ensure bunnyFileId is returned
+    }, "Media uploaded successfully")
+  );
 });

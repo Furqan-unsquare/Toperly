@@ -17,7 +17,7 @@ const adminSchema = new mongoose.Schema({
     enum: ['admin', 'subadmin'],
     default: 'admin',
   },
-}, { timestamps: true });
+}, { timestamps: true }); 
 
 adminSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);

@@ -14,7 +14,7 @@ const razorpay = new Razorpay({
 // Create order
 export const createOrder = async (req, res) => {
   try {
-    const { amount, currency = "INR", courseId, courseName, userEmail } = req.body;
+    let { amount, currency = "INR", courseId, courseName, userEmail } = req.body;
 
     if (!amount || !courseId || !courseName || !userEmail) {
       return res.status(400).json({
@@ -33,6 +33,9 @@ export const createOrder = async (req, res) => {
       return res.status(404).json({ success: false, message: "Course not found" });
     }
 
+    // Convert to smallest currency unit (paise for INR)
+    amount = parseInt(amount) / 100;
+
     const generateSafeReceipt = (courseId) => {
       const timestamp = Date.now().toString(36);
       const courseShort = courseId.slice(-6);
@@ -42,7 +45,7 @@ export const createOrder = async (req, res) => {
     const receipt = generateSafeReceipt(courseId);
 
     const options = {
-      amount: amount,
+      amount, // now in paise
       currency,
       receipt,
       notes: { courseId, courseName, userEmail, originalCourseId: courseId },
@@ -54,7 +57,7 @@ export const createOrder = async (req, res) => {
       success: true,
       order: {
         id: order.id,
-        amount: order.amount,
+        amount: order.amount, // will return 249900 for ₹2499
         currency: order.currency,
         receipt: order.receipt,
         status: order.status,

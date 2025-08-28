@@ -7,25 +7,23 @@ import {
   Download,
   Tv,
   Infinity,
-  Clock,
   Heart,
   X,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
-const EnrollmentCard = ({
-  course,
-  isEnrolled,
-  onEnroll,
-  enrollmentLoading,
-}) => {
+const EnrollmentCard = ({ course, isEnrolled, onEnroll, enrollmentLoading }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
-  const API_BASE = import.meta.env.VITE_API_URL;
   const [showAlert, setShowAlert] = useState({
     show: false,
     message: "",
     type: "",
   });
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-IN", {
@@ -35,36 +33,39 @@ const EnrollmentCard = ({
     }).format(price);
   };
 
-  // Check if course is already in wishlist on component mount
   useEffect(() => {
-    checkWishlistStatus();
-  }, [course._id]);
+    if (!user) {
+      console.log("User not logged in, skipping wishlist check");
+      return;
+    }
 
-  const checkWishlistStatus = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
+    const checkWishlistStatus = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
 
-    try {
-      const response = await fetch(
-        `${API_BASE}/api/wishlist/my-wishlist`,
-        {
+      try {
+        const response = await fetch(`${API_BASE}/api/wishlist/my-wishlist`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
-      );
+        });
 
-      if (response.ok) {
-        const wishlistCourses = await response.json();
-        const isInWishlist = wishlistCourses.some(
-          (wishlistCourse) => wishlistCourse._id === course._id
-        );
-        setIsWishlisted(isInWishlist);
+        if (response.ok) {
+          const wishlistCourses = await response.json();
+          const isInWishlist = wishlistCourses.some(
+            (wishlistCourse) => wishlistCourse._id === course._id
+          );
+          setIsWishlisted(isInWishlist);
+        } else {
+          console.error("Failed to fetch wishlist:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error checking wishlist status:", error);
       }
-    } catch (error) {
-      console.error("Error checking wishlist status:", error);
-    }
-  };
+    };
+
+    checkWishlistStatus();
+  }, [course._id, user]);
 
   const showAlertMessage = (message, type) => {
     setShowAlert({ show: true, message, type });
@@ -74,27 +75,24 @@ const EnrollmentCard = ({
   };
 
   const handleWishlistToggle = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    if (!user) {
       showAlertMessage("Please login to manage wishlist", "error");
+      navigate("/auth/login");
       return;
     }
 
+    const token = localStorage.getItem("token");
     setWishlistLoading(true);
 
     try {
       if (isWishlisted) {
-        // Remove from wishlist
-        const response = await fetch(
-          `${API_BASE}/api/wishlist/${course._id}`,
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch(`${API_BASE}/api/wishlist/${course._id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (!response.ok) {
           throw new Error("Failed to remove from wishlist");
@@ -103,17 +101,13 @@ const EnrollmentCard = ({
         setIsWishlisted(false);
         showAlertMessage("Course removed from wishlist", "success");
       } else {
-        // Add to wishlist
-        const response = await fetch(
-          `${API_BASE}/api/wishlist/${course._id}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch(`${API_BASE}/api/wishlist/${course._id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (!response.ok) {
           throw new Error("Failed to add to wishlist");
@@ -135,6 +129,40 @@ const EnrollmentCard = ({
     }
   };
 
+  const handleEnroll = async () => {
+    if (!user || !user.email) {
+      showAlertMessage("Please login to enroll in the course", "error");
+      navigate("/auth/login");
+      return;
+    }
+
+    console.log("User email for enrollment:", user.email); // Debug user email
+
+    if (course.price === 0) {
+      try {
+        const response = await fetch(`${API_BASE}/api/enroll`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ courseId: course._id, userEmail: user.email }),
+        });
+
+        if (response.ok) {
+          showAlertMessage("Enrolled successfully!", "success");
+        } else {
+          throw new Error("Enrollment failed");
+        }
+      } catch (error) {
+        console.error("Enrollment error:", error);
+        showAlertMessage("Failed to enroll in the course", "error");
+      }
+    } else {
+      onEnroll(user.email); // Pass user.email to onEnroll
+    }
+  };
+
   const features = [
     {
       icon: <PlayCircle size={16} />,
@@ -146,7 +174,6 @@ const EnrollmentCard = ({
     { icon: <Award size={16} />, text: "Certificate of completion" },
   ];
 
-  // Alert Component
   const AlertNotification = () =>
     showAlert.show && (
       <div className="fixed top-4 right-4 z-50 max-w-sm w-full">
@@ -171,19 +198,11 @@ const EnrollmentCard = ({
   return (
     <>
       <AlertNotification />
-
       <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
-        {/* Preview Video Thumbnail */}
         <div className="relative h-48 overflow-hidden bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center">
-          <img src={course.thumbnail.url} alt="" className=""/>
-          {/* <div className="text-center text-white">
-            <PlayCircle size={48} className="mx-auto mb-2 opacity-80" />
-            <p className="text-sm font-medium">Preview course</p>
-          </div> */}
+          <img src={course.thumbnail.url} alt="" className="" />
         </div>
-
         <div className="p-6">
-          {/* Price Section */}
           <div className="text-center mb-6">
             <div className="flex items-center justify-center gap-3 mb-2">
               <div className="text-3xl font-bold text-gray-900">
@@ -199,7 +218,6 @@ const EnrollmentCard = ({
                 </div>
               )}
             </div>
-
             {course.price > 0 && course.originalPrice && (
               <div className="text-sm text-red-600 font-medium bg-red-50 px-3 py-1 rounded-full inline-block">
                 {Math.round((1 - course.price / course.originalPrice) * 100)}%
@@ -207,11 +225,9 @@ const EnrollmentCard = ({
               </div>
             )}
           </div>
-
-          {/* CTA Button */}
           {!isEnrolled ? (
             <button
-              onClick={onEnroll}
+              onClick={handleEnroll}
               disabled={enrollmentLoading}
               className={`w-full py-4 rounded-lg mb-4 font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-2 ${
                 course.price === 0
@@ -262,11 +278,7 @@ const EnrollmentCard = ({
           ) : (
             <div className="text-center py-4 bg-green-50 text-green-800 rounded-lg mb-4 font-semibold border-2 border-green-200">
               <div className="flex items-center justify-center gap-2">
-                <svg
-                  className="h-5 w-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -277,8 +289,6 @@ const EnrollmentCard = ({
               </div>
             </div>
           )}
-
-          {/* Money-back guarantee */}
           {course.price > 0 && (
             <div className="text-center text-sm text-gray-600 mb-6">
               <span className="bg-yellow-50 text-yellow-800 px-2 py-1 rounded text-xs font-medium">
@@ -286,14 +296,21 @@ const EnrollmentCard = ({
               </span>
             </div>
           )}
-
-          {/* Course includes */}
           <div className="space-y-3">
             <h4 className="font-semibold text-gray-900 text-sm">
               This course includes:
             </h4>
             <div className="space-y-3">
-              {features.map((feature, index) => (
+              {[
+                {
+                  icon: <PlayCircle size={16} />,
+                  text: `${course.videos?.length || 0} on-demand videos`,
+                },
+                { icon: <Download size={16} />, text: "Downloadable resources" },
+                { icon: <Tv size={16} />, text: "Access on mobile and TV" },
+                { icon: <Infinity size={16} />, text: "Full lifetime access" },
+                { icon: <Award size={16} />, text: "Certificate of completion" },
+              ].map((feature, index) => (
                 <div
                   key={index}
                   className="flex items-center gap-3 text-sm text-gray-700"
@@ -304,8 +321,6 @@ const EnrollmentCard = ({
               ))}
             </div>
           </div>
-
-          {/* Share and wishlist */}
           <div className="border-t border-gray-200 mt-6 pt-6">
             <div className="flex justify-between items-center text-sm">
               <button className="text-purple-600 hover:text-purple-700 font-medium">
@@ -330,9 +345,7 @@ const EnrollmentCard = ({
                 ) : (
                   <>
                     <Heart
-                      className={`w-4 h-4 ${
-                        isWishlisted ? "fill-current" : ""
-                      }`}
+                      className={`w-4 h-4 ${isWishlisted ? "fill-current" : ""}`}
                     />
                     {isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                   </>

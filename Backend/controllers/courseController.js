@@ -16,7 +16,7 @@ export const createCourse = async (req, res) => {
       materials,
     } = req.body;
 
-    // Get the Auth0 user ID from the request (set by Auth0 middleware)
+    // Get the Auth0 user ID from the request
     const { sub: auth0Id } = req.auth;
 
     if (!auth0Id) {
@@ -31,20 +31,25 @@ export const createCourse = async (req, res) => {
       });
     }
 
-    // Use the instructor's MongoDB _id for the course
-    const instructorObjectId = instructor._id;
+    // Validate videos array
+    const formattedVideos = Array.isArray(videos)
+      ? videos.map((video) => ({
+          url: video.url || "",
+          bunnyFileId: video.bunnyFileId || "",
+        }))
+      : [];
 
     const course = new Course({
       title,
       description,
-      instructor: instructorObjectId,
+      instructor: instructor._id,
       category,
       level,
       price,
       duration,
       thumbnail,
-      videos: videos || [],
-      materials: materials || [],
+      videos: formattedVideos,
+      materials: Array.isArray(materials) ? materials : [],
     });
 
     await course.save();
@@ -56,9 +61,7 @@ export const createCourse = async (req, res) => {
     });
   } catch (error) {
     console.error("Create course error:", error);
-    res
-      .status(500)
-      .json({ message: "Server error creating course", error: error.message });
+    res.status(500).json({ message: "Server error creating course", error: error.message });
   }
 };
 

@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { paymentService } from '../services/paymentService';
-import { Course, RazorpayOptions, RazorpayPaymentResponse } from '../types/payment';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState } from "react";
+import { paymentService } from "../services/paymentService";
+import { Course, RazorpayOptions, RazorpayPaymentResponse } from "../types/payment";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const usePayment = () => {
   const [loading, setLoading] = useState(false);
@@ -16,8 +16,8 @@ export const usePayment = () => {
         return;
       }
 
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
       script.onload = () => resolve(true);
       script.onerror = () => resolve(false);
       document.body.appendChild(script);
@@ -28,6 +28,14 @@ export const usePayment = () => {
     course: Course,
     userDetails: { name: string; email: string; contact: string }
   ) => {
+    if (!user || !user.email) {
+      setError("Please login to proceed with payment");
+      console.error("User not logged in or email missing");
+      return;
+    }
+
+    console.log("Initiating payment with user email:", user.email); // Debug user email
+
     try {
       setLoading(true);
       setError(null);
@@ -36,19 +44,24 @@ export const usePayment = () => {
       // Load Razorpay script
       const isScriptLoaded = await loadRazorpayScript();
       if (!isScriptLoaded) {
-        throw new Error('Failed to load Razorpay script');
+        throw new Error("Failed to load Razorpay script");
       }
 
       // Create order
-      const orderResponse = await paymentService.createOrder({
+      const orderData = {
         amount: course.price,
         courseId: course.id,
         courseName: course.name,
-        userEmail: userDetails.email,
-      });
+        userEmail: user.email,
+        currency: "INR",
+      };
+
+      console.log("Order data:", orderData); // Debug order data
+
+      const orderResponse = await paymentService.createOrder(orderData);
 
       if (!orderResponse.success || !orderResponse.order) {
-        throw new Error(orderResponse.message || 'Failed to create order');
+        throw new Error(orderResponse.message || "Failed to create order");
       }
 
       // Razorpay options
@@ -56,31 +69,32 @@ export const usePayment = () => {
         key: orderResponse.key_id!,
         amount: orderResponse.order.amount,
         currency: orderResponse.order.currency,
-        name: 'Course Academy',
+        name: "Course Academy",
         description: `Purchase ${course.name}`,
         order_id: orderResponse.order.id,
         handler: async (response: RazorpayPaymentResponse) => {
           try {
-            // Verify payment
-            const verificationResponse = await paymentService.verifyPayment({
+            const verificationData = {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
               courseId: course.id,
-              userEmail: userDetails.email,
-              userId:user._id
-            });
+              userEmail: user.email,
+            };
+
+            console.log("Verification data:", verificationData); // Debug verification data
+
+            const verificationResponse = await paymentService.verifyPayment(verificationData);
 
             if (verificationResponse.success) {
               setPaymentSuccess(true);
-              // You can add success callback here
-              console.log('Payment successful!', verificationResponse);
+              console.log("Payment successful!", verificationResponse);
             } else {
-              throw new Error('Payment verification failed');
+              throw new Error("Payment verification failed");
             }
           } catch (err: any) {
             setError(err.message);
-            console.error('Payment verification error:', err);
+            console.error("Payment verification error:", err);
           }
         },
         prefill: {
@@ -89,7 +103,7 @@ export const usePayment = () => {
           contact: userDetails.contact,
         },
         theme: {
-          color: '#3B82F6',
+          color: "#3B82F6",
         },
       };
 
@@ -97,14 +111,13 @@ export const usePayment = () => {
       const razorpay = new window.Razorpay(options);
       razorpay.open();
 
-      razorpay.on('payment.failed', (response: any) => {
+      razorpay.on("payment.failed", (response: any) => {
         setError(`Payment failed: ${response.error.description}`);
-        console.error('Payment failed:', response.error);
+        console.error("Payment failed:", response.error);
       });
-
     } catch (err: any) {
       setError(err.message);
-      console.error('Payment initiation error:', err);
+      console.error("Payment initiation error:", err);
     } finally {
       setLoading(false);
     }
