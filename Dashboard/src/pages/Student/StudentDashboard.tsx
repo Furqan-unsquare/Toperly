@@ -74,10 +74,10 @@ export const StudentDashboard = () => {
   // Course Progress Chart Data
   const progressChartData = data.enrolledCourses?.map((c: any, idx: number) => ({
     name:
-      c.course.title?.length > 15
-        ? c.course.title.substring(0, 15) + "..."
-        : c.course.title,
-    fullName: c.course.title,
+      c.course?.title?.length > 15
+        ? c.course?.title.substring(0, 15) + "..."
+        : c.course?.title,
+    fullName: c.course?.title,
     progress: c.progress || 0,
     completed: c.progress >= 100,
   }));
@@ -224,7 +224,7 @@ export const StudentDashboard = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">
-                      {stat.title}
+                      {stat?.title}
                     </p>
                     <p className="text-3xl font-bold text-gray-900 mt-2">
                       {stat.value}

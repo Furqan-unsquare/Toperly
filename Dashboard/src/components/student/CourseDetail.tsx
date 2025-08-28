@@ -27,6 +27,8 @@ import CourseReviewSection from "./CourseReviewSection";
 import PaymentForm from "../Payment/PaymentForm";
 import PaymentModal from "../Payment/PaymentModal";
 import { usePayment } from "../../hooks/usePayment";
+import LearningObjectives from "../../components/student/LearningObjectives";
+import CourseRequirements from "../../components/student/CourseRequirements";
 
 const API_BASE = `${import.meta.env.VITE_API_URL}/api`;
 
@@ -181,17 +183,18 @@ const CourseDetail = () => {
   };
 
   const handleCertificate = async () => {
-    if (!user?._id || !isEnrolled)
+    console.log(user);
+    if (!user?.id || !isEnrolled)
       return showToast("You must be enrolled", "error");
 
     try {
       setCertificateLoading(true);
       const res = await fetch(
-        `${API_BASE}/certificates/issue/${courseId}/${user._id}`,
+        `${API_BASE}/certificates/issue/${courseId}/${user.id}`,
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
         }
@@ -221,7 +224,7 @@ const CourseDetail = () => {
     try {
       const res = await fetch(`${API_BASE}/enroll/my-courses`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
       const data = await res.json();
@@ -273,7 +276,7 @@ const CourseDetail = () => {
     const courseData = {
       id: course._id,
       name: course.title,
-      price: course.price,
+      price: course.price * 100,
       description: course.description,
     };
 
@@ -356,7 +359,7 @@ const CourseDetail = () => {
 
       {/* Hero Section - Hidden if enrolled */}
       {!isEnrolled ? (
-        <div className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 mt-28 text-white">
+        <div className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 text-white">
           <div className="mx-auto px-4 sm:px-6 lg:px-0 lg:pl-40 lg:pr-10 py-8">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
               <div className="lg:col-span-2">
@@ -495,7 +498,12 @@ const CourseDetail = () => {
               {/* Optional: Progress indicator or course status */}
               <div className="flex items-center space-x-6">
                 <div>
-                  <button onClick={handleCertificate} className="text-green-600 font-medium">Certificate</button>
+                  <button
+                    onClick={handleCertificate}
+                    className="text-green-600 font-medium"
+                  >
+                    Certificate
+                  </button>
                 </div>
                 <div className="flex items-center text-green-600">
                   <CheckCircle size={16} className="mr-1" />
@@ -563,42 +571,15 @@ const CourseDetail = () => {
                 {activeTab === "overview" && (
                   <div className="space-y-8">
                     {/* What you'll learn */}
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-4">
-                        What you'll learn
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {learningObjectives.map((objective, index) => (
-                          <div key={index} className="flex items-start">
-                            <CheckCircle
-                              size={16}
-                              className="text-green-600 mr-3 mt-0.5 flex-shrink-0"
-                            />
-                            <span className="text-gray-700 text-sm">
-                              {objective}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                    <LearningObjectives courseId={courseId} />
 
                     {/* Requirements */}
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-4">
-                        Requirements
-                      </h3>
-                      <ul className="space-y-2">
-                        {requirements.map((requirement, index) => (
-                          <li
-                            key={index}
-                            className="flex items-start text-gray-700 text-sm"
-                          >
-                            <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-3 mt-2 flex-shrink-0"></span>
-                            {requirement}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    <CourseRequirements
+                      courseId={courseId}
+                      isAdmin={
+                        user?.role === "admin" || user?.role === "instructor"
+                      }
+                    />
 
                     {/* Description */}
                     <div>
@@ -971,7 +952,9 @@ const CourseDetail = () => {
             price: course.price,
             description: course.description,
           }}
-          onSubmit={handlePaymentFormSubmit}
+          onSubmit={(formData) => {
+            handlePaymentFormSubmit(formData);
+          }}
           onCancel={handlePaymentFormCancel}
           loading={paymentLoading}
         />

@@ -36,6 +36,8 @@ import Review from "./models/Review.js";
 import Razorpay from "razorpay";
 import crypto from "crypto";
 import Course from "./models/Course.js";
+import learningPointsRoutes from './routes/learningPointsRoutes.js';
+import requirementsRoutes from './routes/requirementsRoutes.js';
 // Load environment variables
 dotenv.config({ path: "./.env" });
 
@@ -463,6 +465,8 @@ app.use("/api/admin", userAdminRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/query", queryRoutes);
+app.use('/api/learning-points', learningPointsRoutes);
+app.use('/api/requirements', requirementsRoutes);
 
 // Error Handler
 app.use(globalErrorHandler);

@@ -123,6 +123,7 @@ export const Sidebar = ({ user, logout }: SidebarProps) => {
     { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard, roles: ["instructor"] },
     { name: "My Courses", path: "/instructor/all-courses", icon: FolderOpen, roles: ["instructor"] },
     { name: "Create Course", path: "/instructor/create-course", icon: FilePlus2, roles: ["instructor"] },
+    { name: "Course Content", path: "/instructor/course-content", icon: FilePlus2, roles: ["instructor"] },
     { name: "Approvals", path: "/instructor/approvals", icon: CheckSquare, roles: ["instructor"] },
     { name: "Quizzes", path: "/instructor/all-quizzes", icon: FileQuestion, roles: ["instructor"] },
     { name: "Materials", path: "/instructor/materials", icon: BookOpen, roles: ["instructor"] },
@@ -295,6 +296,22 @@ export const Sidebar = ({ user, logout }: SidebarProps) => {
                                   >
                                     <CheckSquare className="w-4 h-4 mr-2" />
                                     Approvals
+                                  </Button>
+                                </li>
+                              )}
+                              {filteredNavItems.find((item) => item.name === "Course Content") && (
+                                <li>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="w-full justify-start"
+                                    onClick={() => {
+                                      navigate("/instructor/course-content");
+                                      setIsMobileOpen(false);
+                                    }}
+                                  >
+                                    <CheckSquare className="w-4 h-4 mr-2" />
+                                    Course Content
                                   </Button>
                                 </li>
                               )}

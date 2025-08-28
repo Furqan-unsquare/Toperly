@@ -5,7 +5,7 @@ import {
   deleteReview,
   getAllReviewsWithCourseDetails,
 } from "../controllers/reviewController.js";
-import { verifyAuth0Token } from "../middlewares/auth.middleware.js";
+import { commonVerification, verifyAuth0Token } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ const router = express.Router();
 router.get("/all", getAllReviewsWithCourseDetails); // Fetch all reviews
 
 // POST /reviews/:courseId
-router.post("/:courseId", verifyAuth0Token, addReview);
+router.post("/:courseId", verifyAuth0Token, commonVerification, addReview);
 
 // GET /reviews/:courseId
 router.get("/:courseId", getReviewsForCourse);

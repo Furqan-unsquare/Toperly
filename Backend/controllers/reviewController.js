@@ -1,12 +1,13 @@
 import Review from '../models/Review.js';
 import Course from '../models/Course.js';
+import { GiConsoleController } from 'react-icons/gi';
 
 export const addReview = async (req, res) => {
   try {
     const { courseId } = req.params;
     const { rating, comment } = req.body;
-    const studentId = req.user.id; // From auth middleware
-
+    const studentId = req.user._id; // From auth middleware
+    console.log(req.user)
     if (!rating || rating < 1 || rating > 5) {
       return res.status(400).json({ message: 'Rating must be between 1 and 5' });
     }

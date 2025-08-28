@@ -281,7 +281,7 @@ const TopRatedCourses = () => {
             </div>
             <div className="text-right">
               <span className="text-xl font-bold text-gray-900">
-                ${course.price || 0}
+                ₹{course.price || 0}
               </span>
             </div>
           </div>

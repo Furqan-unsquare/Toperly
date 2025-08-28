@@ -27,6 +27,7 @@ import CourseReviewSection from "../../components/student/CourseReviewSection";
 import PaymentForm from "../../components/Payment/PaymentForm";
 import PaymentModal from "../../components/Payment/PaymentModal";
 import { usePayment } from "../../hooks/usePayment";
+import LearningObjectives from "../../components/student/LearningObjectives";
 
 const API_BASE = `${import.meta.env.VITE_API_URL}/api`;
 
@@ -570,24 +571,7 @@ const CourseDetail = () => {
                 {activeTab === "overview" && (
                   <div className="space-y-8">
                     {/* What you'll learn */}
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-4">
-                        What you'll learn
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {learningObjectives.map((objective, index) => (
-                          <div key={index} className="flex items-start">
-                            <CheckCircle
-                              size={16}
-                              className="text-green-600 mr-3 mt-0.5 flex-shrink-0"
-                            />
-                            <span className="text-gray-700 text-sm">
-                              {objective}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                    <LearningObjectives courseId={courseId} />
 
                     {/* Requirements */}
                     <div>

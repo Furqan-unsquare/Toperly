@@ -21,25 +21,24 @@ const CourseContentList = ({
   const [expandedSections, setExpandedSections] = useState({ 0: true });
   const navigate = useNavigate();
 
-const API_BASE = import.meta.env.VITE_API_URL;
+  const API_BASE = import.meta.env.VITE_API_URL;
 
-useEffect(() => {
-  const fetchQuizzes = async () => {
-    try {
-      const res = await axios.get(
-        `${API_BASE}/api/quizzes/course/${course._id}` // ✅ use API_BASE
-      );
-      if (res.data.success) {
-        setQuizzes(res.data.data);
+  useEffect(() => {
+    const fetchQuizzes = async () => {
+      try {
+        const res = await axios.get(
+          `${API_BASE}/api/quizzes/course/${course._id}`
+        );
+        if (res.data.success) {
+          setQuizzes(res.data.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch quizzes:", error);
       }
-    } catch (error) {
-      console.error("Failed to fetch quizzes:", error);
-    }
-  };
+    };
 
-  if (course?._id) fetchQuizzes();
-}, [course, API_BASE]); // ✅ include API_BASE in deps
-
+    if (course?._id) fetchQuizzes();
+  }, [course, API_BASE]);
 
   const videoToQuizMap = quizzes.reduce((map, quiz) => {
     map[quiz.videoId] = quiz._id;
@@ -53,46 +52,84 @@ useEffect(() => {
     }));
   };
 
-  const createDummyLessons = () => {
-    return Array.from({ length: 5 }, (_, index) => ({
-      _id: `dummy-${index + 1}`,
-      title: `Lesson ${index + 1}`,
-      order: index + 1,
-      duration: Math.floor(Math.random() * 20) + 10,
-      isDummy: true,
-    }));
+  // Group videos by section title and calculate section stats
+  const groupVideosBySection = (videos) => {
+    if (!videos || videos.length === 0) return [];
+
+    const grouped = videos.reduce((acc, video) => {
+      const sectionTitle = video.title || "Untitled Section";
+      if (!acc[sectionTitle]) {
+        acc[sectionTitle] = [];
+      }
+      acc[sectionTitle].push(video);
+      return acc;
+    }, {});
+
+    // Convert to array format with section stats
+    return Object.entries(grouped).map(([title, lectures]) => {
+      // Sort lectures by order
+      const sortedLectures = lectures.sort((a, b) => (a.order || 0) - (b.order || 0));
+      
+      // Calculate total duration for section
+      const totalDuration = sortedLectures.reduce((sum, video) => {
+        return sum + (video.duration || 0);
+      }, 0);
+
+      return {
+        title,
+        lectures: sortedLectures,
+        duration: totalDuration > 0 ? `${totalDuration} min` : "Duration not set",
+        lectureCount: sortedLectures.length,
+      };
+    });
+  };
+
+  // Create dummy sections for courses without real content
+  const createDummySections = () => {
+    return [
+      {
+        title: "Getting Started",
+        lectures: Array.from({ length: 3 }, (_, i) => ({
+          _id: `dummy-${i + 1}`,
+          description: `Introduction Lesson ${i + 1}`,
+          order: i + 1,
+          duration: Math.floor(Math.random() * 20) + 10,
+          isDummy: true,
+        })),
+        duration: "45 min",
+        lectureCount: 3,
+      },
+      {
+        title: "Core Concepts",
+        lectures: Array.from({ length: 4 }, (_, i) => ({
+          _id: `dummy-${i + 4}`,
+          description: `Core Concept ${i + 1}`,
+          order: i + 4,
+          duration: Math.floor(Math.random() * 20) + 10,
+          isDummy: true,
+        })),
+        duration: "60 min",
+        lectureCount: 4,
+      },
+    ];
   };
 
   const hasRealContent = course?.videos && course.videos.length > 0;
-  const videos = hasRealContent ? course.videos : createDummyLessons();
+  const sections = hasRealContent 
+    ? groupVideosBySection(course.videos)
+    : createDummySections();
 
-  const generateSections = (videos, titles) => {
-    const sections = [];
-    const chunkSize = Math.ceil(videos.length / titles.length);
-
-    for (let i = 0; i < titles.length; i++) {
-      const start = i * chunkSize;
-      const end = start + chunkSize;
-      sections.push({
-        title: titles[i],
-        lectures: videos.slice(start, end),
-        duration: hasRealContent
-          ? `${chunkSize * 10} min`
-          : `${chunkSize * 15} min`, // Estimated durations
-      });
-    }
-
-    return sections;
-  };
-
-  const sectionTitles = hasRealContent
-    ? ["Course Introduction", "Core Concepts", "Deep Dive", "Final Thoughts"]
-    : ["Getting Started", "Basic Principles", "Applications", "Next Steps"];
-
-  const sections = generateSections(videos, sectionTitles);
+  // Initialize expanded state for all sections
+  useEffect(() => {
+    const initialExpanded = {};
+    sections.forEach((_, index) => {
+      initialExpanded[index] = index === 0; // Only first section expanded by default
+    });
+    setExpandedSections(initialExpanded);
+  }, [sections.length]);
 
   const getTotalStats = () => {
-    const totalLectures = videos.length;
+    const totalLectures = sections.reduce((sum, section) => sum + section.lectureCount, 0);
     const totalDuration = hasRealContent ? course.duration || 0 : 2;
     return { totalLectures, totalDuration };
   };
@@ -124,7 +161,7 @@ useEffect(() => {
               <div>
                 <h4 className="font-medium text-gray-900">{section.title}</h4>
                 <p className="text-sm text-gray-600 mt-1">
-                  {section.lectures.length} lectures • {section.duration}
+                  {section.lectureCount} lectures • {section.duration}
                 </p>
               </div>
               <ChevronDown
@@ -137,9 +174,13 @@ useEffect(() => {
             {/* Section Content */}
             {expandedSections[sectionIndex] && (
               <div className="bg-white">
-                {section.lectures.map((video, index) => {
-                  const isLocked =
-                    !hasRealContent || (!isEnrolled && index > 0);
+                {section.lectures.map((video, lectureIndex) => {
+                  // Calculate global index for locking logic
+                  const globalIndex = sections
+                    .slice(0, sectionIndex)
+                    .reduce((sum, s) => sum + s.lectureCount, 0) + lectureIndex;
+                  
+                  const isLocked = !hasRealContent || (!isEnrolled && globalIndex > 0);
                   const isActive = currentVideo?._id === video._id;
 
                   return (
@@ -156,7 +197,7 @@ useEffect(() => {
                           return;
                         }
 
-                        if (isEnrolled || index === 0) {
+                        if (isEnrolled || globalIndex === 0) {
                           setCurrentVideo(video);
                         } else {
                           showToast(
@@ -177,7 +218,7 @@ useEffect(() => {
 
                         <div className="flex-1 min-w-0">
                           <h5 className="text-sm font-medium text-gray-900 truncate">
-                            {video.title}
+                            {video.description}
                           </h5>
                           <div className="flex items-center gap-2 mt-1 text-xs text-gray-600">
                             <span>Lesson {video.order}</span>
@@ -190,7 +231,7 @@ useEffect(() => {
                                 </div>
                               </>
                             )}
-                            {(index === 0 || !hasRealContent) && (
+                            {(globalIndex === 0 || !hasRealContent) && (
                               <>
                                 <span>•</span>
                                 <span className="bg-green-100 text-green-700 text-xs font-medium px-2 py-0.5 rounded">
@@ -217,7 +258,7 @@ useEffect(() => {
                             onClick={(e) => {
                               e.stopPropagation();
                               navigate(
-                                `/courses/${course._id}/quiz/${
+                                `/student/courses/${course._id}/quiz/${
                                   videoToQuizMap[video._id]
                                 }`
                               );

@@ -18,7 +18,7 @@ export const paymentService = {
         orderData,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("auth0_token")}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
@@ -42,7 +42,7 @@ export const paymentService = {
         verificationData,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("auth0_token")}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
@@ -58,7 +58,7 @@ export const paymentService = {
     try {
       const response = await axios.get(`${API_BASE_URL}/payment/${paymentId}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("auth0_token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
       return response.data;

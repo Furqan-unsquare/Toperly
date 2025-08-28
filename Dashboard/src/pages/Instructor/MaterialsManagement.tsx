@@ -41,7 +41,7 @@ interface Course {
 
 const MaterialsManagement = () => {
   const [courses, setCourses] = useState<Course[]>([]);
-  const [allCourses, setAllCourses] = useState<Course[]>([]); // For dropdown
+  const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCourse, setSelectedCourse] = useState<string>("");
@@ -108,6 +108,34 @@ const MaterialsManagement = () => {
       console.error("Failed to fetch all courses:", error);
       setAllCourses([]);
     }
+  };
+
+  // Handler for adding new material
+  const handleAddMaterial = () => {
+    setEditingMaterial(null);
+    setFormData({
+      title: "",
+      courseId: "",
+      type: "pdf",
+      content: "",
+    });
+    setSelectedFile(null);
+    setUploadProgress(0);
+    setShowCreateForm(true);
+  };
+
+  // Handler for editing material
+  const handleEditMaterial = (material: Material, courseId: string) => {
+    setEditingMaterial({ material, courseId });
+    setFormData({
+      title: material.title,
+      courseId: courseId,
+      type: material.type,
+      content: material.content || "",
+    });
+    setSelectedFile(null);
+    setUploadProgress(0);
+    setShowCreateForm(true);
   };
 
   const handleDeleteMaterial = async (courseId: string, materialId: string) => {
@@ -216,6 +244,7 @@ const MaterialsManagement = () => {
       }
 
       setShowCreateForm(false);
+      setEditingMaterial(null);
       await fetchCoursesWithMaterials();
     } catch (error: any) {
       console.error("Failed to save material:", error);
@@ -307,7 +336,7 @@ const MaterialsManagement = () => {
               </div>
 
               <button
-                onClick={handleDeleteMaterial}
+                onClick={handleAddMaterial}
                 className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -385,18 +414,6 @@ const MaterialsManagement = () => {
                 </div>
               </div>
             </div>
-
-            {/* <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Upload className="w-6 h-6 text-purple-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm text-gray-500">Storage Used</p>
-                <p className="text-2xl font-bold text-gray-900">2.4 GB</p>
-              </div>
-            </div>
-          </div> */}
           </div>
 
           {/* Materials List */}
@@ -417,7 +434,7 @@ const MaterialsManagement = () => {
                     Get started by adding your first material
                   </p>
                   <button
-                    onClick={handleDeleteMaterial}
+                    onClick={handleAddMaterial}
                     className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                   >
                     <Plus className="w-4 h-4 mr-2" />
@@ -506,18 +523,6 @@ const MaterialsManagement = () => {
                                 >
                                   <Eye className="w-4 h-4" />
                                 </button>
-                                {/* <button
-                                onClick={() => {
-                                  const link = document.createElement('a');
-                                  link.href = material.url;
-                                  link.download = material.filename;
-                                  link.click();
-                                }}
-                                className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                                title="Download"
-                              >
-                                <Download className="w-4 h-4" />
-                              </button> */}
                                 <button
                                   onClick={() =>
                                     handleEditMaterial(material, course._id)
@@ -563,7 +568,10 @@ const MaterialsManagement = () => {
                   </h2>
                   <button
                     type="button"
-                    onClick={() => setShowCreateForm(false)}
+                    onClick={() => {
+                      setShowCreateForm(false);
+                      setEditingMaterial(null);
+                    }}
                     className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                   >
                     <X className="w-5 h-5" />
@@ -711,7 +719,10 @@ const MaterialsManagement = () => {
                 <div className="flex justify-end gap-4 pt-4 border-t border-gray-200 sticky bottom-0 bg-white">
                   <button
                     type="button"
-                    onClick={() => setShowCreateForm(false)}
+                    onClick={() => {
+                      setShowCreateForm(false);
+                      setEditingMaterial(null);
+                    }}
                     className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                   >
                     Cancel

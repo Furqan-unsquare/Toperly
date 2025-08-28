@@ -548,7 +548,7 @@ const CourseManagementSystem: FC = () => {
       console.error("Error deleting course:", error);
       showToast("Error deleting course", "error");
     } finally {
-      window.location.href = "/all-courses";
+      window.location.href = "/instructor/all-courses";
       setLoading(false);
     }
   };
@@ -674,7 +674,7 @@ const CourseManagementSystem: FC = () => {
       });
     }
 
-    if (isEdit && editingCourse) {
+    // if (isEdit && editingCourse) {
       // Loop over lessons
       for (let i = 0; i < courseData.lessons.length; i++) {
         const lesson = courseData.lessons[i];
@@ -705,8 +705,8 @@ const CourseManagementSystem: FC = () => {
           });
         }
       }
-      window.location.href = "/instructor/all-courses";
-    }
+    // }
+    window.location.href = "/instructor/all-courses";
   };
 
   return (

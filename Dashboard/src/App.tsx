@@ -79,6 +79,9 @@ import AboutPage from "./components/student/AboutPage";
 import { StudentDashboard } from "./pages/Student/StudentDashboard";
 import Revenue from "./pages/Instructor/Revenue";
 import PaymentHistory from "./pages/Student/PaymentHistory";
+import LearningPointsForm from "./components/Course/LearningPointsForm";
+import RequirementsForm from "./components/instructor/RequirementsForm";
+import CourseContentForms from "./pages/Instructor/CourseContentManager";
 
 const queryClient = new QueryClient();
 
@@ -134,7 +137,7 @@ const App = () => (
             <Route element={<PublicLayout />}>
               <Route path="/" element={<HomePage />} />
               <Route path="/courses" element={<AllCoursesPage />} />
-              <Route path="/courses/:courseId" element={<CourseDetail />} />
+              <Route path="/courses/:courseId" element={<div className="mt-28"><CourseDetail /></div>} />
               <Route path="/blogs" element={<BlogPage />} />
               <Route path="/subscription-plans" element={<SubscriptionPlans />} />
               <Route path="/contact-us" element={<ContactPage />} />
@@ -144,7 +147,7 @@ const App = () => (
             <Route element={<ProtectedRoute allowedRoles={["student"]}><StudentLayout /></ProtectedRoute>}>
               <Route path="/student/dashboard" element={<StudentRoutes><Dashboard /></StudentRoutes>}/>
               <Route path="/student/courses" element={<StudentRoutes><CoursesCatalog /></StudentRoutes>}/>
-              <Route path="/student/courses/:courseId" element={<StudentRoutes><div className="-mt-28"><CourseDetail /></div></StudentRoutes>}/>
+              <Route path="/student/courses/:courseId" element={<StudentRoutes><div className=""><CourseDetail /></div></StudentRoutes>}/>
               <Route path="/student/courses/:courseId/quiz/:quizId" element={<StudentRoutes><QuizPage /></StudentRoutes>}/>
               <Route path="/student/enrolled-courses" element={<StudentRoutes><EnrolledCourses /></StudentRoutes>}/>
               <Route path="/student/wishlist" element={<StudentRoutes><Wishlist /></StudentRoutes>}/>
@@ -250,6 +253,14 @@ const App = () => (
                   </InstructorRoutes>
                 }
               />
+              <Route
+                path="/instructor/course-content"
+                element={
+                  <InstructorRoutes>
+                    <CourseContentForms />
+                  </InstructorRoutes>
+                }
+              />
             </Route>
 
             {/* Admin Routes */}
@@ -268,6 +279,8 @@ const App = () => (
               <Route path="/admin/notification" element={<Notifications />} />
               <Route path="/admin/Profile/" element={<AdminProfile />} />
             </Route>
+              <Route path="/addLearningPoints" element={<LearningPointsForm />} />
+              <Route path="/requirements" element={<RequirementsForm />} />
 
             {/* Fallback Route */}
             <Route path="*" element={<NotFound />} />
