@@ -336,14 +336,6 @@ const CourseDetail = () => {
     { icon: <Award size={20} />, text: "Certificate of completion" },
   ];
 
-  const learningObjectives = [
-    "Master the core concepts and fundamentals",
-    "Build real-world projects from scratch",
-    "Apply best practices and industry standards",
-    "Develop problem-solving skills",
-    "Create portfolio-worthy applications",
-  ];
-
   const requirements = [
     "No prior experience necessary",
     "A computer with internet access",

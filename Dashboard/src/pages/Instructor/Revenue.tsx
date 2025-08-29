@@ -123,7 +123,7 @@ const InstructorRevenueDashboard = () => {
       datasets: [
         {
           label: 'Revenue (₹)',
-          data: topCourses.map(course => course.revenue),
+          data: topCourses.map(course => course.revenue * 100),
           backgroundColor: '#3B82F6',
           borderColor: '#2563EB',
           borderWidth: 1,
@@ -140,7 +140,7 @@ const InstructorRevenueDashboard = () => {
     const categoryRevenue = {};
     coursesWithMetrics.forEach(course => {
       const category = course.category || 'Uncategorized';
-      categoryRevenue[category] = (categoryRevenue[category] || 0) + course.revenue;
+      categoryRevenue[category] = (categoryRevenue[category] || 0) + course.revenue * 100;
     });
 
     const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#84CC16', '#F97316'];
@@ -261,7 +261,7 @@ const InstructorRevenueDashboard = () => {
       return { totalRevenue: 0, totalStudents: 0, avgRating: 0, topCourse: null };
     }
 
-    const totalRevenue = coursesWithMetrics.reduce((sum, course) => sum + course.revenue, 0);
+    const totalRevenue = coursesWithMetrics.reduce((sum, course) => sum + course.revenue, 0) * 100;
     const totalStudents = coursesWithMetrics.reduce((sum, course) => sum + course.students, 0);
     const avgRating = coursesWithMetrics.reduce((sum, course) => sum + course.rating, 0) / coursesWithMetrics.length;
     const topCourse = coursesWithMetrics.reduce((top, course) => 
@@ -584,7 +584,7 @@ const InstructorRevenueDashboard = () => {
                         {formatCurrency(course.price)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {formatCurrency(course.revenue)}
+                        {formatCurrency(course.revenue * 100)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <div className="flex items-center">
@@ -629,7 +629,7 @@ const InstructorRevenueDashboard = () => {
                     </div>
                     <div className="text-right">
                       <p className="font-semibold text-gray-900">{formatNumber(course.students)} students</p>
-                      <p className="text-sm text-gray-500">{formatCurrency(course.revenue)}</p>
+                      <p className="text-sm text-gray-500">{formatCurrency(course.revenue * 100)}</p>
                     </div>
                   </div>
                 ))}

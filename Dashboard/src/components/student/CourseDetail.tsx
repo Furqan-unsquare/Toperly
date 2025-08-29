@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -172,7 +173,7 @@ const CourseDetail = () => {
       const res2 = await fetch(`${API_BASE}/instructors/${data.instructor}`);
       const data2 = await res2.json();
       setCourse(data);
-      setInstructor(data2);
+      setInstructor(data2.data); // Changed to data2.data
       if (data.videos?.length > 0) {
         setCurrentVideo(data.videos[0]);
       }
@@ -339,21 +340,6 @@ const CourseDetail = () => {
     { icon: <Award size={20} />, text: "Certificate of completion" },
   ];
 
-  const learningObjectives = [
-    "Master the core concepts and fundamentals",
-    "Build real-world projects from scratch",
-    "Apply best practices and industry standards",
-    "Develop problem-solving skills",
-    "Create portfolio-worthy applications",
-  ];
-
-  const requirements = [
-    "No prior experience necessary",
-    "A computer with internet access",
-    "Willingness to learn and practice",
-    "Basic understanding of computers",
-  ];
-
   return (
     <div className="min-h-screen bg-gray-50 ">
       <Toast message={toastMessage} />
@@ -361,10 +347,10 @@ const CourseDetail = () => {
       {/* Hero Section - Hidden if enrolled */}
       {!isEnrolled ? (
         <div className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 text-white">
-          <div className="mx-auto px-4 sm:px-6 lg:px-0 lg:pl-40 lg:pr-10 py-8">
+          <div className="mx-auto px-4 sm:px-6 lg:px-0 lg:pl-40 lg:pr-10 py-10">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
               <div className="lg:col-span-2">
-                <div className="mb-4">
+                <div className="mb-10">
                   <span
                     className={`px-3 py-1 rounded-full text-sm font-medium ${
                       course.level === "beginner"
@@ -384,7 +370,7 @@ const CourseDetail = () => {
                   {course.title}
                 </h1>
 
-                <p className="text-xl text-gray-300 mb-6 leading-relaxed">
+                <p className="text-md line-clamp-2 text-gray-300 mb-6 leading-relaxed">
                   {course.description
                     ?.replace(/<[^>]*>/g, "")
                     .substring(0, 200)}
@@ -394,8 +380,8 @@ const CourseDetail = () => {
                 <div className="flex flex-wrap items-center gap-6 mb-6 text-sm">
                   <div className="flex items-center text-yellow-400">
                     <Star size={16} className="mr-1 fill-current" />
-                    <span className="font-semibold mr-1">4.8</span>
-                    <span className="text-gray-300">(2,847 ratings)</span>
+                    <span className="font-semibold mr-1">{course.rating.toFixed(1)}</span>
+                    <span className="text-gray-300">({course.totalReviews.toLocaleString()} ratings)</span>
                   </div>
                   <div className="flex items-center text-gray-300">
                     <Users size={16} className="mr-2" />
@@ -440,11 +426,11 @@ const CourseDetail = () => {
                 <div className="bg-gray-800 rounded-lg sm:rounded overflow-hidden shadow-xl">
                   {/* Video Preview */}
                   <div className="relative aspect-video bg-gray-700">
-                    <img
-                      src={course?.thumbnail?.url}
-                      alt=""
-                      className="w-full h-full object-cover object-top"
-                    />
+                    <VideoPlayer
+                  video={currentVideo}
+                  course={course}
+                  showToast={showToast}
+                />
                     <div className="absolute bottom-4 right-4">
                       <span className="bg-black/70 text-white text-xs font-medium px-2 py-1 rounded">
                         {course.duration || 0} hours
@@ -567,10 +553,10 @@ const CourseDetail = () => {
               </div>
 
               {/* Tab Content - Clean background */}
-              <div className="bg-white px-6 py-8">
+              <div className="bg-white px-4 py-8">
                 {/* Overview Tab */}
                 {activeTab === "overview" && (
-                  <div className="space-y-8">
+                  <div className="space-y-10">
                     {/* What you'll learn */}
                     <LearningObjectives courseId={courseId} />
 
@@ -588,7 +574,7 @@ const CourseDetail = () => {
                         Description
                       </h3>
                       <div
-                        className="text-gray-700 leading-relaxed prose max-w-none"
+                        className="text-gray-700 leading-relaxed prose text-sm max-w-none"
                         dangerouslySetInnerHTML={{ __html: course.description }}
                       />
                     </div>
@@ -728,8 +714,8 @@ const CourseDetail = () => {
           </div>
 
           {/* Right Sidebar - Fixed/Sticky Course Content or Enrollment Card */}
-          <div className="lg:col-span-1">
-            <div className="lg:sticky lg:top-8 hidden lg:block">
+          <div className="lg:col-span-1 z-50">
+            <div className="lg:sticky lg:top-10 hidden lg:block ">
               {isEnrolled ? (
                 <CourseContentList
                   course={course}

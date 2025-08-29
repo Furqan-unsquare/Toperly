@@ -32,7 +32,7 @@ const LearningObjectives = ({ courseId }) => {
         // If no learning points found (404), show empty state instead of error
         if (err.response?.status === 404) {
           setLearningPoints([]);
-        } else {
+        } else { 
           setError("Failed to load learning objectives");
         }
       } finally {
@@ -72,40 +72,6 @@ const LearningObjectives = ({ courseId }) => {
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <p className="text-red-600 text-sm">{error}</p>
         </div>
-      </div>
-    );
-  }
-
-  // Empty state - show default objectives or nothing
-  if (!learningPoints || learningPoints.length === 0) {
-    const defaultObjectives = [
-      "Master the core concepts and fundamentals",
-      "Build real-world projects from scratch",
-      "Apply best practices and industry standards",
-      "Develop problem-solving skills",
-    ];
-
-    return (
-      <div>
-        <h3 className="text-xl font-bold text-gray-900 mb-4">
-          What you'll learn
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {defaultObjectives.map((objective, index) => (
-            <div key={index} className="flex items-start">
-              <CheckCircle
-                size={16}
-                className="text-green-600 mr-3 mt-0.5 flex-shrink-0"
-              />
-              <span className="text-gray-700 text-sm">{objective}</span>
-            </div>
-          ))}
-        </div>
-        {/* <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-yellow-800 text-xs">
-            <strong>Note:</strong> Specific learning objectives for this course are being updated.
-          </p>
-        </div> */}
       </div>
     );
   }

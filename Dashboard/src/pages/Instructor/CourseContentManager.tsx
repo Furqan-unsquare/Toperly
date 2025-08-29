@@ -6,14 +6,14 @@ import LearningPointsForm from '@/components/Course/LearningPointsForm';
 const CourseContentForms = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto px-4 ">
         
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+        <div className="text-left mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Course Content Management
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          </h1> 
+          <p className="text-md text-gray-600">
             Manage learning objectives and requirements for your courses. 
             Use the forms below to add or update course content.
           </p>

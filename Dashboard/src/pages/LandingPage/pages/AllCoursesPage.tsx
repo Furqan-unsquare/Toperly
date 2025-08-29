@@ -564,7 +564,7 @@ useEffect(() => {
                         <ChevronRightIcon className="w-4 h-4 ml-1" />
                       </button>
                       <button
-                        className="bg-blue-600 text-sm hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center shadow-md hover:shadow-lg"
+                        className="bg-blue-600 text-sm hover:text-gray-600 hover:bg-[#66E4CC] text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center shadow-md hover:shadow-lg"
                         onClick={e => {
                           e.stopPropagation();
                           navigate(`/courses/${course._id}`);

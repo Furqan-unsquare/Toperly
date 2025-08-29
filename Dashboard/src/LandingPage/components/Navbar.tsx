@@ -5,6 +5,9 @@ import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 import debounce from 'lodash/debounce';
 import { useAuth } from '@/contexts/AuthContext';
+import styled from 'styled-components';
+
+import Translate from "@/pages/GoogleTranslate"
 
 // Animated AI Wave Component
 const AnimatedAIWave = () => (
@@ -51,7 +54,7 @@ const SearchResults = ({ filtered, setQuery, setFiltered, toggleMobileMenu, isSc
 
   return (
     <ul
-      className={`absolute top-full left-0 mt-1 w-[300px] bg-gray-300 border rounded-sm shadow z-50 max-h-60 overflow-y-auto ${
+      className={`absolute top-full left-0 mt-1 w-[300px] bg-gray-300 border rounded-sm shadow z-10 max-h-60 overflow-y-auto ${
         isScrolled ? 'border-gray-200' : 'border-gray-600'
       }`}
     >
@@ -253,6 +256,7 @@ useEffect(() => {
 
       {/* Main navbar */}
       <div className="h-16 flex items-center justify-between max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+        
         {/* Logo & Categories */}
         <div className="flex items-center">
           <div className="flex items-center space-x-3">
@@ -402,51 +406,15 @@ useEffect(() => {
               </div>
             ) : (
               <div className="flex items-center space-x-2">
-                {/* <button
-                  className={`text-sm font-medium transition-colors duration-300 ${
-                    isScrolled ? 'text-gray-500 hover:text-gray-700' : 'text-gray-400 hover:text-gray-300'
-                  }`}
-                  onClick={() => navigate('/auth/login')}
-                >
-                  Login
-                </button> */}
-                <button
-                  className={`px-3 py-2 rounded-md text-xs md:text-sm font-medium transition-colors duration-300 ${
-                    isScrolled
-                      ? 'bg-[#2721F7] text-gray-200 hover:bg-gray-300'
-                      : 'bg-[#2721F7] text-white hover:bg-gray-600'
-                  }`}
-                  onClick={() => navigate('/auth/login')}
-                >
-                  Login
+                <button className="toperly-navbar-btn bg-[#2721F7] rounded-lg">
+                  <span className="toperly-navbar-btn-content" onClick={() => navigate('/auth/login')}>Login</span>
                 </button>
               </div>
             )}
           </div>
 
           {/* Language Selector */}
-          <div className="relative group hidden md:flex">
-            <button
-              className={`flex items-center text-sm font-medium transition-colors duration-300 ${
-                isScrolled ? 'text-gray-700 hover:text-gray-500' : 'text-gray-700 hover:text-gray-500'
-              }`}
-            >
-              <Globe className="h-4 w-4 mr-1" />
-              {language}
-              <ChevronDown className="h-4 w-4 ml-1 transition-transform duration-300 group-hover:rotate-180" />
-            </button>
-            <div className="absolute top-full right-0 mt-2 w-32 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out transform group-hover:scale-100 scale-95 z-50">
-              {languages.map((lang) => (
-                <div
-                  key={lang}
-                  className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 cursor-pointer transition-colors duration-200"
-                  onClick={() => setLanguage(lang)}
-                >
-                  {lang}
-                </div>
-              ))}
-            </div>
-          </div>
+         <Translate />
 
           {/* Mobile menu button */}
           <button

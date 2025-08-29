@@ -101,9 +101,9 @@ const Footer = () => {
                 placeholder="Enter your email"
                 className="flex-1 px-4 py-2 rounded-lg border border-gray-200 bg-gray-200 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
-              <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25">
-                Get Started Now
-              </Button>
+               <button className="toperly-navbar-btn bg-[#2721F7] rounded-lg">
+                  <span className="toperly-navbar-btn-content">Get Started Now</span>
+                </button>
             </div>
           </div>
         </div>

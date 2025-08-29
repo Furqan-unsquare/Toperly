@@ -1,4 +1,3 @@
-// components/admin/RequirementsForm.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Plus, X } from "lucide-react";
@@ -14,17 +13,22 @@ const RequirementsForm = () => {
 
   const API_BASE = `${import.meta.env.VITE_API_URL}/api`;
 
-  // Fetch courses for dropdown
+  // Fetch current user's courses from /api/auth/me
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchUserCourses = async () => {
       try {
-        const { data } = await axios.get(`${API_BASE}/courses`);
-        setCourses(data);
+        const response = await axios.get(`${API_BASE}/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        const userData = response.data;
+        setCourses(userData.courses || []);
       } catch (error) {
-        console.error("Error fetching courses:", error);
+        console.error("Error fetching user courses:", error);
       }
     };
-    fetchCourses();
+    fetchUserCourses();
   }, []);
 
   // Fetch existing requirements when course is selected
@@ -37,15 +41,20 @@ const RequirementsForm = () => {
       }
 
       // Set course title
-      const course = courses.find(c => c._id === selectedCourse);
+      const course = courses.find((c) => c._id === selectedCourse);
       setSelectedCourseTitle(course?.title || "");
 
       setFetchingRequirements(true);
       try {
         const { data } = await axios.get(
-          `${API_BASE}/requirements/course/${selectedCourse}`
+          `${API_BASE}/requirements/course/${selectedCourse}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
         );
-        
+
         if (data.requirements && data.requirements.length > 0) {
           setRequirements(data.requirements);
           setMessage("Existing requirements loaded for editing.");
@@ -84,13 +93,15 @@ const RequirementsForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!selectedCourse) {
       setMessage("Please select a course.");
       return;
     }
 
-    const filteredRequirements = requirements.filter(req => req.trim() !== "");
+    const filteredRequirements = requirements.filter(
+      (req) => req.trim() !== ""
+    );
     if (filteredRequirements.length === 0) {
       setMessage("Please add at least one requirement.");
       return;
@@ -98,14 +109,22 @@ const RequirementsForm = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API_BASE}/requirements`, {
-        courseId: selectedCourse,
-        requirements: filteredRequirements
-      });
-      
+      const response = await axios.post(
+        `${API_BASE}/requirements`,
+        {
+          courseId: selectedCourse,
+          requirements: filteredRequirements,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
       setMessage("Requirements saved successfully!");
       setRequirements(filteredRequirements);
-      
+
       // Clear message after 3 seconds
       setTimeout(() => setMessage(""), 3000);
     } catch (error) {
@@ -119,7 +138,6 @@ const RequirementsForm = () => {
   return (
     <div className="max-w-7xl mx-auto bg-white p-6 shadow-lg rounded-lg">
       <div className="grid md:grid-cols-2 gap-8">
-        
         {/* Form Section */}
         <div>
           <h2 className="text-2xl font-bold mb-4 text-gray-800">
@@ -127,11 +145,13 @@ const RequirementsForm = () => {
           </h2>
 
           {message && (
-            <div className={`mb-4 p-3 rounded ${
-              message.includes('successfully') 
-                ? 'bg-green-100 text-green-700' 
-                : 'bg-blue-100 text-blue-700'
-            }`}>
+            <div
+              className={`mb-4 p-3 rounded ${
+                message.includes("successfully")
+                  ? "bg-green-100 text-green-700"
+                  : "bg-blue-100 text-blue-700"
+              }`}
+            >
               {message}
             </div>
           )}
@@ -162,11 +182,13 @@ const RequirementsForm = () => {
               <label className="block mb-2 font-medium text-gray-700">
                 Course Requirements
               </label>
-              
+
               {fetchingRequirements ? (
                 <div className="text-center py-4">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="text-sm text-gray-500 mt-2">Loading existing requirements...</p>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Loading existing requirements...
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -175,7 +197,9 @@ const RequirementsForm = () => {
                       <input
                         type="text"
                         value={requirement}
-                        onChange={(e) => handleRequirementChange(index, e.target.value)}
+                        onChange={(e) =>
+                          handleRequirementChange(index, e.target.value)
+                        }
                         placeholder={`Enter requirement ${index + 1}`}
                         className="border border-gray-300 rounded-lg flex-1 p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       />
@@ -190,7 +214,7 @@ const RequirementsForm = () => {
                       )}
                     </div>
                   ))}
-                  
+
                   <button
                     type="button"
                     onClick={addRequirementField}
@@ -217,29 +241,31 @@ const RequirementsForm = () => {
         {/* Preview Section */}
         <div>
           <h3 className="text-2xl font-bold mb-4 text-gray-800">Preview</h3>
-          
+
           {selectedCourseTitle && (
             <div className="bg-gray-50 p-6 rounded-lg">
               <h4 className="text-lg font-semibold mb-4 text-gray-900">
                 {selectedCourseTitle}
               </h4>
-              
+
               <div className="mb-4">
                 <h5 className="text-lg font-medium text-gray-900 mb-3">
                   Requirements
                 </h5>
-                
-                {requirements.filter(req => req.trim() !== "").length > 0 ? (
+
+                {requirements.filter((req) => req.trim() !== "").length > 0 ? (
                   <ul className="space-y-2">
                     {requirements
-                      .filter(req => req.trim() !== "")
+                      .filter((req) => req.trim() !== "")
                       .map((requirement, index) => (
-                        <li key={index} className="flex items-start text-gray-700 text-sm">
+                        <li
+                          key={index}
+                          className="flex items-start text-gray-700 text-sm"
+                        >
                           <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-3 mt-2 flex-shrink-0"></span>
                           {requirement}
                         </li>
-                      ))
-                    }
+                      ))}
                   </ul>
                 ) : (
                   <p className="text-gray-500 italic">
@@ -249,7 +275,7 @@ const RequirementsForm = () => {
               </div>
             </div>
           )}
-          
+
           {!selectedCourse && (
             <div className="bg-gray-100 p-6 rounded-lg text-center">
               <p className="text-gray-500">

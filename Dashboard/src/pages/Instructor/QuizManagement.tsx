@@ -43,11 +43,20 @@ interface Course {
   }>;
 }
 
-const API_BASE = import.meta.env.VITE_API_URL; // Define API base URL
+interface AuthMeResponse {
+  profile: {
+    _id: string;
+    [key: string]: any;
+  };
+  courses: Course[];
+}
+
+const API_BASE = import.meta.env.VITE_API_URL;
 
 const QuizManagement = () => {
-  const [quizzes, setQuizzes] = useState<Quiz[]>([]); // Initialize as empty array
-  const [courses, setCourses] = useState<Course[]>([]); // Initialize as empty array
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [instructorId, setInstructorId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCourse, setSelectedCourse] = useState<string>("");
@@ -70,26 +79,58 @@ const QuizManagement = () => {
   const [courseLessons, setCourseLessons] = useState<
     Array<{ _id: string; title: string }>
   >([]);
+  const [error, setError] = useState<string | null>(null);
   const usedVideoIds = new Set<string>(
     quizzes
-      .filter((q) => q.videoId) // ensure videoId is defined
+      .filter((q) => q.videoId)
       .map((q) => q.videoId as string)
   );
 
   useEffect(() => {
-    fetchQuizzes();
-    fetchCourses();
+    fetchInstructorData();
   }, []);
 
-  const fetchQuizzes = async () => {
+  const fetchInstructorData = async () => {
     try {
       setLoading(true);
+      setError(null);
       const token = localStorage.getItem("token");
-      const response = await axios.get(`${API_BASE}/api/quizzes`, {
+
+      if (!token) {
+        throw new Error("Authentication token missing. Please log in.");
+      }
+
+      // Fetch instructor data and courses
+      const userResponse = await axios.get<AuthMeResponse>(`${API_BASE}/api/auth/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Ensure we always set an array
+      const { profile, courses } = userResponse.data;
+      if (!profile?._id) {
+        throw new Error("Instructor ID not found in user profile.");
+      }
+
+      setInstructorId(profile._id);
+      setCourses(Array.isArray(courses) ? courses : []);
+
+      // Fetch quizzes
+      await fetchQuizzes(profile._id, token);
+    } catch (err: any) {
+      console.error("Failed to fetch instructor data:", err);
+      setError(err.message || "Failed to load data. Please try again.");
+      setQuizzes([]);
+      setCourses([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchQuizzes = async (instructorId: string, token: string) => {
+    try {
+      const response = await axios.get(`${API_BASE}/api/quizzes?instructorId=${instructorId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       const quizData = response.data;
       if (Array.isArray(quizData)) {
         setQuizzes(quizData);
@@ -99,57 +140,41 @@ const QuizManagement = () => {
         setQuizzes(quizData.quizzes);
       } else {
         console.warn("Unexpected quiz data structure:", quizData);
-        setQuizzes([]); // Fallback to empty array
+        setQuizzes([]);
       }
     } catch (error) {
       console.error("Failed to fetch quizzes:", error);
-      setQuizzes([]); // Ensure we set empty array on error
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchCourses = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${API_BASE}/api/courses`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      // Ensure we always set an array
-      const courseData = response.data;
-      if (Array.isArray(courseData)) {
-        setCourses(courseData);
-      } else if (courseData && Array.isArray(courseData.data)) {
-        setCourses(courseData.data);
-      } else if (courseData && Array.isArray(courseData.courses)) {
-        setCourses(courseData.courses);
-      } else {
-        console.warn("Unexpected course data structure:", courseData);
-        setCourses([]); // Fallback to empty array
-      }
-    } catch (error) {
-      console.error("Failed to fetch courses:", error);
-      setCourses([]); // Ensure we set empty array on error
+      setQuizzes([]);
+      throw error;
     }
   };
 
   const fetchCourseLessons = async (courseId: string) => {
-    if (!courseId) {
+    if (!courseId || !instructorId) {
       setCourseLessons([]);
       return;
     }
 
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`${API_BASE}/api/courses/${courseId}`, {
+      if (!token) {
+        throw new Error("Authentication token missing.");
+      }
+
+      // Try to get lessons from cached courses first
+      const course = courses.find((c) => c._id === courseId);
+      if (course?.videos) {
+        setCourseLessons(course.videos);
+        return;
+      }
+
+      // Fallback to API if videos not in cached course
+      const response = await axios.get(`${API_BASE}/api/courses/${courseId}?instructorId=${instructorId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Extract lessons/videos from the response
       let lessons = [];
       const data = response.data;
-      console.log(data)
       if (data?.data?.videos) {
         lessons = data.data.videos;
       } else if (data?.course?.videos) {
@@ -160,7 +185,6 @@ const QuizManagement = () => {
         lessons = data;
       }
 
-      // Ensure lessons is an array
       setCourseLessons(Array.isArray(lessons) ? lessons : []);
     } catch (error) {
       console.error("Failed to fetch course lessons:", error);
@@ -172,7 +196,7 @@ const QuizManagement = () => {
     setFormData((prev) => ({
       ...prev,
       courseId,
-      videoId: "", // Reset video selection when course changes
+      videoId: "",
     }));
     fetchCourseLessons(courseId);
   };
@@ -199,7 +223,7 @@ const QuizManagement = () => {
     setEditingQuiz(quiz);
     setShowCreateForm(true);
 
-    await fetchCourseLessons(quiz.course._id); // Wait for lessons
+    await fetchCourseLessons(quiz.course._id);
 
     setFormData({
       title: quiz.title,
@@ -214,10 +238,14 @@ const QuizManagement = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`${API_BASE}/api/quizzes/${quizId}`, {
+      if (!token || !instructorId) {
+        throw new Error("Authentication token or instructor ID missing.");
+      }
+
+      await axios.delete(`${API_BASE}/api/quizzes/${quizId}?instructorId=${instructorId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      await fetchQuizzes();
+      await fetchQuizzes(instructorId, token);
       alert("Quiz deleted successfully!");
     } catch (error) {
       console.error("Failed to delete quiz:", error);
@@ -312,7 +340,6 @@ const QuizManagement = () => {
     e.preventDefault();
     setFormLoading(true);
 
-    // === Custom Validation ===
     const { title, courseId, videoId, questions } = formData;
 
     if (!title.trim() || !courseId || !videoId) {
@@ -347,31 +374,34 @@ const QuizManagement = () => {
       }
     }
 
-    // === If Validation Passes ===
     try {
+      const token = localStorage.getItem("token");
+      if (!token || !instructorId) {
+        throw new Error("Authentication token or instructor ID missing.");
+      }
+
       const payload = {
         course: courseId,
         videoId,
         title,
         questions,
+        instructorId,
       };
 
-      const token = localStorage.getItem("token");
-
       if (editingQuiz) {
-        await axios.put(`${API_BASE}/api/quizzes/${editingQuiz._id}`, payload, {
+        await axios.put(`${API_BASE}/api/quizzes/${editingQuiz._id}?instructorId=${instructorId}`, payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
         alert("Quiz updated successfully!");
       } else {
-        await axios.post(`${API_BASE}/api/quizzes`, payload, {
+        await axios.post(`${API_BASE}/api/quizzes?instructorId=${instructorId}`, payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
         alert("Quiz created successfully!");
       }
 
       setShowCreateForm(false);
-      await fetchQuizzes();
+      await fetchQuizzes(instructorId, token);
     } catch (error: any) {
       console.error("Failed to save quiz:", error);
       alert(error.response?.data?.message || "Failed to save quiz");
@@ -392,7 +422,6 @@ const QuizManagement = () => {
     });
   };
 
-  // Group quizzes by course - Add safety check
   const groupedQuizzes = Array.isArray(quizzes)
     ? quizzes.reduce((acc, quiz) => {
         const courseId = quiz.course?._id;
@@ -407,7 +436,6 @@ const QuizManagement = () => {
       }, {} as Record<string, { course: { _id: string; title: string }; quizzes: Quiz[] }>)
     : {};
 
-  // Filter logic
   const filteredGroupedQuizzes = Object.entries(groupedQuizzes).filter(
     ([courseId, data]) => {
       if (selectedCourse && courseId !== selectedCourse) return false;
@@ -425,6 +453,24 @@ const QuizManagement = () => {
       return true;
     }
   );
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-sm p-8 text-center max-w-md">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Error</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={fetchInstructorData}
+            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          >
+            <Loader className="w-4 h-4 mr-2" />
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -447,6 +493,7 @@ const QuizManagement = () => {
               <button
                 onClick={handleCreateQuiz}
                 className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                disabled={!instructorId}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Create Quiz
@@ -492,7 +539,7 @@ const QuizManagement = () => {
             </div>
           </div>
 
-          {/* Stats - Add safety checks */}
+          {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex items-center">
@@ -563,6 +610,7 @@ const QuizManagement = () => {
                   <button
                     onClick={handleCreateQuiz}
                     className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                    disabled={!instructorId}
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Create Quiz
@@ -574,7 +622,6 @@ const QuizManagement = () => {
                     key={courseId}
                     className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
                   >
-                    {/* Course Header */}
                     <div
                       className="flex items-center justify-between p-4 bg-gray-50 border-b border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors"
                       onClick={() => toggleCourseExpansion(courseId)}
@@ -595,7 +642,6 @@ const QuizManagement = () => {
                       </div>
                     </div>
 
-                    {/* Quizzes List */}
                     {expandedCourses.has(courseId) && (
                       <div className="divide-y divide-gray-200">
                         {data.quizzes.map((quiz) => (
@@ -705,6 +751,7 @@ const QuizManagement = () => {
                       onChange={(e) => handleCourseChange(e.target.value)}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
                       required
+                      disabled={!instructorId}
                     >
                       <option value="">Select a course</option>
                       {courses.map((course) => (
@@ -713,6 +760,11 @@ const QuizManagement = () => {
                         </option>
                       ))}
                     </select>
+                    {!instructorId && (
+                      <p className="text-sm text-red-500 mt-1">
+                        Instructor data not loaded. Please try again.
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -734,13 +786,12 @@ const QuizManagement = () => {
                     <option value="">Select a lesson</option>
                     {courseLessons
                       .filter((lesson) => {
-                        // Always include the selected lesson if editing
                         if (lesson._id === formData.videoId) return true;
                         return !usedVideoIds.has(lesson._id);
                       })
                       .map((lesson) => (
                         <option key={lesson._id} value={lesson._id}>
-                          {lesson.description}
+                          {lesson.title}
                         </option>
                       ))}
                   </select>
@@ -862,7 +913,7 @@ const QuizManagement = () => {
                   </button>
                   <button
                     type="submit"
-                    disabled={formLoading}
+                    disabled={formLoading || !instructorId}
                     className="flex items-center gap-2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
                   >
                     {formLoading ? (

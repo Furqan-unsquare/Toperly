@@ -283,22 +283,6 @@ export const Sidebar = ({ user, logout }: SidebarProps) => {
                                   </Button>
                                 </li>
                               )}
-                              {filteredNavItems.find((item) => item.name === "Approvals") && (
-                                <li>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="w-full justify-start"
-                                    onClick={() => {
-                                      navigate("/instructor/approvals");
-                                      setIsMobileOpen(false);
-                                    }}
-                                  >
-                                    <CheckSquare className="w-4 h-4 mr-2" />
-                                    Approvals
-                                  </Button>
-                                </li>
-                              )}
                               {filteredNavItems.find((item) => item.name === "Course Content") && (
                                 <li>
                                   <Button
@@ -314,7 +298,7 @@ export const Sidebar = ({ user, logout }: SidebarProps) => {
                                     Course Content
                                   </Button>
                                 </li>
-                              )}
+                              )}                              
                             </ul>
                           )}
                         </div>

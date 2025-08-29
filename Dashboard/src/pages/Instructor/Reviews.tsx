@@ -8,8 +8,8 @@ import {
   MessageSquare,
   ChevronDown,
   ChevronRight,
-  Eye,
 } from "lucide-react";
+import axios from "axios";
 
 const AdminCoursesReviews = () => {
   const [courses, setCourses] = useState([]);
@@ -18,42 +18,57 @@ const AdminCoursesReviews = () => {
   const [loading, setLoading] = useState(true);
   const [expandedCourses, setExpandedCourses] = useState(new Set());
   const [filteredData, setFilteredData] = useState([]);
+  const [userId, setUserId] = useState(null);
+  const API_BASE = import.meta.env.VITE_API_URL;
 
-  // Fetch courses and reviews
-const API_BASE = import.meta.env.VITE_API_URL;
+  // Fetch user data, courses, and reviews
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
 
-useEffect(() => {
-  const fetchData = async () => {
-    setLoading(true);
+      try {
+        // Fetch current user data
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("No authentication token found. Please log in.");
+        }
 
-    try {
-      // Fetch all courses
-      const coursesResponse = await fetch(`${API_BASE}/api/courses/`);
-      const coursesData = await coursesResponse.json();
-      setCourses(coursesData);
+        const userResponse = await axios.get(`${API_BASE}/api/auth/me`, {
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        });
+        const currentUserId = userResponse.data.profile._id;
+        setUserId(currentUserId);
 
-      // Fetch all reviews once
-      const reviewsResponse = await fetch(`${API_BASE}/api/reviews/all`);
-      const allReviews = await reviewsResponse.json();
+        // Fetch all courses and filter by current user's ID
+        const coursesResponse = await axios.get(`${API_BASE}/api/courses/`);
+        const userCourses = coursesResponse.data.filter(
+          (course) => course.instructor?._id === currentUserId || course.instructor === currentUserId
+        );
+        setCourses(userCourses);
 
-      // Group reviews by courseId
-      const reviewsByCourse = allReviews.reduce((acc: any, review: any) => {
-        const courseId = review.course?._id || review.course; // Handle both populated and ObjectId cases
-        if (!acc[courseId]) acc[courseId] = [];
-        acc[courseId].push(review);
-        return acc;
-      }, {});
-      setReviews(reviewsByCourse);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+        // Fetch all reviews and filter by user's courses
+        const reviewsResponse = await axios.get(`${API_BASE}/api/reviews/all`);
+        const allReviews = reviewsResponse.data;
 
-  fetchData();
-}, [API_BASE]); // ✅ include API_BASE in deps
+        // Group reviews by courseId, only for user's courses
+        const reviewsByCourse = allReviews.reduce((acc, review) => {
+          const courseId = review.course?._id || review.course;
+          if (userCourses.some((course) => course._id === courseId)) {
+            if (!acc[courseId]) acc[courseId] = [];
+            acc[courseId].push(review);
+          }
+          return acc;
+        }, {});
+        setReviews(reviewsByCourse);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchData();
+  }, [API_BASE]);
 
   // Filter courses and reviews based on search term
   useEffect(() => {
@@ -113,6 +128,18 @@ useEffect(() => {
     return (sum / courseReviews.length).toFixed(1);
   };
 
+  // Calculate total students from enrollments
+  const totalStudents = courses.reduce((sum, course) => sum + (course.students || 0), 0);
+
+  // Format currency for INR
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: 0,
+    }).format(amount || 0);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -125,7 +152,7 @@ useEffect(() => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100  p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -133,8 +160,7 @@ useEffect(() => {
             Courses & Reviews
           </h1>
           <p className="text-gray-600">
-            Monitor all courses and their reviews. Read-only access for
-            administrative oversight.
+            Monitor your courses and their reviews. Read-only access for administrative oversight.
           </p>
         </div>
 
@@ -176,13 +202,7 @@ useEffect(() => {
                   Total Students
                 </p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {(Array.isArray(courses)
-                    ? courses.reduce(
-                        (sum, course) => sum + (course.students || 0),
-                        0
-                      )
-                    : 0
-                  ).toLocaleString()}
+                  {totalStudents.toLocaleString()}
                 </p>
               </div>
             </div>
@@ -226,7 +246,7 @@ useEffect(() => {
         </div>
 
         {/* Courses Table */}
-        <div className=" rounded-lg  overflow-hidden">
+        <div className="rounded-lg overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">
               Courses & Reviews ({filteredData.length})
@@ -265,8 +285,6 @@ useEffect(() => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredData.map((course) => (
                     <React.Fragment key={course._id}>
-                      {" "}
-                      {/* Use _id as key, assuming it's the MongoDB ID */}
                       <tr className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
@@ -277,7 +295,7 @@ useEffect(() => {
                               {course.category}
                             </div>
                             <div className="text-xs text-gray-400">
-                              {course.duration} • {course.price}
+                              {course.duration} hours • {formatCurrency(course.price)}
                             </div>
                           </div>
                         </td>
@@ -286,14 +304,11 @@ useEffect(() => {
                             {course.instructor?.name || course.instructor}
                           </div>
                         </td>
-
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="flex mr-2">
                               {renderStars(
-                                Math.round(
-                                  getAverageRating(reviews[course._id])
-                                )
+                                Math.round(getAverageRating(reviews[course._id]))
                               )}
                             </div>
                             <span className="text-sm text-gray-600">
@@ -326,52 +341,46 @@ useEffect(() => {
                         </td>
                       </tr>
                       {/* Reviews Section */}
-                      {expandedCourses.has(course._id) &&
-                        reviews[course._id] && (
-                          <tr>
-                            <td colSpan="6" className="px-6 py-4 bg-gray-50">
-                              <div className="space-y-4">
-                                <h4 className="font-medium text-gray-900 mb-3">
-                                  Reviews for {course.title}
-                                </h4>
-                                {reviews[course._id].map((review) => (
-                                  <div
-                                    key={review._id}
-                                    className="bg-white rounded-lg p-4 border border-gray-200"
-                                  >
-                                    {" "}
-                                    {/* Added key with _id */}
-                                    <div className="flex items-start justify-between mb-2">
-                                      <div className="flex items-center">
-                                        <div className="flex mr-2">
-                                          {renderStars(review.rating)}
-                                        </div>
-                                        <span className="text-sm font-medium text-gray-900 mr-2">
-                                          {review.student?.name || "Anonymous"}
+                      {expandedCourses.has(course._id) && reviews[course._id] && (
+                        <tr>
+                          <td colSpan="5" className="px-6 py-4 bg-gray-50">
+                            <div className="space-y-4">
+                              <h4 className="font-medium text-gray-900 mb-3">
+                                Reviews for {course.title}
+                              </h4>
+                              {reviews[course._id].map((review) => (
+                                <div
+                                  key={review._id}
+                                  className="bg-white rounded-lg p-4 border border-gray-200"
+                                >
+                                  <div className="flex items-start justify-between mb-2">
+                                    <div className="flex items-center">
+                                      <div className="flex mr-2">
+                                        {renderStars(review.rating)}
+                                      </div>
+                                      <span className="text-sm font-medium text-gray-900 mr-2">
+                                        {review.student?.name || "Anonymous"}
+                                      </span>
+                                      {review.verified && (
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                          Verified
                                         </span>
-                                        {review.verified && (
-                                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                                            Verified
-                                          </span>
-                                        )}
-                                      </div>
-                                      <div className="flex items-center text-xs text-gray-500">
-                                        <Calendar className="h-3 w-3 mr-1" />
-                                        {new Date(
-                                          review.createdAt
-                                        ).toLocaleDateString()}{" "}
-                                        {/* Changed from review.date to createdAt */}
-                                      </div>
+                                      )}
                                     </div>
-                                    <p className="text-sm text-gray-700">
-                                      {review.comment || "No comment"}
-                                    </p>
+                                    <div className="flex items-center text-xs text-gray-500">
+                                      <Calendar className="h-3 w-3 mr-1" />
+                                      {new Date(review.createdAt).toLocaleDateString()}
+                                    </div>
                                   </div>
-                                ))}
-                              </div>
-                            </td>
-                          </tr>
-                        )}
+                                  <p className="text-sm text-gray-700">
+                                    {review.comment || "No comment"}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
                     </React.Fragment>
                   ))}
                 </tbody>

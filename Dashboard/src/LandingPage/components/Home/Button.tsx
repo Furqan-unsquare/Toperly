@@ -113,9 +113,10 @@ const Button = () => {
             <div className="wrap-content">
               <div className="content">
                 <div className="outline" />
-                <div className="glyphs">
+                <div className="glyphs" >
                   <span className="text">
-                    <span data-label="J" data-index={3}>J</span>
+                    Join the AI Revolution Today
+                    {/* <span data-label="J" data-index={3}>J</span>
                     <span data-label="o" data-index={4}>o</span>
                     <span data-label="i" data-index={5}>i</span>
                     <span data-label="n" data-index={6}>n</span> &nbsp;
@@ -142,7 +143,7 @@ const Button = () => {
                     <span data-label="o" data-index={27}>o</span>
                     <span data-label="d" data-index={28}>d</span>
                     <span data-label="a" data-index={29}>a</span>
-                    <span data-label="y" data-index={30}>y</span>
+                    <span data-label="y" data-index={30}>y</span> */}
                   </span>
                 </div>
               </div>
@@ -574,6 +575,7 @@ const StyledWrapper = styled.div`
   }
 
   .text {
+    color: #C7CCD9;
     transition: all 0.3s ease;
     transform: translateY(-1px);
     display: flex;

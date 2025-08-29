@@ -135,7 +135,9 @@ const PricingTable = () => {
 
             {/* Action Buttons */}
             <div className="mb-6 space-y-3">
-              <button className={`w-full py-3 px-4 rounded-full font-semibold ${plan.buttonStyle} hover:opacity-90 transition-opacity`}>
+              <button className={`w-full py-3 px-4 rounded-full font-semibold ${plan.buttonStyle} 
+              hover:text-gray-800 hover:bg-[#66E4CC] 
+              transition-all duration-300 ease-in-out`}>
                 {plan.buttonText}
               </button>
             </div>

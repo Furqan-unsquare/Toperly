@@ -232,7 +232,7 @@ const EnrollmentCard = ({ course, isEnrolled, onEnroll, enrollmentLoading }) => 
               className={`w-full py-4 rounded-lg mb-4 font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-2 ${
                 course.price === 0
                   ? "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
-                  : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                  : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-[#1ac6a7] hover:to-[#66E4CC] hover:text-black text-white"
               } ${
                 enrollmentLoading
                   ? "opacity-50 cursor-not-allowed"

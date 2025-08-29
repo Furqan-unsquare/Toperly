@@ -242,7 +242,7 @@ const Footer: React.FC = () => {
               <span>© {currentYear} Toperly. All rights reserved.</span>
               <span>•</span>
               <span className="flex items-center gap-1">
-                Made with <Heart size={12} className="text-red-500 fill-current" /> by EduTeam
+                Made with <Heart size={12} className="text-red-500 fill-current" /> by Unsquare Labs
               </span>
             </div>
             
@@ -250,14 +250,6 @@ const Footer: React.FC = () => {
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span>All systems operational</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Globe size={14} />
-                <select className="bg-transparent border-none text-gray-400 focus:outline-none cursor-pointer">
-                  <option value="en">English</option>
-                  <option value="es">Español</option>
-                  <option value="fr">Français</option>
-                </select>
               </div>
             </div>
           </div>

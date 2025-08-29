@@ -27,18 +27,24 @@ const CourseContentList = ({
     const fetchQuizzes = async () => {
       try {
         const res = await axios.get(
-          `${API_BASE}/api/quizzes/course/${course._id}`
+          `${API_BASE}/api/quizzes/course/${course._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
         );
         if (res.data.success) {
           setQuizzes(res.data.data);
         }
       } catch (error) {
         console.error("Failed to fetch quizzes:", error);
+        showToast("Failed to fetch quizzes.", "error");
       }
     };
 
     if (course?._id) fetchQuizzes();
-  }, [course, API_BASE]);
+  }, [course, API_BASE, showToast]);
 
   const videoToQuizMap = quizzes.reduce((map, quiz) => {
     map[quiz.videoId] = quiz._id;
@@ -69,7 +75,7 @@ const CourseContentList = ({
     return Object.entries(grouped).map(([title, lectures]) => {
       // Sort lectures by order
       const sortedLectures = lectures.sort((a, b) => (a.order || 0) - (b.order || 0));
-      
+
       // Calculate total duration for section
       const totalDuration = sortedLectures.reduce((sum, video) => {
         return sum + (video.duration || 0);
@@ -84,57 +90,35 @@ const CourseContentList = ({
     });
   };
 
-  // Create dummy sections for courses without real content
-  const createDummySections = () => {
-    return [
-      {
-        title: "Getting Started",
-        lectures: Array.from({ length: 3 }, (_, i) => ({
-          _id: `dummy-${i + 1}`,
-          description: `Introduction Lesson ${i + 1}`,
-          order: i + 1,
-          duration: Math.floor(Math.random() * 20) + 10,
-          isDummy: true,
-        })),
-        duration: "45 min",
-        lectureCount: 3,
-      },
-      {
-        title: "Core Concepts",
-        lectures: Array.from({ length: 4 }, (_, i) => ({
-          _id: `dummy-${i + 4}`,
-          description: `Core Concept ${i + 1}`,
-          order: i + 4,
-          duration: Math.floor(Math.random() * 20) + 10,
-          isDummy: true,
-        })),
-        duration: "60 min",
-        lectureCount: 4,
-      },
-    ];
-  };
-
   const hasRealContent = course?.videos && course.videos.length > 0;
-  const sections = hasRealContent 
-    ? groupVideosBySection(course.videos)
-    : createDummySections();
+  const sections = hasRealContent ? groupVideosBySection(course.videos) : [];
 
   // Initialize expanded state for all sections
   useEffect(() => {
-    const initialExpanded = {};
-    sections.forEach((_, index) => {
-      initialExpanded[index] = index === 0; // Only first section expanded by default
-    });
-    setExpandedSections(initialExpanded);
-  }, [sections.length]);
+    if (hasRealContent) {
+      const initialExpanded = {};
+      sections.forEach((_, index) => {
+        initialExpanded[index] = index === 0; // Only first section expanded by default
+      });
+      setExpandedSections(initialExpanded);
+    }
+  }, [sections.length, hasRealContent]);
 
   const getTotalStats = () => {
     const totalLectures = sections.reduce((sum, section) => sum + section.lectureCount, 0);
-    const totalDuration = hasRealContent ? course.duration || 0 : 2;
+    const totalDuration = hasRealContent ? course.duration || 0 : 0;
     return { totalLectures, totalDuration };
   };
 
   const { totalLectures, totalDuration } = getTotalStats();
+
+  if (!hasRealContent) {
+    return (
+      <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
+        <p className="text-gray-500 text-sm">No content available for this course.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg">
@@ -179,8 +163,8 @@ const CourseContentList = ({
                   const globalIndex = sections
                     .slice(0, sectionIndex)
                     .reduce((sum, s) => sum + s.lectureCount, 0) + lectureIndex;
-                  
-                  const isLocked = !hasRealContent || (!isEnrolled && globalIndex > 0);
+
+                  const isLocked = !isEnrolled && globalIndex > 0;
                   const isActive = currentVideo?._id === video._id;
 
                   return (
@@ -192,11 +176,6 @@ const CourseContentList = ({
                           : "border-l-transparent"
                       } ${isLocked ? "opacity-60" : ""}`}
                       onClick={() => {
-                        if (!hasRealContent) {
-                          showToast("Course content coming soon!", "info");
-                          return;
-                        }
-
                         if (isEnrolled || globalIndex === 0) {
                           setCurrentVideo(video);
                         } else {
@@ -231,11 +210,11 @@ const CourseContentList = ({
                                 </div>
                               </>
                             )}
-                            {(globalIndex === 0 || !hasRealContent) && (
+                            {globalIndex === 0 && (
                               <>
                                 <span>•</span>
                                 <span className="bg-green-100 text-green-700 text-xs font-medium px-2 py-0.5 rounded">
-                                  {!hasRealContent ? "Coming Soon" : "Preview"}
+                                  Preview
                                 </span>
                               </>
                             )}
@@ -243,7 +222,7 @@ const CourseContentList = ({
                         </div>
 
                         {/* Progress indicator */}
-                        {isEnrolled && hasRealContent && !isLocked && (
+                        {isEnrolled && !isLocked && (
                           <div className="flex-shrink-0">
                             <CheckCircle className="w-4 h-4 text-green-600" />
                           </div>
@@ -251,23 +230,21 @@ const CourseContentList = ({
                       </div>
 
                       {/* Quiz button */}
-                      {isEnrolled &&
-                        hasRealContent &&
-                        videoToQuizMap[video._id] && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(
-                                `/student/courses/${course._id}/quiz/${
-                                  videoToQuizMap[video._id]
-                                }`
-                              );
-                            }}
-                            className="ml-3 bg-green-100 hover:bg-green-200 text-green-800 text-xs font-medium px-3 py-1 rounded"
-                          >
-                            Quiz
-                          </button>
-                        )}
+                      {isEnrolled && videoToQuizMap[video._id] && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(
+                              `/student/courses/${course._id}/quiz/${
+                                videoToQuizMap[video._id]
+                              }`
+                            );
+                          }}
+                          className="ml-3 bg-green-100 hover:bg-green-200 text-green-800 text-xs font-medium px-3 py-1 rounded"
+                        >
+                          Quiz
+                        </button>
+                      )}
                     </div>
                   );
                 })}

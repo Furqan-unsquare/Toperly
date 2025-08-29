@@ -79,7 +79,7 @@ const FAQSection = () => {
             <p className="text-gray-600 text-sm mb-4">
               Can't find the answer to your question? Send us an email and we'll get back to you as soon as possible!
             </p>
-            <button className="flex items-center px-5 py-2.5 bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white rounded-lg font-medium transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2">
+            <button className="flex items-center px-5 py-2.5 hover:text-gray-600 bg-gradient-to-r from-purple-600 to-blue-500 hover:from-[#0c9279] hover:to-[#66E4CC] text-white rounded-lg font-medium transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2">
               Send email
             </button>
           </div>

@@ -13,17 +13,22 @@ const LearningPointsForm = () => {
 
   const API_BASE = "http://localhost:5000/api";
 
-  // Fetch courses for dropdown
+  // Fetch current user's courses from /api/auth/me
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchUserCourses = async () => {
       try {
-        const { data } = await axios.get(`${API_BASE}/courses`);
-        setCourses(data);
+        const response = await axios.get(`${API_BASE}/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        const userData = response.data;
+        setCourses(userData.courses || []);
       } catch (error) {
-        console.error("Error fetching courses:", error);
+        console.error("Error fetching user courses:", error);
       }
     };
-    fetchCourses();
+    fetchUserCourses();
   }, []);
 
   // Fetch existing learning points when course is selected
@@ -36,15 +41,20 @@ const LearningPointsForm = () => {
       }
 
       // Set course title
-      const course = courses.find(c => c._id === selectedCourse);
+      const course = courses.find((c) => c._id === selectedCourse);
       setSelectedCourseTitle(course?.title || "");
 
       setFetchingPoints(true);
       try {
         const { data } = await axios.get(
-          `${API_BASE}/learning-points/course/${selectedCourse}`
+          `${API_BASE}/learning-points/course/${selectedCourse}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
         );
-        
+
         if (data.points && data.points.length > 0) {
           setPoints(data.points);
           setMessage("Existing learning points loaded for editing.");
@@ -83,13 +93,13 @@ const LearningPointsForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!selectedCourse) {
       setMessage("Please select a course.");
       return;
     }
 
-    const filteredPoints = points.filter(point => point.trim() !== "");
+    const filteredPoints = points.filter((point) => point.trim() !== "");
     if (filteredPoints.length === 0) {
       setMessage("Please add at least one learning point.");
       return;
@@ -97,14 +107,22 @@ const LearningPointsForm = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API_BASE}/learning-points`, {
-        courseId: selectedCourse,
-        points: filteredPoints
-      });
-      
+      const response = await axios.post(
+        `${API_BASE}/learning-points`,
+        {
+          courseId: selectedCourse,
+          points: filteredPoints,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
       setMessage("Learning points saved successfully!");
       setPoints(filteredPoints);
-      
+
       // Clear message after 3 seconds
       setTimeout(() => setMessage(""), 3000);
     } catch (error) {
@@ -118,7 +136,6 @@ const LearningPointsForm = () => {
   return (
     <div className="max-w-7xl mx-auto bg-white p-6 shadow-lg rounded-lg">
       <div className="grid md:grid-cols-2 gap-8">
-        
         {/* Form Section */}
         <div>
           <h2 className="text-2xl font-bold mb-4 text-gray-800">
@@ -126,11 +143,13 @@ const LearningPointsForm = () => {
           </h2>
 
           {message && (
-            <div className={`mb-4 p-3 rounded ${
-              message.includes('successfully') 
-                ? 'bg-green-100 text-green-700' 
-                : 'bg-blue-100 text-blue-700'
-            }`}>
+            <div
+              className={`mb-4 p-3 rounded ${
+                message.includes("successfully")
+                  ? "bg-green-100 text-green-700"
+                  : "bg-blue-100 text-blue-700"
+              }`}
+            >
               {message}
             </div>
           )}
@@ -161,11 +180,13 @@ const LearningPointsForm = () => {
               <label className="block mb-2 font-medium text-gray-700">
                 Learning Points
               </label>
-              
+
               {fetchingPoints ? (
                 <div className="text-center py-4">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="text-sm text-gray-500 mt-2">Loading existing points...</p>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Loading existing points...
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -189,7 +210,7 @@ const LearningPointsForm = () => {
                       )}
                     </div>
                   ))}
-                  
+
                   <button
                     type="button"
                     onClick={addPointField}
@@ -216,29 +237,28 @@ const LearningPointsForm = () => {
         {/* Preview Section */}
         <div>
           <h3 className="text-2xl font-bold mb-4 text-gray-800">Preview</h3>
-          
+
           {selectedCourseTitle && (
             <div className="bg-gray-50 p-6 rounded-lg">
               <h4 className="text-lg font-semibold mb-4 text-gray-900">
                 {selectedCourseTitle}
               </h4>
-              
+
               <div className="mb-4">
                 <h5 className="text-lg font-medium text-gray-900 mb-3">
                   What you'll learn
                 </h5>
-                
-                {points.filter(point => point.trim() !== "").length > 0 ? (
+
+                {points.filter((point) => point.trim() !== "").length > 0 ? (
                   <div className="grid grid-cols-1 gap-2">
                     {points
-                      .filter(point => point.trim() !== "")
+                      .filter((point) => point.trim() !== "")
                       .map((point, index) => (
                         <div key={index} className="flex items-start gap-3">
                           <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                           <span className="text-gray-700">{point}</span>
                         </div>
-                      ))
-                    }
+                      ))}
                   </div>
                 ) : (
                   <p className="text-gray-500 italic">
@@ -248,7 +268,7 @@ const LearningPointsForm = () => {
               </div>
             </div>
           )}
-          
+
           {!selectedCourse && (
             <div className="bg-gray-100 p-6 rounded-lg text-center">
               <p className="text-gray-500">

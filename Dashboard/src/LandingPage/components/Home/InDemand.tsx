@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Star, Clock, Users, PlayCircle, BookOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -21,6 +22,7 @@ interface Course {
   materials: any[];
   videos: any[];
   __v: number;
+  inDemand: boolean; // Added to interface
 }
 
 // Skeleton Card Component
@@ -100,26 +102,29 @@ const ProfessionalCourseSection: React.FC = () => {
         const response = await fetch(`${API_BASE}/api/courses/`);
         if (!response.ok) throw new Error('Failed to fetch courses');
         const result = await response.json();
-        const mappedCourses = result?.map((course: any) => ({
-          _id: course._id,
-          title: course.title,
-          description: course.description,
-          instructor: course.instructor || 'Unknown Instructor',
-          category: course.category,
-          level: course.level as 'Beginner' | 'Intermediate' | 'Advanced',
-          price: course.price,
-          duration: course.duration,
-          isPublished: course.isPublished,
-          rating: course.rating,
-          totalReviews: course.totalReviews || 0,
-          createdAt: course.createdAt,
-          updatedAt: course.updatedAt,
-          customId: course.customId || 'N/A',
-          thumbnail: course.thumbnail || { url: 'https://via.placeholder.com/480x360.png?text=Course' },
-          materials: course.materials || [],
-          videos: course.videos || [],
-          __v: course.__v
-        }));
+        const mappedCourses = result
+          ?.filter((course: any) => course.inDemand === true) // Filter inDemand: true
+          .map((course: any) => ({
+            _id: course._id,
+            title: course.title,
+            description: course.description,
+            instructor: course.instructor || 'Unknown Instructor',
+            category: course.category,
+            level: course.level as 'Beginner' | 'Intermediate' | 'Advanced',
+            price: course.price,
+            duration: course.duration,
+            isPublished: course.isPublished,
+            rating: course.rating,
+            totalReviews: course.totalReviews || 0,
+            createdAt: course.createdAt,
+            updatedAt: course.updatedAt,
+            customId: course.customId || 'N/A',
+            thumbnail: course.thumbnail || { url: 'https://via.placeholder.com/480x360.png?text=Course' },
+            materials: course.materials || [],
+            videos: course.videos || [],
+            __v: course.__v,
+            inDemand: course.inDemand || false,
+          }));
         setCourses(mappedCourses);
         setLoading(false);
       } catch (err: any) {
@@ -137,7 +142,7 @@ const ProfessionalCourseSection: React.FC = () => {
       ([entry]) => {
         setIsVisible(entry.isIntersecting);
       },
-      { threshold: 0.2 } // Trigger when 20% of the section is visible
+      { threshold: 0.2 }
     );
 
     if (sectionRef.current) {
@@ -156,10 +161,14 @@ const ProfessionalCourseSection: React.FC = () => {
 
   const getLevelColor = (level: string) => {
     switch (level) {
-      case 'Beginner': return 'bg-green-100 text-green-800';
-      case 'Intermediate': return 'bg-yellow-100 text-yellow-800';
-      case 'Advanced': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Beginner':
+        return 'bg-green-100 text-green-800';
+      case 'Intermediate':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'Advanced':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -185,8 +194,8 @@ const ProfessionalCourseSection: React.FC = () => {
               onClick={slidePrev}
               disabled={atStart}
               className={`p-3 rounded-full border-2 transition-all duration-200 ${
-                atStart 
-                  ? 'border-gray-200 text-gray-300 cursor-not-allowed' 
+                atStart
+                  ? 'border-gray-200 text-gray-300 cursor-not-allowed'
                   : 'border-gray-300 text-gray-600 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50'
               }`}
             >
@@ -196,8 +205,8 @@ const ProfessionalCourseSection: React.FC = () => {
               onClick={slideNext}
               disabled={atEnd}
               className={`p-3 rounded-full border-2 transition-all duration-200 ${
-                atEnd 
-                  ? 'border-gray-200 text-gray-300 cursor-not-allowed' 
+                atEnd
+                  ? 'border-gray-200 text-gray-300 cursor-not-allowed'
                   : 'border-gray-300 text-gray-600 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50'
               }`}
             >
@@ -232,7 +241,7 @@ const ProfessionalCourseSection: React.FC = () => {
               }
             `}
           </style>
-          <div 
+          <div
             ref={swiperRef}
             className="flex gap-6 overflow-x-auto scrollbar-hide pb-6"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
@@ -240,17 +249,15 @@ const ProfessionalCourseSection: React.FC = () => {
           >
             {loading ? (
               // Render 4 skeletons while loading
-              Array.from({ length: 4 }).map((_, idx) => (
-                <CourseCardSkeleton key={idx} />
-              ))
+              Array.from({ length: 4 }).map((_, idx) => <CourseCardSkeleton key={idx} />)
             ) : error ? (
               // No cards on error
               null
             ) : (
               // Real course cards
               courses.map((course, idx) => (
-                <div 
-                  key={course._id} 
+                <div
+                  key={course._id}
                   className={`flex-none w-80 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 group cursor-pointer ${
                     isVisible ? 'animate-fade-up' : 'hidden-animation'
                   }`}
@@ -281,11 +288,10 @@ const ProfessionalCourseSection: React.FC = () => {
                     </div>
 
                     {/* Title */}
-                    <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2">
-                      {course.title}
-                    </h3>
-                    
-                    <div className="text-gray-600 mb-3 line-clamp-2"
+                    <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2">{course.title}</h3>
+
+                    <div
+                      className="text-gray-600 mb-3 line-clamp-2"
                       dangerouslySetInnerHTML={{ __html: course.description }}
                     />
 
@@ -307,9 +313,9 @@ const ProfessionalCourseSection: React.FC = () => {
                         <span className="text-sm font-bold text-gray-900 mr-1">{course.rating || 'N/A'}</span>
                         <div className="flex">
                           {[...Array(5)]?.map((_, i) => (
-                            <Star 
-                              key={i} 
-                              className={`w-4 h-4 ${i < Math.floor(course.rating || 0) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+                            <Star
+                              key={i}
+                              className={`w-4 h-4 ${i < Math.floor(course.rating || 0) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
                             />
                           ))}
                         </div>
@@ -355,9 +361,7 @@ const ProfessionalCourseSection: React.FC = () => {
             )}
           </div>
           {/* Show error below the cards, only if not loading */}
-          {!loading && error && (
-            <div className="text-center py-16 text-red-600">{error}</div>
-          )}
+          {!loading && error && <div className="text-center py-16 text-red-600">{error}</div>}
         </div>
       </div>
     </section>

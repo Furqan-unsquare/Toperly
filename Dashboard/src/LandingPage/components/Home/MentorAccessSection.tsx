@@ -80,6 +80,7 @@ const ProfileCard = ({
   );
 };
 
+
 // Central Post Component
 const CentralPost = ({ isVisible, delay = 0 }) => {
   return (
@@ -252,8 +253,8 @@ const MentorAccessSection = () => {
             under an hour and take the next step in your journey.
           </p>
 
-          <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-2xl shadow-md transition">
-            Connect with a Mentor
+          <button className="toperly-navbar-btn bg-[#2721F7] rounded-lg">
+            <span className="toperly-navbar-btn-content">Connect with us</span>
           </button>
         </div>
       </div>

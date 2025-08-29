@@ -16,6 +16,7 @@ import {
   Save,
   ChevronDown,
   ChevronRight,
+  Calendar,
 } from "lucide-react";
 
 const API_BASE = import.meta.env.VITE_API_URL;
@@ -37,6 +38,7 @@ interface Course {
   title: string;
   description: string;
   materials: Material[];
+  instructor: string | { _id: string; name: string };
 }
 
 const MaterialsManagement = () => {
@@ -50,9 +52,8 @@ const MaterialsManagement = () => {
     material: Material;
     courseId: string;
   } | null>(null);
-  const [expandedCourses, setExpandedCourses] = useState<Set<string>>(
-    new Set()
-  );
+  const [expandedCourses, setExpandedCourses] = useState<Set<string>>(new Set());
+  const [userId, setUserId] = useState<string | null>(null);
 
   // Form states
   const [formData, setFormData] = useState({
@@ -66,47 +67,46 @@ const MaterialsManagement = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
-    fetchCoursesWithMaterials();
-    fetchAllCourses();
+    fetchUserAndCourses();
   }, []);
 
-  const fetchCoursesWithMaterials = async () => {
+  const fetchUserAndCourses = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found. Please log in.");
+      }
+
+      // Fetch current user data
+      const userResponse = await axios.get(`${API_BASE}/api/auth/me`, {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      });
+      const currentUserId = userResponse.data.profile._id;
+      setUserId(currentUserId);
+
+      // Fetch all courses and filter by instructor
       const response = await axios.get(`${API_BASE}/api/courses`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const coursesData = Array.isArray(response.data)
-        ? response.data
-        : response.data?.data || [];
-      const coursesWithMaterials = coursesData.filter(
+      const coursesData = Array.isArray(response.data) ? response.data : response.data?.data || [];
+      const userCourses = coursesData.filter(
+        (course) => (course.instructor?._id || course.instructor) === currentUserId
+      );
+
+      // Separate courses with materials
+      const coursesWithMaterials = userCourses.filter(
         (course) => course.materials && course.materials.length > 0
       );
       setCourses(coursesWithMaterials);
+      setAllCourses(userCourses);
     } catch (error) {
-      console.error("Failed to fetch courses:", error);
+      console.error("Failed to fetch data:", error);
       setCourses([]);
+      setAllCourses([]);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchAllCourses = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${API_BASE}/api/courses`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const coursesData = Array.isArray(response.data)
-        ? response.data
-        : response.data?.data || [];
-      setAllCourses(coursesData);
-    } catch (error) {
-      console.error("Failed to fetch all courses:", error);
-      setAllCourses([]);
     }
   };
 
@@ -149,7 +149,7 @@ const MaterialsManagement = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      await fetchCoursesWithMaterials();
+      await fetchUserAndCourses();
       alert("Material deleted successfully!");
     } catch (error) {
       console.error("Failed to delete material:", error);
@@ -245,7 +245,7 @@ const MaterialsManagement = () => {
 
       setShowCreateForm(false);
       setEditingMaterial(null);
-      await fetchCoursesWithMaterials();
+      await fetchUserAndCourses();
     } catch (error: any) {
       console.error("Failed to save material:", error);
       alert(error.response?.data?.message || "Failed to save material");
@@ -304,7 +304,8 @@ const MaterialsManagement = () => {
         course.materials.some(
           (material) =>
             material.title.toLowerCase().includes(searchLower) ||
-            material.filename.toLowerCase().includes(searchLower)
+            material.filename.toLowerCase().includes(searchLower) ||
+            (material.content || "").toLowerCase().includes(searchLower)
         )
       );
     }
@@ -330,7 +331,7 @@ const MaterialsManagement = () => {
                     Materials Management
                   </h1>
                   <p className="text-sm text-gray-500">
-                    Manage course materials and resources
+                    Manage your course materials and resources
                   </p>
                 </div>
               </div>
@@ -371,7 +372,7 @@ const MaterialsManagement = () => {
                     onChange={(e) => setSelectedCourse(e.target.value)}
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
                   >
-                    <option value="">All Courses</option>
+                    <option value="">All Your Courses</option>
                     {allCourses.map((course) => (
                       <option key={course._id} value={course._id}>
                         {course.title}
@@ -496,18 +497,36 @@ const MaterialsManagement = () => {
                                     </span>
                                   </div>
 
-                                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                                  <div className="flex flex-col gap-1 text-sm text-gray-500">
                                     <span>{material.filename}</span>
                                     {material.createdAt && (
-                                      <>
-                                        <span>•</span>
+                                      <div className="flex items-center gap-2">
+                                        <Calendar className="w-4 h-4" />
                                         <span>
                                           Added{" "}
                                           {new Date(
                                             material.createdAt
                                           ).toLocaleDateString()}
                                         </span>
-                                      </>
+                                      </div>
+                                    )}
+                                    {material.updatedAt &&
+                                      material.updatedAt !== material.createdAt && (
+                                        <div className="flex items-center gap-2">
+                                          <Calendar className="w-4 h-4" />
+                                          <span>
+                                            Updated{" "}
+                                            {new Date(
+                                              material.updatedAt
+                                            ).toLocaleDateString()}
+                                          </span>
+                                        </div>
+                                      )}
+                                    {material.content && (
+                                      <p className="text-sm text-gray-600 mt-1 truncate">
+                                        {material.content.substring(0, 100)}
+                                        {material.content.length > 100 ? "..." : ""}
+                                      </p>
                                     )}
                                   </div>
                                 </div>

@@ -1,4 +1,3 @@
-// components/RecommendedCourses.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -17,7 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 // Import Swiper styles
 import "swiper/css";
-import "swiper/css/navigation"; 
+import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 const RecommendedCourses = () => {
@@ -43,25 +42,11 @@ const RecommendedCourses = () => {
 
       if (response.ok) {
         const data = await response.json();
-
-        // Duplicate courses to have more content for the slider
-        const duplicatedCourses = [
-          ...data,
-          ...data.map((course) => ({
-            ...course,
-            _id: `${course._id}_dup1`,
-            title: `${course.title} - Advanced`,
-          })),
-          ...data.map((course) => ({
-            ...course,
-            _id: `${course._id}_dup2`,
-            title: `${course.title} - Masterclass`,
-          })),
-        ];
-
-        // Shuffle and take first 12 courses
-        const shuffled = duplicatedCourses.sort(() => 0.5 - Math.random());
-        setCourses(shuffled.slice(0, 12));
+        // Filter courses to only include those with isPublished: "approved"
+        const filteredCourses = data.filter(
+          (course) => course.isPublished === "approved"
+        );
+        setCourses(filteredCourses);
       }
     } catch (error) {
       console.error("Error fetching recommended courses:", error);
@@ -95,11 +80,7 @@ const RecommendedCourses = () => {
         return;
       }
 
-      const originalId = course._id.includes("_dup")
-        ? course._id.split("_dup")[0]
-        : course._id;
-
-      const endpoint = `${API_BASE}/wishlist/${originalId}`;
+      const endpoint = `${API_BASE}/wishlist/${course._id}`;
       const method = isWishlisted ? "DELETE" : "POST";
 
       try {
@@ -124,10 +105,7 @@ const RecommendedCourses = () => {
     };
 
     const handleCourseClick = () => {
-      const originalId = course._id.includes("_dup")
-        ? course._id.split("_dup")[0]
-        : course._id;
-      navigate(`/student/courses/${originalId}`);
+      navigate(`/student/courses/${course._id}`);
     };
 
     return (
@@ -293,7 +271,7 @@ const RecommendedCourses = () => {
 
           <button
             onClick={() => navigate("/student/courses")}
-            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 transform hover:scale-105 active:scale-95 font-medium"
+            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 transform  active:scale-95 font-medium"
           >
             All Courses
             <ArrowRight size={16} />
@@ -302,86 +280,96 @@ const RecommendedCourses = () => {
 
         {/* Courses Slider */}
         <div className="relative">
-          <Swiper
-            modules={[Navigation, Pagination, Autoplay]}
-            spaceBetween={24}
-            slidesPerView={1}
-            navigation={{
-              prevEl: ".swiper-button-prev-custom",
-              nextEl: ".swiper-button-next-custom",
-            }}
-            pagination={{
-              clickable: true,
-              bulletClass: "swiper-pagination-bullet",
-              bulletActiveClass: "swiper-pagination-bullet-active",
-            }}
-            autoplay={{
-              delay: 4000,
-              disableOnInteraction: false,
-              pauseOnMouseEnter: true,
-            }}
-            breakpoints={{
-              640: {
-                slidesPerView: 2,
-              },
-              768: {
-                slidesPerView: 2,
-              },
-              1024: {
-                slidesPerView: 3,
-              },
-              1280: {
-                slidesPerView: 4,
-              },
-            }}
-            className="pb-12"
-          >
-            {courses.map((course, index) => (
-              <SwiperSlide key={course._id}>
-                <CourseCard course={course} />
-              </SwiperSlide>
-            ))}
+          {courses.length === 0 ? (
+            <div className="text-center text-gray-600">
+              No recommended courses available.
+            </div>
+          ) : (
+            <Swiper
+              modules={[Navigation, Pagination, Autoplay]}
+              spaceBetween={24}
+              slidesPerView={1}
+              navigation={{
+                prevEl: ".swiper-button-prev-custom",
+                nextEl: ".swiper-button-next-custom",
+              }}
+              pagination={{
+                clickable: true,
+                bulletClass: "swiper-pagination-bullet",
+                bulletActiveClass: "swiper-pagination-bullet-active",
+              }}
+              autoplay={{
+                delay: 4000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+              }}
+              breakpoints={{
+                640: {
+                  slidesPerView: 2,
+                },
+                768: {
+                  slidesPerView: 3,
+                },
+                1024: {
+                  slidesPerView: 4,
+                },
+                1280: {
+                  slidesPerView: 4,
+                },
+              }}
+              className="pb-12"
+            >
+              {courses.map((course) => (
+                <SwiperSlide key={course._id}>
+                  <CourseCard course={course} />
+                </SwiperSlide>
+              ))}
 
-            {/* More Courses Slide */}
-            <SwiperSlide>
-              <div
-                onClick={() => navigate("/courses")}
-                className="group bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl border-2 border-dashed border-blue-200 overflow-hidden hover:from-blue-100 hover:to-indigo-200 hover:border-blue-300 transition-all duration-300 transform hover:-translate-y-1 h-full cursor-pointer flex flex-col items-center justify-center p-8 min-h-[400px]"
-              >
-                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <ArrowRight size={24} className="text-white" />
+              {/* More Courses Slide */}
+              <SwiperSlide>
+                <div
+                  onClick={() => navigate("/student/courses")}
+                  className="group bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl border-2 border-dashed border-blue-200 overflow-hidden hover:from-blue-100 hover:to-indigo-200 hover:border-blue-300 transition-all duration-300 transform h-full cursor-pointer flex flex-col items-center justify-center p-8 min-h-[420px]"
+                >
+                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-6  transition-transform duration-300">
+                    <ArrowRight size={24} className="text-white" />
+                  </div>
+
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3 text-center">
+                    Explore More Courses
+                  </h3>
+
+                  <p className="text-gray-600 text-center mb-6 leading-relaxed">
+                    Discover hundreds of courses across different categories and
+                    skill levels
+                  </p>
+
+                  <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium ">
+                    View All Courses
+                  </button>
                 </div>
-
-                <h3 className="text-xl font-semibold text-gray-900 mb-3 text-center">
-                  Explore More Courses
-                </h3>
-
-                <p className="text-gray-600 text-center mb-6 leading-relaxed">
-                  Discover hundreds of courses across different categories and
-                  skill levels
-                </p>
-
-                <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium group-hover:scale-105">
-                  View All Courses
-                </button>
-              </div>
-            </SwiperSlide>
-          </Swiper>
+              </SwiperSlide>
+            </Swiper>
+          )}
 
           {/* Custom Navigation Buttons */}
-          <button className="swiper-button-prev-custom absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-all duration-200 group">
-            <ChevronLeft
-              size={20}
-              className="text-gray-600 group-hover:text-gray-900"
-            />
-          </button>
+          {courses.length > 0 && (
+            <>
+              <button className="swiper-button-prev-custom absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-all duration-200 group">
+                <ChevronLeft
+                  size={20}
+                  className="text-gray-600 group-hover:text-gray-900"
+                />
+              </button>
 
-          <button className="swiper-button-next-custom absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-all duration-200 group">
-            <ChevronRight
-              size={20}
-              className="text-gray-600 group-hover:text-gray-900"
-            />
-          </button>
+              <button className="swiper-button-next-custom absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-all duration-200 group">
+                <ChevronRight
+                  size={20}
+                  className="text-gray-600 group-hover:text-gray-900"
+                />
+              </button>
+            </>
+          )}
         </div>
       </div>
 

@@ -158,7 +158,7 @@ const DarkAIHero = () => {
 
       <div className="container mx-auto px-6 lg:px-8 relative z-10">
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 gap-16  mt-4 md:mt-12 items-left"
+          className="grid grid-cols-1 md:grid-cols-2 gap-16  mt-4 md:mt-10 items-left"
           variants={container}
         >
           {/* Left Content */}
@@ -187,7 +187,7 @@ const DarkAIHero = () => {
               className="text-[3.2rem] sm:text-6xl lg:text-7xl font-black leading-[0.9] mb-8 tracking-tight"
               variants={zoomOut}
             >
-              <span className="bg-gradient-to-b from-gray-500 via-gray-300 to-gray-100 text-transparent bg-clip-text leading-none">
+              <span className=" bg-gradient-to-b from-gray-500 via-gray-300 to-gray-100 text-transparent bg-clip-text leading-none">
                 Making India Ready for the Future with AI
               </span>
             </motion.h1>

@@ -16,20 +16,14 @@ const InstructorProfile = ({ instructorId }) => {
         setLoading(true);
         setError(null);
 
-        const token = localStorage.getItem("token");
-        if (!token) {
-          throw new Error("Authentication token not found");
-        }
-
-        const response = await fetch(`${API_BASE}/api/instructors/${instructorId}`, {
-        });
+        const response = await fetch(`${API_BASE}/api/instructors/${instructorId}`);
 
         if (!response.ok) {
           throw new Error(`Failed to fetch instructor: ${response.statusText}`);
         }
 
         const data = await response.json();
-        setInstructor(data);
+        setInstructor(data.data); // Changed from data.instructor to data.data
       } catch (err) {
         console.error("Error fetching instructor:", err);
         setError(err.message);
@@ -46,18 +40,14 @@ const InstructorProfile = ({ instructorId }) => {
       <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
         <div className="animate-pulse">
           <div className="h-6 bg-gray-200 rounded w-1/3 mx-auto mb-4"></div>
-          <div className="flex justify-center gap-6">
+          <div className="flex flex-col items-center gap-4">
             <div className="w-24 h-24 bg-gray-200 rounded-full"></div>
             <div className="space-y-2">
               <div className="h-4 bg-gray-200 rounded w-40"></div>
               <div className="h-4 bg-gray-200 rounded w-32"></div>
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-16 bg-gray-200 rounded-lg"></div>
-            ))}
-          </div>
+          <div className="mt-6 h-16 bg-gray-200 rounded-lg"></div>
         </div>
       </div>
     );
@@ -90,12 +80,14 @@ const InstructorProfile = ({ instructorId }) => {
 
       {/* Instructor Profile */}
       <div className="p-6">
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* Left Side - Avatar and Basic Info */}
-          <div className="flex flex-col items-center md:items-start">
-            <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-3xl mb-4">
-              {instructor.name?.charAt(0) || "I"}
-            </div>
+        <div className="flex flex-col gap-6">
+          {/* Top Section - Avatar and Basic Info */}
+          <div className="flex flex-col items-center md:flex-row md:items-start gap-6">
+            <img
+              src={instructor.profileImage || "https://via.placeholder.com/96"}
+              alt={instructor.name || "Instructor"}
+              className="w-24 h-24 rounded-full"
+            />
             <div className="text-center md:text-left">
               <h4 className="text-xl font-bold text-blue-600 mb-1">
                 {instructor.name || "Unknown Instructor"}
@@ -103,141 +95,111 @@ const InstructorProfile = ({ instructorId }) => {
               <p className="text-gray-600 font-medium mb-2">
                 {instructor.title || "Instructor"}
               </p>
-              <p className="text-gray-500 text-sm">{instructor.email || "N/A"}</p>
+              <p className="text-gray-500 text-sm">
+                {instructor.email || "N/A"}
+              </p>
             </div>
           </div>
 
-          {/* Right Side - Stats and Bio */}
-          <div className="flex-1">
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="text-center p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center justify-center mb-1">
-                  <Star className="w-4 h-4 text-yellow-400 mr-1" />
-                  <span className="font-bold text-gray-900">
-                    {instructor.rating?.toFixed(1) || "N/A"}
-                  </span>
-                </div>
-                <div className="text-sm text-gray-600">Instructor Rating</div>
-              </div>
-              <div className="text-center p-3 bg-gray-50 rounded-lg">
-                <div className="font-bold text-gray-900 mb-1">
-                  {instructor.reviewsCount?.toLocaleString() || "0"}
-                </div>
-                <div className="text-sm text-gray-600">Reviews</div>
-              </div>
-              <div className="text-center p-3 bg-gray-50 rounded-lg">
-                <div className="font-bold text-gray-900 mb-1">
-                  {instructor.studentsCount?.toLocaleString() || "0"}
-                </div>
-                <div className="text-sm text-gray-600">Students</div>
-              </div>
-              <div className="text-center p-3 bg-gray-50 rounded-lg">
-                <div className="font-bold text-gray-900 mb-1">
-                  {instructor.coursesCount || "0"}
-                </div>
-                <div className="text-sm text-gray-600">Courses</div>
-              </div>
+          {/* Bottom Section - Bio and Expertise (Full Width) */}
+          <div className="space-y-4">
+            {/* Bio */}
+            <div>
+              <h5 className="font-medium text-gray-900 mb-2">Bio</h5>
+              <p className="text-gray-700 leading-relaxed">
+                {instructor.bio || "No bio available"}
+              </p>
             </div>
 
-            {/* Bio Section */}
-            <div className="space-y-4">
-              <div>
-                <p className="text-gray-700 leading-relaxed">
-                  {instructor.bio || "No bio available"}
-                </p>
-              </div>
+            {/* Detailed Bio */}
+            <div
+              className={`space-y-3 text-sm text-gray-600 transition-all duration-300 overflow-hidden ${
+                showFullBio ? "max-h-none opacity-100" : "max-h-0 opacity-0"
+              }`}
+            >
+              {instructor.detailedBio ? (
+                <>
+                  <p>{instructor.detailedBio.paragraph1}</p>
+                  <p>{instructor.detailedBio.paragraph2}</p>
+                  <p>{instructor.detailedBio.paragraph3}</p>
+                </>
+              ) : (
+                <p>No detailed bio available</p>
+              )}
+            </div>
 
-              {/* Detailed Bio */}
-              <div
-                className={`space-y-3 text-sm text-gray-600 transition-all duration-300 overflow-hidden ${
-                  showFullBio ? "max-h-none opacity-100" : "max-h-0 opacity-0"
-                }`}
-              >
-                {instructor.detailedBio ? (
-                  <>
-                    <p>{instructor.detailedBio.paragraph1}</p>
-                    <p>{instructor.detailedBio.paragraph2}</p>
-                    <p>{instructor.detailedBio.paragraph3}</p>
-                  </>
-                ) : (
-                  <p>No detailed bio available</p>
+            {/* Expertise */}
+            {showFullBio && instructor.expertise && (
+              <div className="pt-4 border-t border-gray-200">
+                <h5 className="font-medium text-gray-900 mb-2">
+                  Areas of Expertise
+                </h5>
+                <div className="flex flex-wrap gap-2">
+                  {instructor.expertise.map((skill, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Education & Experience */}
+            {showFullBio && (instructor.education || instructor.experience) && (
+              <div className="pt-4 border-t border-gray-200 grid md:grid-cols-2 gap-4">
+                {instructor.education && (
+                  <div>
+                    <h5 className="font-medium text-gray-900 mb-2">
+                      Education
+                    </h5>
+                    <div className="space-y-1 text-sm text-gray-600">
+                      {instructor.education.map((edu, index) => (
+                        <div key={index}>{edu}</div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {instructor.experience && (
+                  <div>
+                    <h5 className="font-medium text-gray-900 mb-2">
+                      Experience
+                    </h5>
+                    <div className="space-y-1 text-sm text-gray-600">
+                      {instructor.experience.map((exp, index) => (
+                        <div key={index}>{exp}</div>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
+            )}
 
-              {/* Expertise */}
-              {showFullBio && instructor.expertise && (
-                <div className="pt-4 border-t border-gray-200">
-                  <h5 className="font-medium text-gray-900 mb-2">
-                    Areas of Expertise
-                  </h5>
-                  <div className="flex flex-wrap gap-2">
-                    {instructor.expertise.map((skill, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Education & Experience */}
-              {showFullBio && (instructor.education || instructor.experience) && (
-                <div className="pt-4 border-t border-gray-200 grid md:grid-cols-2 gap-4">
-                  {instructor.education && (
-                    <div>
-                      <h5 className="font-medium text-gray-900 mb-2">
-                        Education
-                      </h5>
-                      <div className="space-y-1 text-sm text-gray-600">
-                        {instructor.education.map((edu, index) => (
-                          <div key={index}>{edu}</div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {instructor.experience && (
-                    <div>
-                      <h5 className="font-medium text-gray-900 mb-2">
-                        Experience
-                      </h5>
-                      <div className="space-y-1 text-sm text-gray-600">
-                        {instructor.experience.map((exp, index) => (
-                          <div key={index}>{exp}</div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Show More/Less Button */}
-              <div className="pt-4">
-                <button
-                  onClick={() => setShowFullBio(!showFullBio)}
-                  className="text-blue-600 text-sm font-medium hover:text-blue-700 flex items-center transition-colors"
+            {/* Show More/Less Button */}
+            <div className="pt-4">
+              <button
+                onClick={() => setShowFullBio(!showFullBio)}
+                className="text-blue-600 text-sm font-medium hover:text-blue-700 flex items-center transition-colors"
+              >
+                {showFullBio ? "Show less" : "Show more"}
+                <svg
+                  className={`w-4 h-4 ml-1 transition-transform duration-200 ${
+                    showFullBio ? "transform rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  {showFullBio ? "Show less" : "Show more"}
-                  <svg
-                    className={`w-4 h-4 ml-1 transition-transform duration-200 ${
-                      showFullBio ? "transform rotate-180" : ""
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-              </div>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
             </div>
           </div>
         </div>
@@ -247,3 +209,4 @@ const InstructorProfile = ({ instructorId }) => {
 };
 
 export default InstructorProfile;
+

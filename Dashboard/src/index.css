@@ -110,3 +110,90 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* Remove weird spacing caused by Google Translate */
+.skiptranslate {
+  display: none;
+}
+
+.VIpgJd-yAWNEb-L7lbkb {
+  display: none !important;
+}
+
+/* Disable Google Translate hover & tooltip */
+/* *{
+  pointer-events: none !important;
+} */
+
+/* Kill Google Translate hover popups everywhere */
+font[dir="auto"],
+span.goog-text-highlight {
+  pointer-events: none !important;
+  background: inherit !important;
+  box-shadow: none !important;
+}
+
+/* Custom animation for the login button */
+.group:hover .group-hover\\:w-64 {
+  width: 16rem;
+}
+
+.group:hover .group-hover\\:h-64 {
+  height: 16rem;
+}
+
+.transform {
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.duration-500 {
+  transition-duration: 500ms;
+}
+
+.duration-700 {
+  transition-duration: 700ms;
+}
+
+.ease-out {
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Styled component for the login button */
+ .toperly-navbar-btn {
+      position: relative !important;
+      overflow: hidden !important;
+      height: 2.5rem;
+      padding: 0 1rem;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: color 0.475s ease;
+      z-index: 0;
+    }
+    .toperly-navbar-btn:hover {
+      color: #1f2937;
+    }
+    .toperly-navbar-btn-content {
+      position: relative;
+      z-index: 2;
+    }
+    .toperly-navbar-btn::before {
+      content: "";
+      position: absolute;
+      bottom: -50%;
+      left: -98%;
+      width: 400%;
+      height: 400%;
+      background: #66E4CC;
+      transform: rotate(-40deg) translateY(100%);
+      transition: transform 0.475s ease;
+      z-index: 1;
+    }
+    .toperly-navbar-btn:hover::before {
+      transform: rotate(-40deg) translateY(0);
+    }
