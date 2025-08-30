@@ -323,7 +323,7 @@ const CourseDetail = () => {
             The course you're looking for doesn't exist.
           </p>
           <button
-            onClick={() => navigate("/courses")}
+            onClick={() => navigate("/student/courses")}
             className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
             Back to Courses
@@ -496,7 +496,7 @@ const CourseDetail = () => {
                   <CheckCircle size={16} className="mr-1" />
                   <span className="text-sm font-medium">Enrolled</span>
                   <button
-                    onClick={() => navigate("/courses")}
+                    onClick={() => navigate("/student/courses")}
                     className="flex items-center text-gray-600 hover:text-gray-800 transition-colors pl-8"
                   >
                     <ArrowLeft size={20} className="mr-2" />

@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect, useRef } from "react";
+import Translate from "@/pages/GoogleTranslate"
 
 interface Course {
   _id: string;
@@ -237,6 +238,9 @@ export const Navbar = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+             {/* Language Selector */}
+                   <Translate />
         </div>
       </div>
     </nav>

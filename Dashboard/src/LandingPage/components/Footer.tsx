@@ -129,8 +129,7 @@ const Footer = () => {
             {/* Contact Info */}
             <div className="space-y-2 text-sm text-gray-600 mb-6 max-w-sm">
               <p className="mb-4 text-gray-600">
-                Empowering the next generation of AI professionals with cutting-edge courses
-                and hands-on experience.
+                Making India Ready for the Future with AI
               </p>
               <div className="flex items-center space-x-2">
                 <Mail className="w-4 h-4" />

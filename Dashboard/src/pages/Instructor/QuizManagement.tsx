@@ -37,18 +37,11 @@ interface Quiz {
 interface Course {
   _id: string;
   title: string;
+  instructor: string | { _id: string; name: string };
   videos?: Array<{
     _id: string;
     title: string;
   }>;
-}
-
-interface AuthMeResponse {
-  profile: {
-    _id: string;
-    [key: string]: any;
-  };
-  courses: Course[];
 }
 
 const API_BASE = import.meta.env.VITE_API_URL;
@@ -100,21 +93,26 @@ const QuizManagement = () => {
         throw new Error("Authentication token missing. Please log in.");
       }
 
-      // Fetch instructor data and courses
-      const userResponse = await axios.get<AuthMeResponse>(`${API_BASE}/api/auth/me`, {
+      // Fetch current user data
+      const userResponse = await axios.get(`${API_BASE}/api/auth/me`, {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      });
+      const currentUserId = userResponse.data.profile._id;
+      setInstructorId(currentUserId);
+
+      // Fetch all courses and filter by instructor
+      const response = await axios.get(`${API_BASE}/api/courses`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const { profile, courses } = userResponse.data;
-      if (!profile?._id) {
-        throw new Error("Instructor ID not found in user profile.");
-      }
+      const coursesData = Array.isArray(response.data) ? response.data : response.data?.data || [];
+      const userCourses = coursesData.filter(
+        (course) => (course.instructor?._id || course.instructor) === currentUserId
+      );
+      setCourses(userCourses);
 
-      setInstructorId(profile._id);
-      setCourses(Array.isArray(courses) ? courses : []);
-
-      // Fetch quizzes
-      await fetchQuizzes(profile._id, token);
+      // Fetch quizzes for the filtered courses
+      await fetchQuizzes(currentUserId, token, userCourses);
     } catch (err: any) {
       console.error("Failed to fetch instructor data:", err);
       setError(err.message || "Failed to load data. Please try again.");
@@ -125,23 +123,21 @@ const QuizManagement = () => {
     }
   };
 
-  const fetchQuizzes = async (instructorId: string, token: string) => {
+  const fetchQuizzes = async (instructorId: string, token: string, userCourses: Course[]) => {
     try {
+      const courseIds = userCourses.map(course => course._id);
       const response = await axios.get(`${API_BASE}/api/quizzes?instructorId=${instructorId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const quizData = response.data;
-      if (Array.isArray(quizData)) {
-        setQuizzes(quizData);
-      } else if (quizData && Array.isArray(quizData.data)) {
-        setQuizzes(quizData.data);
-      } else if (quizData && Array.isArray(quizData.quizzes)) {
-        setQuizzes(quizData.quizzes);
-      } else {
-        console.warn("Unexpected quiz data structure:", quizData);
-        setQuizzes([]);
+      let quizData = response.data;
+      if (!Array.isArray(quizData)) {
+        quizData = quizData?.data || quizData?.quizzes || [];
       }
+
+      // Filter quizzes to only include those from the user's courses
+      const filteredQuizzes = quizData.filter(quiz => courseIds.includes(quiz.course?._id));
+      setQuizzes(filteredQuizzes);
     } catch (error) {
       console.error("Failed to fetch quizzes:", error);
       setQuizzes([]);
@@ -245,7 +241,7 @@ const QuizManagement = () => {
       await axios.delete(`${API_BASE}/api/quizzes/${quizId}?instructorId=${instructorId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      await fetchQuizzes(instructorId, token);
+      await fetchQuizzes(instructorId, token, courses);
       alert("Quiz deleted successfully!");
     } catch (error) {
       console.error("Failed to delete quiz:", error);
@@ -401,7 +397,7 @@ const QuizManagement = () => {
       }
 
       setShowCreateForm(false);
-      await fetchQuizzes(instructorId, token);
+      await fetchQuizzes(instructorId, token, courses);
     } catch (error: any) {
       console.error("Failed to save quiz:", error);
       alert(error.response?.data?.message || "Failed to save quiz");
@@ -527,7 +523,7 @@ const QuizManagement = () => {
                     onChange={(e) => setSelectedCourse(e.target.value)}
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
                   >
-                    <option value="">All Courses</option>
+                    <option value="">All Your Courses</option>
                     {courses.map((course) => (
                       <option key={course._id} value={course._id}>
                         {course.title}

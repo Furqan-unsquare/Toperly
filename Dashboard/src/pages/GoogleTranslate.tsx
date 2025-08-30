@@ -42,6 +42,8 @@ export default function LanguageSwitcher() {
     { code: "en", label: "English" },
     { code: "or", label: "Odia" },
     { code: "hi", label: "Hindi" },
+    { code: "ta", label: "Tamil" },
+    { code: "bn", label: "Bengali" },
   ];
 
   return (

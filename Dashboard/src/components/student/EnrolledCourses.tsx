@@ -136,32 +136,10 @@ const EnrolledCourses = () => {
           </div>
         )}
 
-        {/* Enrolled Badge */}
-        <div className="absolute top-3 right-3">
-          <span className="bg-green-100 text-green-700 px-2.5 py-1 rounded-md text-xs font-medium border border-green-200">
-            Enrolled
-          </span>
-        </div>
-
-        {/* Level Badge */}
-        <div className="absolute top-3 left-3">
-          <span
-            className={`px-2.5 py-1 rounded-md text-xs font-medium border ${
-              course?.level === "beginner"
-                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                : course?.level === "intermediate"
-                ? "bg-amber-50 text-amber-700 border-amber-200"
-                : "bg-rose-50 text-rose-700 border-rose-200"
-            }`}
-          >
-            {course?.level}
-          </span>
-        </div>
-
         {/* Continue Learning Overlay */}
         <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center opacity-0 hover:opacity-100">
           <button
-            onClick={() => navigate(`/courses/${course?._id}`)}
+            onClick={() => navigate(`/student/courses/${course?._id}`)}
             className="bg-white text-gray-800 px-4 py-2 rounded-md font-medium text-sm hover:bg-gray-100 transition-colors"
           >
             Continue Learning
@@ -171,18 +149,45 @@ const EnrolledCourses = () => {
 
       {/* Card Content */}
       <div className="p-5">
-        {/* Course Title */}
-        <h3 className="font-semibold text-lg text-gray-900 mb-3 leading-tight line-clamp-2">
-          {course?.title}
-        </h3>
+        <div className="flex items-center justify-between mb-3">
 
-        {/* Instructor */}
+          {/* Course Title */}
+          <h3 className="font-semibold text-lg text-gray-900 leading-tight line-clamp-2">
+            {course?.title}
+          </h3>
+
+           {/* Level Badge */}
+          <span className={`px-2.5 py-1 rounded-md text-xs font-medium border ${
+              course?.level === "beginner"
+                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                : course?.level === "intermediate"
+                ? "bg-amber-50 text-amber-700 border-amber-200"
+                : "bg-rose-50 text-rose-700 border-rose-200"
+            }`}>
+            {course?.level}
+          </span>
+        </div>
+
+          {/* Course Description */}
+          <div 
+            className="text-gray-600 mb-4 line-clamp-2 text-sm"
+            dangerouslySetInnerHTML={{ __html: course.description }} />
+
+          {/* Instructor */}
         <div className="flex items-center mb-4">
-          <div className="w-7 h-7 bg-gray-200 rounded-full flex items-center justify-center mr-2.5">
-            <span className="text-xs font-semibold text-gray-600">
-              {course?.instructor?.name?.charAt(0)}
-            </span>
-          </div>
+          {course?.instructor?.profileImage ? (
+            <img
+              src={course.instructor.profileImage}
+              alt={course?.instructor?.name}
+              className="w-7 h-7 rounded-full object-cover mr-2.5"
+            />
+          ) : (
+            <div className="w-7 h-7 bg-gray-200 rounded-full flex items-center justify-center mr-2.5">
+              <span className="text-xs font-semibold text-gray-600">
+                {course?.instructor?.name?.charAt(0)}
+              </span>
+            </div>
+          )}
           <span className="text-sm text-gray-600 font-medium">
             {course?.instructor?.name}
           </span>
@@ -207,13 +212,13 @@ const EnrolledCourses = () => {
         {/* Action Buttons */}
         <div className="flex gap-2">
           <button
-            onClick={() => navigate(`/courses/${course?._id}`)}
+            onClick={() => navigate(`/student/courses/${course?._id}`)}
             className="flex-1 bg-gray-900 text-white py-2.5 rounded-md hover:bg-gray-800 transition-colors duration-200 font-medium text-sm"
           >
             Continue Learning
           </button>
           <button
-            onClick={() => navigate(`/courses/${course?._id}`)}
+            onClick={() => navigate(`/student/courses/${course?._id}`)}
             className="px-3 py-2.5 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200"
           >
             <BookOpen size={16} className="text-gray-600" />
@@ -228,7 +233,7 @@ const EnrolledCourses = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto mt-8">
+    <div className="max-w-7xl mx-auto mt-2 mb-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -240,22 +245,10 @@ const EnrolledCourses = () => {
             {enrolledCourses?.length !== 1 ? "s" : ""} enrolled
           </p>
         </div>
-
-        {/* Quick Stats */}
-        {/* <div className="hidden md:flex items-center gap-6 text-sm">
-          <div className="flex items-center gap-2">
-            <TrendingUp size={16} className="text-blue-600" />
-            <span className="font-medium">Learning Progress</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Award size={16} className="text-green-600" />
-            <span className="font-medium">Certificates</span>
-          </div>
-        </div> */}
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+      <div className="bg-white rounded-lg mb-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
             <Search

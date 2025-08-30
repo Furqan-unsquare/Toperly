@@ -37,8 +37,8 @@ const VirtualDevicesDashboard = () => {
           size: "h-12"
         }
       ],
-      sideText: "No matter where you're from, you can now access quality education without the language barrier holding you back.",
-      leftDescription: "Learning becomes easier when it's in a language you understand best. That's why we provide lessons in multiple regional languages, including Odia, so you can focus on concepts—not translations."
+      sideText: "By learning in your own language, you can focus fully on concepts and skills, not translations.",
+      leftDescription: "We’re proud to be building a platform that educates India in the truest sense. That’s why our AI courses go beyond English- they’re available in regional languages like Odia, Tamil, Hindi, Bengali, and more."
     },
     Skills: {
       title: "Why Is Toperly Different",

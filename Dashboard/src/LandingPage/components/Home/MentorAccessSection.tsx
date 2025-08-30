@@ -248,9 +248,7 @@ const MentorAccessSection = () => {
 
           {/* Animated List Items */}
           <p className="text-lg text-gray-700 mb-6">
-            Get instant support from 200+ expert mentors. Prep for interviews, 
-            startup guidance, or personalized support. Connect with mentors in 
-            under an hour and take the next step in your journey.
+            Expert-designed courses, mentorship in your field, and guidance in your language- so nothing holds you back from the Top
           </p>
 
           <button className="toperly-navbar-btn bg-[#2721F7] rounded-lg">

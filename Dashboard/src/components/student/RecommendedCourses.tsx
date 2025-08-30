@@ -9,7 +9,7 @@ import {
   Play,
   Heart,
   ArrowRight,
-  ChevronLeft,
+  ChevronLeft,BookOpen ,
   ChevronRight,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -21,6 +21,7 @@ import "swiper/css/pagination";
 
 const RecommendedCourses = () => {
   const [courses, setCourses] = useState([]);
+  const [enrolledCourses, setEnrolledCourses] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [wishlist, setWishlist] = useState([]);
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ const RecommendedCourses = () => {
     fetchRecommendedCourses();
     if (user?.id) {
       fetchWishlist();
+      fetchEnrolledCourses();
     }
   }, [user]);
 
@@ -71,8 +73,25 @@ const RecommendedCourses = () => {
     }
   };
 
+  const fetchEnrolledCourses = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/enroll/my-courses`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setEnrolledCourses(data.map((entry) => entry.course._id));
+      }
+    } catch (error) {
+      console.error("Error fetching enrolled courses:", error);
+    }
+  };
+
   const CourseCard = ({ course }) => {
     const isWishlisted = wishlist.includes(course._id);
+    const isEnrolled = enrolledCourses.includes(course._id);
 
     const toggleWishlist = async () => {
       if (!user?.id) {
@@ -105,13 +124,13 @@ const RecommendedCourses = () => {
     };
 
     const handleCourseClick = () => {
-      navigate(`/student/courses/${course._id}`);
+      navigate(`/courses/${course._id}`);
     };
 
     return (
-      <div className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-xl hover:border-gray-200 transition-all duration-300 transform hover:-translate-y-1 h-full">
+      <div className="group bg-white rounded-lg border border-gray-200 overflow-hidden hover:border-gray-300 hover:shadow-md transition-all duration-200 h-full">
         {/* Course Thumbnail */}
-        <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+        <div className="relative h-48 bg-gray-100 overflow-hidden">
           {/* Wishlist Button */}
           {user?.id && (
             <button
@@ -138,9 +157,9 @@ const RecommendedCourses = () => {
               loading="lazy"
             />
           ) : (
-            <div className="flex items-center justify-center h-full bg-gradient-to-br from-blue-50 to-indigo-100">
+            <div className="flex items-center justify-center h-full">
               <div className="p-4 bg-white/80 rounded-full">
-                <Play size={24} className="text-blue-600" />
+                <Play size={24} className="text-gray-400" />
               </div>
             </div>
           )}
@@ -148,16 +167,26 @@ const RecommendedCourses = () => {
           {/* Level Badge */}
           <div className="absolute top-3 left-3">
             <span
-              className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
+              className={`px-2.5 py-1 rounded-md text-xs font-medium border ${
                 course.level === "beginner"
-                  ? "bg-green-100/90 text-green-700 border border-green-200/50"
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                   : course.level === "intermediate"
-                  ? "bg-yellow-100/90 text-yellow-700 border border-yellow-200/50"
-                  : "bg-red-100/90 text-red-700 border border-red-200/50"
+                  ? "bg-amber-50 text-amber-700 border-amber-200"
+                  : "bg-rose-50 text-rose-700 border-rose-200"
               }`}
             >
               {course.level?.toUpperCase() || "BEGINNER"}
             </span>
+          </div>
+
+          {/* Continue Learning Overlay */}
+          <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center opacity-0 hover:opacity-100">
+            <button
+              onClick={handleCourseClick}
+              className="bg-white text-gray-800 px-4 py-2 rounded-md font-medium text-sm hover:bg-gray-100 transition-colors"
+            >
+              {isEnrolled ? "Continue Learning" : "View Course"}
+            </button>
           </div>
         </div>
 
@@ -174,6 +203,9 @@ const RecommendedCourses = () => {
           <h3 className="font-semibold text-lg text-gray-900 mb-3 leading-tight line-clamp-1 group-hover:text-blue-600 transition-colors duration-200 flex-grow">
             {course.title}
           </h3>
+
+            {/* Course Desc*/}
+           <p className="text-gray-600 text-sm mb-3 line-clamp-1" dangerouslySetInnerHTML={{ __html: course.description }}></p>
 
           {/* Rating and Students */}
           <div className="flex items-center justify-between mb-4">
@@ -207,12 +239,20 @@ const RecommendedCourses = () => {
           </div>
 
           {/* Action Button */}
-          <button
-            onClick={handleCourseClick}
-            className="w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-800 active:bg-gray-700 transition-all duration-200 font-medium text-sm transform hover:scale-[1.02] active:scale-[0.98] mt-auto"
-          >
-            View Course
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleCourseClick}
+              className="flex-1 bg-gray-900 text-white py-2.5 rounded-md hover:bg-gray-800 transition-colors duration-200 font-medium text-sm"
+            >
+              {isEnrolled ? "Continue Learning" : "View Course"}
+            </button>
+            <button
+              onClick={handleCourseClick}
+              className="px-3 py-2.5 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200"
+            >
+              <BookOpen size={16} className="text-gray-600" />
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -223,7 +263,7 @@ const RecommendedCourses = () => {
       {[...Array(4)].map((_, i) => (
         <div
           key={i}
-          className="min-w-[300px] bg-white rounded-xl border border-gray-100 overflow-hidden animate-pulse"
+          className="min-w-[300px] bg-white rounded-lg border border-gray-200 overflow-hidden animate-pulse"
         >
           <div className="h-48 bg-gray-200" />
           <div className="p-5">
@@ -271,7 +311,7 @@ const RecommendedCourses = () => {
 
           <button
             onClick={() => navigate("/student/courses")}
-            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 transform  active:scale-95 font-medium"
+            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all duration-200 font-medium"
           >
             All Courses
             <ArrowRight size={16} />
@@ -329,9 +369,9 @@ const RecommendedCourses = () => {
               <SwiperSlide>
                 <div
                   onClick={() => navigate("/student/courses")}
-                  className="group bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl border-2 border-dashed border-blue-200 overflow-hidden hover:from-blue-100 hover:to-indigo-200 hover:border-blue-300 transition-all duration-300 transform h-full cursor-pointer flex flex-col items-center justify-center p-8 min-h-[420px]"
+                  className="group bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg border-2 border-dashed border-blue-200 overflow-hidden hover:from-blue-100 hover:to-indigo-200 hover:border-blue-300 transition-all duration-200 h-full cursor-pointer flex flex-col items-center justify-center p-8 min-h-[420px]"
                 >
-                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-6  transition-transform duration-300">
+                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-6 transition-transform duration-300">
                     <ArrowRight size={24} className="text-white" />
                   </div>
 
@@ -344,7 +384,7 @@ const RecommendedCourses = () => {
                     skill levels
                   </p>
 
-                  <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium ">
+                  <button className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all duration-200 font-medium">
                     View All Courses
                   </button>
                 </div>

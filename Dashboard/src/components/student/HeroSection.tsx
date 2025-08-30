@@ -107,22 +107,22 @@ const HeroSection = () => {
   const achievements = [
     {
       icon: BookOpen,
-      value: userStats.enrolledCourses > 0 ? userStats.enrolledCourses.toLocaleString() : "No Courses Yet",
+      value: userStats.enrolledCourses > 0 ? userStats.enrolledCourses.toLocaleString() : "10+ Courses",
       label: "Enrolled Courses",
     },
     {
       icon: Star,
-      value: userStats.reviews > 0 ? userStats.reviews.toLocaleString() : "No Reviews Yet",
+      value: userStats.reviews > 0 ? userStats.reviews.toLocaleString() : "99+ Review",
       label: "Reviews Given",
     },
     {
       icon: Zap,
-      value: userStats.quizAttempts > 0 ? userStats.quizAttempts.toLocaleString() : "No Quizzes Taken",
+      value: userStats.quizAttempts > 0 ? userStats.quizAttempts.toLocaleString() : "Attempt Now!",
       label: "Quizzes Attempted",
     },
     {
       icon: Award,
-      value: userStats.certificates > 0 ? userStats.certificates.toLocaleString() : "No Certificates Earned",
+      value: userStats.certificates > 0 ? userStats.certificates.toLocaleString() : "10+ Available",
       label: "Certificates Earned",
     },
   ];

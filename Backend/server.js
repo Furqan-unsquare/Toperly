@@ -56,7 +56,7 @@ if (missingEnvVars.length > 0) {
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use("/temp", express.static(path.join(__dirname, "public/temp")));
+app.use("/temp", express.static(path.join(__dirname, "public")));
 const allowedOrigins = [
   "ttp://localhost:8080",
   "ttp://localhost:8081",

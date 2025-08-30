@@ -5,8 +5,6 @@ import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 import debounce from 'lodash/debounce';
 import { useAuth } from '@/contexts/AuthContext';
-import styled from 'styled-components';
-
 import Translate from "@/pages/GoogleTranslate"
 
 // Animated AI Wave Component
@@ -221,7 +219,7 @@ useEffect(() => {
     { label: 'Contact', href: '/contact-us', icon: 'mail' },
   ];
   const topNavItems = [
-    { label: 'Become an Instructor', href: '/auth/Instructor' },
+    { label: 'Become an Instructor', href: '/auth/login' },
     { label: 'My learning', href: '/auth/login' },
   ];
   const languages = ['Eng', 'Hin', 'Mar'];

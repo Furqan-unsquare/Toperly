@@ -9,7 +9,7 @@ import {
   getMyStudents,
 } from "../controllers/studentController.js";
 import {
-  isInstructor,
+  isAdmin,
   verifyAuth0Token,
 } from "../middlewares/auth.middleware.js";
 
@@ -21,6 +21,6 @@ router.get("/:id", getStudentById); // get by id
 router.put("/:id", updateStudent); // admin: update
 router.delete("/:id", deleteStudent); // admin: delete
 router.post("/enroll-course/:courseId", verifyAuth0Token, enrollCourse);
-router.post("/get-mystudents", verifyAuth0Token, isInstructor, getMyStudents);
+router.post("/get-mystudents", verifyAuth0Token, isAdmin, getMyStudents);
 
 export default router;

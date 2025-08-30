@@ -120,11 +120,6 @@ All colors MUST be HSL.
   display: none !important;
 }
 
-/* Disable Google Translate hover & tooltip */
-/* *{
-  pointer-events: none !important;
-} */
-
 /* Kill Google Translate hover popups everywhere */
 font[dir="auto"],
 span.goog-text-highlight {

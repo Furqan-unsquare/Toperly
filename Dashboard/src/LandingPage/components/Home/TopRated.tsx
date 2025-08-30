@@ -209,13 +209,13 @@ const CoursesSection = () => {
               <div className="w-2 h-2 bg-blue-600 rounded-full ml-2 animate-pulse"></div>
             </div>
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              Top-Rated{' '}
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                AI Courses
+               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Courses
               </span>
+               {' '} That Keep You Ahead
             </h2>
             <p className="hidden md:block text-sm md:text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Explore expert-designed AI courses with smart learning.
+              Build a strong foundation in AI with our most trusted courses
             </p>
           </div>
 

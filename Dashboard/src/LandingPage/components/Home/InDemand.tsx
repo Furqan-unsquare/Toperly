@@ -183,10 +183,10 @@ const ProfessionalCourseSection: React.FC = () => {
               <span className="text-blue-600 font-semibold text-sm uppercase tracking-wide">Professional Courses</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-              Learn In-Demand Skills
+              Future-Ready Courses for Every Field
             </h2>
             <p className="md:text-lg text-gray-600">
-              Master AI tech with expert-led, trusted courses.
+              We help you upskill in the areas that matter most to your passion and your profession
             </p>
           </div>
           <div className="hidden md:flex items-center space-x-3">
@@ -333,11 +333,6 @@ const ProfessionalCourseSection: React.FC = () => {
                         {course.videos.length} lessons
                       </div>
                     </div>
-
-                    {/* Updated */}
-                    <p className="text-xs text-gray-500 mb-4 flex items-center">
-                      Updated {new Date(course.updatedAt).toLocaleDateString()}
-                    </p>
 
                     {/* Price & CTA */}
                     <div className="flex items-center justify-between">

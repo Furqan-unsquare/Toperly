@@ -158,7 +158,7 @@ const DarkAIHero = () => {
 
       <div className="container mx-auto px-6 lg:px-8 relative z-10">
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 gap-16  mt-4 md:mt-10 items-left"
+          className="grid grid-cols-1 md:grid-cols-2 gap-16 mt-4 md:mt-10 items-left"
           variants={container}
         >
           {/* Left Content */}
@@ -169,7 +169,7 @@ const DarkAIHero = () => {
               variants={zoomOut}
             >
               <Shield className="w-4 h-4 mr-2 text-blue-400" />
-              Secure Your Spot in India's First AI Academy
+              Thinking about AI? It’s time to learn it
               <motion.div 
                 className="w-2 h-2 rounded-full ml-2 bg-blue-400"
                 animate={{
@@ -198,8 +198,7 @@ const DarkAIHero = () => {
               variants={zoomOut}
               transition={{ delay: 0.3 }}
             >
-                "we’re not just teaching  <span className="font-semibold text-blue-400">AI</span> — we’re shaping the next generation of innovators and job creators.
-                From small-town students to professionals seeking change, we make AI learning accessible in your own language."
+                 <span className="font-semibold text-blue-400">AI</span> isn’t just for tech anymore - it’s changing healthcare,  fashion, business, and design. At Toperly, we make learning AI simple, so you can grow in your field and stay on Top
             </motion.p>
 
             {/* Action Button */}
@@ -211,56 +210,7 @@ const DarkAIHero = () => {
               <Button />
             </motion.div>
 
-            {/* Stats */}
-            <motion.div 
-              className="grid grid-cols-3 gap-4 text-left"
-              variants={container}
-            >
-              {[
-                { value: '25K+', label: 'Languages', icon: Users },
-                { value: '20,000+', label: 'Learners', icon: Cpu },
-                { value: '15+', label: 'Experts', icon: TrendingUp }
-              ].map((stat, index) => (
-                <motion.div 
-                  key={index}
-                  className="group p-4 rounded-xl transition-all"
-                  // variants={fadeUp}
-                  custom={index}
-                  whileHover={{ y: -5 }}
-                  style={{ 
-                    boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)'
-                  }}
-                >
-                  <div className="flex flex-col items-left">
-                    <div className="flex items-center mb-2">
-                      <div className="text-xl sm:text-4xl font-black text-blue-400">
-                        {stat.value}
-                      </div>
-                      {/* <motion.div
-                        whileHover={{ y: [0, -5, 0] }}
-                        transition={{ duration: 0.5 }}
-                      >
-                        <stat.icon className="w-6 h-6 text-blue-400" />
-                      </motion.div> */}
-                    </div>
-                    <div className="text-xs md:text-sm font-medium text-gray-300">
-                      {stat.label}
-                    </div>
-                    <div className="w-full h-1 rounded-full mt-3 bg-blue-200/20">
-                      <motion.div 
-                        className="h-full rounded-full bg-gradient-to-r from-blue-400 to-blue-300"
-                        initial={{ scaleX: 0 }}
-                        animate={{ scaleX: stat.value === '98%' ? 0.98 : 1 }}
-                        transition={{ 
-                          delay: 0.8 + index * 0.2,
-                          type: 'spring'
-                        }}
-                      />
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
+         
           </div>
 
           {/* Right Column - Optional AI Visualization */}
@@ -398,7 +348,53 @@ const DarkAIHero = () => {
             </div>
           </div>
         </div>         
+
+        
         </motion.div>
+           {/* Stats */}
+            <motion.div 
+              className="grid grid-cols-3 gap-2 text-left max-w-4xl mt-16"
+              variants={container}
+            >
+              {[
+                { value: 'Regional Languages', label: 'Learn in the language you’re most comfortable with.', icon: Users },
+                { value: 'Expert-Led', label: 'Courses designed and taught by industry professionals.', icon: Cpu },
+                { value: 'Certified Learning', label: 'Earn certifications that add real value to your career.', icon: TrendingUp }
+              ].map((stat, index) => (
+                <motion.div 
+                  key={index}
+                  className="group p-4 rounded-xl transition-all"
+                  // variants={fadeUp}
+                  custom={index}
+                  whileHover={{ y: -5 }}
+                  style={{ 
+                    boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)'
+                  }}
+                >
+                  <div className="flex flex-col items-left">
+                    <div className="flex items-center mb-2">
+                      <div className="text-xl sm:text-xl font-black text-blue-400 ">
+                        {stat.value}
+                      </div>
+                    </div>
+                    <div className="text-xs font-medium text-gray-300">
+                      {stat.label}
+                    </div>
+                    <div className="w-full h-1 rounded-full mt-3 bg-blue-200/20">
+                      <motion.div 
+                        className="h-full rounded-full bg-gradient-to-r from-blue-400 to-blue-300"
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: stat.value === '98%' ? 0.98 : 1 }}
+                        transition={{ 
+                          delay: 0.8 + index * 0.2,
+                          type: 'spring'
+                        }}
+                      />
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
       </div>
     </motion.section>
   );

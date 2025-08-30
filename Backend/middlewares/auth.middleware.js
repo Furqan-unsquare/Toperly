@@ -25,72 +25,68 @@ export const commonVerification = async (req, res, next) => {
     // Check for user in collections
     const student = await Student.findOne({ auth0Id });
     if (student) {
-      req.user = { ...student.toObject(), role: "student" };
+      req.user = { ...student.toObject(), id: student._id.toString(), role: "student" };
       return next();
     }
 
     const instructor = await Instructor.findOne({ auth0Id });
     if (instructor) {
-      req.user = { ...instructor.toObject(), role: "instructor" };
+      req.user = { ...instructor.toObject(), id: instructor._id.toString(), role: "instructor" };
       return next();
     }
 
     const admin = await Admin.findOne({ auth0Id });
     if (admin) {
-      req.user = { ...admin.toObject(), role: admin.role || "admin" }; 
+      req.user = { ...admin.toObject(), id: admin._id.toString(), role: admin.role || "admin" };
       return next();
     }
 
     // If no user found
     return res.status(404).json({ message: "User not found" });
-
   } catch (err) {
     console.error("commonVerification error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-
 export const isStudent = async (req, res, next) => {
   try {
-    const student = await Student.find({auth0Id: req.auth.sub});
+    const student = await Student.findOne({ auth0Id: req.auth.sub });
     if (!student) {
       return res.status(403).json({ message: "Access denied. Not a student." });
     }
-    req.user = student[0];
+    req.user = { ...student.toObject(), id: student._id.toString(), role: "student" };
     next();
   } catch (err) {
-    console.error(err);
+    console.error("isStudent error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-// For instructors
 export const isInstructor = async (req, res, next) => {
   try {
-    const instructor = await Instructor.find({auth0Id: req.auth.sub});
+    const instructor = await Instructor.findOne({ auth0Id: req.auth.sub });
     if (!instructor) {
       return res.status(403).json({ message: "Access denied. Not an instructor." });
     }
-    req.user = instructor[0];
+    req.user = { ...instructor.toObject(), id: instructor._id.toString(), role: "instructor" };
     next();
   } catch (err) {
-    console.error(err);
+    console.error("isInstructor error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-// For admins
 export const isAdmin = async (req, res, next) => {
   try {
-    const admin = await Admin.find({auth0Id: req.auth.sub});
+    const admin = await Admin.findOne({ auth0Id: req.auth.sub });
     if (!admin) {
       return res.status(403).json({ message: "Access denied. Not an admin." });
     }
-    req.user = admin[0];
+    req.user = { ...admin.toObject(), id: admin._id.toString(), role: admin.role || "admin" };
     next();
   } catch (err) {
-    console.error(err);
+    console.error("isAdmin error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };

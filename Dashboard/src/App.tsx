@@ -136,7 +136,7 @@ const App = () => (
             {/* Public Routes */}
             <Route element={<PublicLayout />}>
               <Route path="/" element={<HomePage />} />
-              <Route path="/courses" element={<AllCoursesPage />} />
+              <Route path="/courses" element={<div className="mt-28"><AllCoursesPage /></div>} />
               <Route path="/courses/:courseId" element={<div className="mt-28"><CourseDetail /></div>} />
               <Route path="/blogs" element={<BlogPage />} />
               <Route path="/subscription-plans" element={<SubscriptionPlans />} />
@@ -146,7 +146,7 @@ const App = () => (
             {/* Student Routes */}
             <Route element={<ProtectedRoute allowedRoles={["student"]}><StudentLayout /></ProtectedRoute>}>
               <Route path="/student/dashboard" element={<StudentRoutes><Dashboard /></StudentRoutes>}/>
-              <Route path="/student/courses" element={<StudentRoutes><CoursesCatalog /></StudentRoutes>}/>
+              <Route path="/student/courses" element={<StudentRoutes><AllCoursesPage /></StudentRoutes>}/>
               <Route path="/student/courses/:courseId" element={<StudentRoutes><CourseDetail /></StudentRoutes>}/>
               <Route path="/student/courses/:courseId/quiz/:quizId" element={<StudentRoutes><QuizPage /></StudentRoutes>}/>
               <Route path="/student/enrolled-courses" element={<StudentRoutes><EnrolledCourses /></StudentRoutes>}/>
