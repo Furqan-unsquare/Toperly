@@ -33,7 +33,7 @@ const EnrolledStudents = () => {
 
         // Simulating your existing API call structure
         const res = await axios.post(
-           `${API_BASE}/api/students/get-mystudents`,
+           `${API_BASE}/api/students/ins-mystudents`,
           {},
           {
             headers: { Authorization: `Bearer ${token}` },
