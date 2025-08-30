@@ -42,7 +42,7 @@ const VirtualDevicesDashboard = () => {
     },
     Skills: {
       title: "Why Is Toperly Different",
-      centralImage: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400&h=300&fit=crop",
+      centralImage: "https://i.pinimg.com/736x/4d/77/13/4d771383de42c87535f4e3d981edb4a0.jpg",
       centralTitle: "Skill Hub",
       postDescription: "Hands-on projects let you apply what you've learned in real-world scenarios, building confidence for interviews and actual job tasks.",
       comments: [
@@ -50,57 +50,52 @@ const VirtualDevicesDashboard = () => {
       ],
        randomImages: [
         {
-          src: "https://images.icon-icons.com/2699/PNG/512/python_logo_icon_168886.png",
+          src: "https://logos-world.net/wp-content/uploads/2024/08/OpenAI-Logo.png",
           position: "top-[4%] left-[15%]",
           size: "h-24"
         },
         {
-          src: "https://static.vecteezy.com/system/resources/previews/022/100/214/non_2x/java-logo-transparent-free-png.png",
+          src: "https://static.vecteezy.com/system/resources/previews/049/401/762/non_2x/midjourney-black-icon-on-transparent-background-free-png.png",
           position: "top-[65%] left-[20%]",
           size: "h-40"
         },
         {
-          src: "https://www.freeiconspng.com/uploads/c--logo-icon-0.png",
+          src: "https://freelogopng.com/images/all_img/1681142503openai-icon-png.png",
           position: "top-[20%] right-[15%]",
           size: "h-20"
-        },
-        {
-          src: "https://www.syntonize.com/wp-content/uploads/2024/01/7746A535-AC40-442A-9627-ADAD756DCF82.png",
-          position: "bottom-[25%] right-[20%]",
-          size: "h-24"
         }
       ],
       sideText: "From beginner-friendly introductions to advanced mastery, you'll be prepared for high-demand roles across industries",
       leftDescription: "We focus on skills that match what companies are looking for today. Every course is designed with industry experts to ensure what you learn is useful in the workplace."
     },
-    Community: {
-      title: "Why Is Toperly Different",
-      centralImage: "https://i.pinimg.com/1200x/06/fa/cd/06facdcb60ea58713eafb59fb13f0dab.jpg",
-      centralTitle: "Student Community",
-      postDescription: "Ask questions, share your achievements, and get instant feedback from peers who understand your journey.",
-      comments: [
-        {
-          id: 1,
-          name: "Emma Wilson",
-          handle: "@emmawilson",
-          message: "The community made me feel like I'm not learning alone",
-          avatar: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=50&h=50&fit=crop&crop=face",
-          verified: true,
-        },
-        {
-          id: 2,
-          name: "Alex Thompson",
-          handle: "@alexthompson",
-          message: "I've made friends here who are as passionate as I am.",
-          avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop&crop=face",
-          verified: false,
-        }
-      ],
-      randomImages: [
-      ],
-      sideText: "When motivation drops, the community is there to lift you up and keep you moving forward.",
-      leftDescription: "A strong community makes learning more enjoyable. Join thousands of learners and mentors who support each other at every step."
+   Mentors: {
+  title: "Why Toperly Mentorship Stands Out",
+  centralImage: "https://i.pinimg.com/1200x/f5/98/96/f598969842aaa87a62844e9fb6ca10d5.jpg",
+  centralTitle: "Our Mentors",
+  postDescription: "Get personal guidance, 1-on-1 counseling, and tailored feedback from experienced mentors like Topsy who understand your unique learning path.",
+  comments: [
+    {
+      id: 1,
+      name: "Emma Wilson",
+      handle: "@emmawilson",
+      message: "Having a mentor like Topsy gave me clarity and confidence at every step.",
+      avatar: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=50&h=50&fit=crop&crop=face",
+      verified: true,
     },
+    {
+      id: 2,
+      name: "Alex Thompson",
+      handle: "@alexthompson",
+      message: "The 1-on-1 counseling sessions helped me overcome challenges I couldn’t solve alone.",
+      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop&crop=face",
+      verified: false,
+    }
+  ],
+  randomImages: [],
+  sideText: "With mentors like Topsy, you’ll always have expert advice, encouragement, and personalized strategies to keep moving forward.",
+  leftDescription: "Toperly mentors provide more than guidance—they offer 1-on-1 counseling, career insights, and continuous feedback to ensure your growth at every stage."
+},
+
     more: {
       title: "Why Is Toperly Different",
       centralImage: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=300&fit=crop",
@@ -108,11 +103,7 @@ const VirtualDevicesDashboard = () => {
       postDescription: "Display them proudly on LinkedIn, resumes, or portfolios to stand out in a competitive job market.",
       comments: [],
       randomImages: [
-        {
-          src: "https://clipart-library.com/img1/1053315.png",
-          position: "top-[7%] left-[22%]",
-          size: "h-28"
-        },
+       
         {
           src: "https://static.vecteezy.com/system/resources/previews/021/358/803/original/artificial-intelligence-icon-element-design-illustration-ai-technology-and-cyber-icon-element-futuristic-technology-service-and-communication-artificial-intelligence-concept-png.png",
           position: "top-[15%] right-[15%]",
@@ -122,11 +113,6 @@ const VirtualDevicesDashboard = () => {
           src: "https://www.pngmart.com/files/22/Social-Network-PNG-Free-Download.png",
           position: "bottom-[20%] left-[10%]",
           size: "h-48"
-        },
-        {
-          src: "https://www.freeiconspng.com/uploads/idea-icon-11.png",
-          position: "bottom-[25%] right-[25%]",
-          size: "h-24"
         }
       ],
       sideText: "Each certificate is a recognition of your hard work and dedication, adding credibility to your professional profile.",
@@ -138,7 +124,7 @@ const VirtualDevicesDashboard = () => {
  const navTabs = [
   { name: "Languages", icon: Languages, color: "bg-gradient-to-r from-blue-300 to-blue-500", activeColor: "bg-gradient-to-r from-blue-600 to-blue-800", id: "Languages" },
   { name: "Skills",  icon: Power, color: "bg-gradient-to-r from-purple-300 to-purple-500", activeColor: "bg-gradient-to-r from-purple-600 to-purple-800", id: "Skills" },
-  { name: "Community",  icon: Group, color: "bg-gradient-to-r from-pink-300 to-pink-500", activeColor: "bg-gradient-to-r from-pink-600 to-pink-800", id: "Community" },
+  { name: "Mentors",  icon: Group, color: "bg-gradient-to-r from-pink-300 to-pink-500", activeColor: "bg-gradient-to-r from-pink-600 to-pink-800", id: "Mentors" },
   { name: "Certificates & more",  icon: Dock, color: "bg-gradient-to-r from-orange-300 to-orange-500", activeColor: "bg-gradient-to-r from-orange-600 to-orange-800", id: "more" },
 ];
 
