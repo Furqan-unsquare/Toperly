@@ -66,19 +66,25 @@ export default function LanguageSwitcher() {
       </button>
 
       {/* dropdown */}
-      {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg transition-all duration-300 ease-in-out z-50">
-          {languages.map((lang) => (
-            <div
-              key={lang.code}
-              className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 cursor-pointer"
-              onClick={() => handleTranslate(lang.code)}
-            >
-              {lang.label}
-            </div>
-          ))}
-        </div>
-      )}
+      {/* dropdown */}
+{isOpen && (
+  <div
+    className="absolute top-full right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg transition-all duration-300 ease-in-out z-50 notranslate"
+    translate="no"
+  >
+    {languages.map((lang) => (
+      <div
+        key={lang.code}
+        className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 cursor-pointer notranslate"
+        translate="no"
+        onClick={() => handleTranslate(lang.code)}
+      >
+        {lang.label}
+      </div>
+    ))}
+  </div>
+)}
+
     </div>
   );
 }

@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 
 import VideoPlayer from "./VideoPlayer";
+import {Preview} from "./Preview";
 import EnrollmentCard from "./EnrollmentCard";
 import CourseContentList from "./CourseContentList";
 import Material from "./Material";
@@ -426,11 +427,7 @@ const CourseDetail = () => {
                 <div className="bg-gray-800 rounded-lg sm:rounded overflow-hidden shadow-xl">
                   {/* Video Preview */}
                   <div className="relative aspect-video bg-gray-700">
-                    <VideoPlayer
-                  video={currentVideo}
-                  course={course}
-                  showToast={showToast}
-                />
+                    <Preview />
                     <div className="absolute bottom-4 right-4">
                       <span className="bg-black/70 text-white text-xs font-medium px-2 py-1 rounded">
                         {course.duration || 0} hours

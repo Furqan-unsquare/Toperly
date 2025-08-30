@@ -159,49 +159,49 @@ export const StudentDashboard = () => {
 
   // Badges data with image URLs
   const badges = [
-    { 
-      id: 1, 
-      name: "First Quiz", 
-      image: "https://via.placeholder.com/40/quiz.png",
-      earned: data.quizAttempts?.length >= 1, 
-      description: "Completed your first quiz"
-    },
-    { 
-      id: 2, 
-      name: "Course Completer", 
-      image: "https://via.placeholder.com/40/trophy.png",
-      earned: completedCourses >= 1, 
-      description: "Completed your first course"
-    },
-    { 
-      id: 3, 
-      name: "5 Courses Master", 
-      image: "https://via.placeholder.com/40/star.png",
-      earned: completedCourses >= 5, 
-      description: "Completed 5 courses"
-    },
-    { 
-      id: 4, 
-      name: "Perfect Quiz", 
-      image: "https://via.placeholder.com/40/perfect.png",
-      earned: data.quizAttempts?.some((q: any) => q.score >= 100), 
-      description: "Scored 100% on a quiz"
-    },
-    { 
-      id: 5, 
-      name: "Streak Master", 
-      image: "https://via.placeholder.com/40/streak.png",
-      earned: learningStreak >= 7, 
-      description: "7-day learning streak"
-    },
-    { 
-      id: 6, 
-      name: "High Scorer", 
-      image: "https://via.placeholder.com/40/rocket.png",
-      earned: data.quizAttempts?.some((q: any) => q.score >= 90), 
-      description: "Scored 90%+ on a quiz"
-    },
-  ];
+      { 
+        id: 1, 
+        name: "First Quiz", 
+        png: "https://www.pngarts.com/files/4/Golden-Badge-PNG-Free-Download.png", // Replace with actual PNG path
+        earned: data.quizAttempts?.length >= 1, 
+        color: "bg-yellow-100 text-yellow-800" 
+      },
+      { 
+        id: 2, 
+        name: "Course Completer", 
+        png: "https://static.vecteezy.com/system/resources/previews/023/654/780/original/golden-logo-template-it-s-finisher-concept-free-png.png", 
+        earned: completedCourses >= 1, 
+        color: "bg-purple-100 text-purple-800" 
+      },
+      { 
+        id: 3, 
+        name: "5 Courses Master", 
+        png: "https://apexlegendsstatus.com/assets/badges/badges_new/you_re_tiering_me_apart_master_rs11.png", 
+        earned: completedCourses >= 5, 
+        color: "bg-green-100 text-green-800" 
+      },
+      { 
+        id: 4, 
+        name: "Perfect Quiz", 
+        png: "https://halo.wiki.gallery/images/a/ac/HINF_Medal_Perfect.png", 
+        earned: data.quizAttempts?.some((q: any) => q.score >= 100), 
+        color: "bg-blue-100 text-blue-800" 
+      },
+      { 
+        id: 5, 
+        name: "Streak Master", 
+        png: "https://cdn2.iconfinder.com/data/icons/gamification-badges-1/300/streak_7d1-1024.png", 
+        earned: learningStreak >= 7, 
+        color: "bg-orange-100 text-orange-800" 
+      },
+      { 
+        id: 6, 
+        name: "High Scorer", 
+        png: "https://cdn-icons-png.flaticon.com/512/7960/7960322.png", 
+        earned: data.quizAttempts?.some((q: any) => q.score >= 90), 
+        color: "bg-red-100 text-red-800" 
+      },
+    ];
 
   // Weekly streak data based on activity
   const weeklyStreakData = (() => {
@@ -547,7 +547,7 @@ export const StudentDashboard = () => {
                 }`}
               >
                 <img 
-                  src={badge.image} 
+                  src={badge.png} 
                   alt={badge.name} 
                   className={`w-10 h-10 mb-2 ${badge.earned ? "" : "grayscale opacity-50"}`} 
                 />

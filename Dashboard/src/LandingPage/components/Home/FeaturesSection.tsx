@@ -76,23 +76,23 @@ const VirtualDevicesDashboard = () => {
   comments: [
     {
       id: 1,
-      name: "Emma Wilson",
-      handle: "@emmawilson",
+      name: "Nina Patel",
+      handle: "@ninapatel",
       message: "Having a mentor like Topsy gave me clarity and confidence at every step.",
       avatar: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=50&h=50&fit=crop&crop=face",
       verified: true,
     },
     {
       id: 2,
-      name: "Alex Thompson",
-      handle: "@alexthompson",
+      name: "Rahul Mehta",
+      handle: "@raulhmehta",
       message: "The 1-on-1 counseling sessions helped me overcome challenges I couldn’t solve alone.",
       avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop&crop=face",
       verified: false,
     }
   ],
   randomImages: [],
-  sideText: "With mentors like Topsy, you’ll always have expert advice, encouragement, and personalized strategies to keep moving forward.",
+  sideText: "With mentors, you’ll always have expert advice, encouragement, and personalized strategies to keep moving forward.",
   leftDescription: "Toperly mentors provide more than guidance—they offer 1-on-1 counseling, career insights, and continuous feedback to ensure your growth at every stage."
 },
 
@@ -141,7 +141,11 @@ const VirtualDevicesDashboard = () => {
   };
 
   return (
-    <div className="min-h-full bg-gradient-to-br from-blue-50 via-blue-200 to-purple-50 relative overflow-x-hidden">
+   <div
+  className="min-h-full relative overflow-x-hidden bg-cover bg-center bg-no-repeat"
+  style={{ backgroundImage: "url('/bg.png')" }}
+>
+
       
       {/* Main Title */}
       <div className="text-center pt-16 md:pt-24 px-4 relative z-20">
@@ -269,7 +273,8 @@ const VirtualDevicesDashboard = () => {
             </div>
           ))}
         </div>
-      </div>
+      </div>    
+
     </div>
   );
 };
