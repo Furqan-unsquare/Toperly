@@ -692,7 +692,7 @@ const CourseDetail = () => {
 
           {/* Right Sidebar - Fixed/Sticky Course Content or Enrollment Card */}
           <div className="lg:col-span-1 z-50">
-            <div className="lg:sticky lg:top-10 hidden lg:block ">
+            <div className="lg:sticky lg:top-16 hidden lg:block ">
               {isEnrolled ? (
                 <CourseContentList
                   course={course}
