@@ -81,8 +81,15 @@ const LearningObjectives = ({ courseId }) => {
     <div>
       <h3 className="text-xl font-bold text-gray-900 mb-4">
         What you'll learn
-      </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      </h3>      
+
+        <div>
+          <ul>
+            <li>A Course that teach you everything at one place</li>
+          </ul>
+        </div>
+
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {learningPoints.map((point, index) => (
           <div key={index} className="flex items-start">
             <CheckCircle
@@ -92,7 +99,7 @@ const LearningObjectives = ({ courseId }) => {
             <span className="text-gray-700 text-sm">{point}</span>
           </div>
         ))}
-      </div>
+      </div> */}
       
     </div>
   );

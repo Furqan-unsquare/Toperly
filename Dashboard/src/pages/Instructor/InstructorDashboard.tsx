@@ -186,10 +186,10 @@ const InstructorDashboard = () => {
                 </p>
               </div>
             </div>
-            <button className="flex items-center space-x-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+            <a href="/instructor/all-courses"><button className="flex items-center space-x-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">
               <PlusCircle className="w-4 h-4" />
               <span>Create Course</span>
-            </button>
+            </button></a>
           </div>
         </div>
 

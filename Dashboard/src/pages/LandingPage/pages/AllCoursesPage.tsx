@@ -451,7 +451,7 @@ const ProfessionalCourseSection = () => {
               )}
             </div>
             <div className="flex items-center space-x-3">
-              <select
+              {/* <select
                 className="p-2 border border-gray-300 rounded-md bg-white text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 value={sortOption}
                 onChange={(e) => setSortOption(e.target.value)}
@@ -462,7 +462,7 @@ const ProfessionalCourseSection = () => {
                 <option value="rating-desc">Rating: High to Low</option>
                 <option value="duration-asc">Duration: Short to Long</option>
                 <option value="duration-desc">Duration: Long to Short</option>
-              </select>
+              </select> */}
               <button
                 className="md:hidden p-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                 onClick={() => setIsFilterOpen(true)}

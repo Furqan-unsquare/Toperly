@@ -176,7 +176,7 @@ const CourseDashboard: FC<CourseDashboardProps> = ({
         </div>
         <button
           onClick={handleCreate}
-          className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 outline-none"
+          className="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 outline-none"
         >
           <Plus size={20} />
           Create New Course
@@ -195,7 +195,7 @@ const CourseDashboard: FC<CourseDashboardProps> = ({
           <p className="text-gray-500 mb-4">Create your first course to get started</p>
           <button
             onClick={handleCreate}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 outline-none"
+            className="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 outline-none"
           >
             Create Course
           </button>

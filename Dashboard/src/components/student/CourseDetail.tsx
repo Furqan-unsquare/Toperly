@@ -492,13 +492,7 @@ const CourseDetail = () => {
                 <div className="flex items-center text-green-600">
                   <CheckCircle size={16} className="mr-1" />
                   <span className="text-sm font-medium">Enrolled</span>
-                  <button
-                    onClick={() => navigate("/student/courses")}
-                    className="flex items-center text-gray-600 hover:text-gray-800 transition-colors pl-8"
-                  >
-                    <ArrowLeft size={20} className="mr-2" />
-                    Back to Courses
-                  </button>
+                
                 </div>
               </div>
             </div>
@@ -530,7 +524,6 @@ const CourseDetail = () => {
                 <nav className="flex space-x-8 px-6 overflow-x-auto">
                   {[
                     { id: "overview", label: "Overview" },
-                    { id: "curriculum", label: "Curriculum" },
                     { id: "instructor", label: "Instructor" },
                     { id: "reviews", label: "Reviews" },
                   ].map((tab) => (
@@ -595,19 +588,6 @@ const CourseDetail = () => {
                         ))}
                       </div>
                     </div>
-                  </div>
-                )}
-
-                {/* Curriculum Tab */}
-                {activeTab === "curriculum" && (
-                  <div>
-                    <CourseContentList
-                      course={course}
-                      currentVideo={currentVideo}
-                      setCurrentVideo={setCurrentVideo}
-                      isEnrolled={isEnrolled}
-                      showToast={showToast}
-                    />
                   </div>
                 )}
 

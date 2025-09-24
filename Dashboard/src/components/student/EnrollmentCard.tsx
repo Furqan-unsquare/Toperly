@@ -237,8 +237,7 @@ const EnrollmentCard = ({ course, isEnrolled, onEnroll, enrollmentLoading }) => 
                 enrollmentLoading
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:shadow-lg transform hover:-translate-y-0.5"
-              }`}
-            >
+              }`}>
               {enrollmentLoading ? (
                 <>
                   <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">

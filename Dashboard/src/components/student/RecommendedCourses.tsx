@@ -124,7 +124,7 @@ const RecommendedCourses = () => {
     };
 
     const handleCourseClick = () => {
-      navigate(`/courses/${course._id}`);
+      navigate(`/student/courses/${course._id}`);
     };
 
     return (

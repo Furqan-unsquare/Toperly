@@ -2,48 +2,48 @@ import React, { useEffect, useState } from "react";
 import {
   Users,
   BookOpen,
-  TrendingUp,
-  Award,
   Clock,
   Play,
   CheckCircle,
   Search,
   Filter,
-  Download,
   Eye,
-  BarChart3,
-  Calendar,
 } from "lucide-react";
 import axios from "axios";
 
 const EnrolledStudents = () => {
   const [studentsData, setStudentsData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("all");
   const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'table'
-  const API_BASE = import.meta.env.VITE_API_URL;
+  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        // Using axios would require import, simulating the API call structure
-        const token =
-          typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
-        // Simulating your existing API call structure
+        setLoading(true);
+        setError(null);
+        const token = localStorage.getItem("token");
         const res = await axios.post(
-           `${API_BASE}/api/students/ins-mystudents`,
+          `${API_BASE}/api/students/ins-mystudents`,
           {},
           {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: { Authorization: `Bearer ${token || ""}` },
           }
         );
-        console.log(res.data.data);
-        setStudentsData(res.data.data);
+        console.log("Students Data:", res.data.data);
+        if (res.data.success && Array.isArray(res.data.data)) {
+          setStudentsData(res.data.data);
+        } else {
+          console.error("Invalid data format:", res.data);
+          setError("Invalid data format from API");
+        }
         setLoading(false);
       } catch (err) {
         console.error("Failed to fetch students:", err);
+        setError(err instanceof Error ? err.message : "Unknown error");
         setLoading(false);
       }
     };
@@ -52,20 +52,22 @@ const EnrolledStudents = () => {
 
   // Calculate analytics
   const calculateAnalytics = () => {
-    if (studentsData.length === 0)
+    if (studentsData.length === 0) {
       return {
         totalStudents: 0,
         totalCourses: 0,
+        totalRevenue: 0,
         avgProgress: 0,
         certificatesIssued: 0,
       };
+    }
 
-    const totalStudents = new Set(
-      studentsData.map((s) => s.student?._id || s.student?.id)
-    ).size;
-    const totalCourses = new Set(
-      studentsData.map((s) => s.course?._id || s.course?.id)
-    ).size;
+    const totalStudents = new Set(studentsData.map((s) => s.student?._id)).size;
+    const totalCourses = new Set(studentsData.map((s) => s.course?._id)).size;
+    const totalRevenue = studentsData.reduce(
+      (acc, cur) => acc + (cur.paymentDetails?.amount || 0),
+      0
+    );
     const avgProgress = (
       studentsData.reduce((acc, cur) => acc + (cur.progress || 0), 0) /
       studentsData.length
@@ -74,7 +76,7 @@ const EnrolledStudents = () => {
       (s) => s.certificateIssued
     ).length;
 
-    return { totalStudents, totalCourses, avgProgress, certificatesIssued };
+    return { totalStudents, totalCourses, totalRevenue, avgProgress, certificatesIssued };
   };
 
   const analytics = calculateAnalytics();
@@ -82,9 +84,15 @@ const EnrolledStudents = () => {
   // Filter data
   const filteredData = studentsData.filter((entry) => {
     const matchesSearch =
-      entry.student?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      entry.student?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      entry.course?.title?.toLowerCase().includes(searchTerm.toLowerCase());
+      (entry.student?.name || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      (entry.student?.email || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      (entry.course?.title || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
     const matchesCourse =
       selectedCourse === "all" || entry.course?._id === selectedCourse;
     return matchesSearch && matchesCourse;
@@ -94,7 +102,7 @@ const EnrolledStudents = () => {
     ...new Set(
       studentsData.map((s) => ({ id: s.course?._id, title: s.course?.title }))
     ),
-  ];
+  ].filter((course) => course.id && course.title); // Ensure valid courses
 
   if (loading) {
     return (
@@ -109,16 +117,24 @@ const EnrolledStudents = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-red-600">Error: {error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className=" border-b shadow-sm">
+        <div className="border-b shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
               <div>
                 <h1 className="text-xl font-semibold text-slate-900">
-                  Monitor's student progress and course performance
+                  Monitor Student Progress and Course Performance
                 </h1>
               </div>
               <div className="flex items-center space-x-3"></div>
@@ -128,7 +144,7 @@ const EnrolledStudents = () => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Analytics Cards */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -145,7 +161,6 @@ const EnrolledStudents = () => {
               </div>
               <p className="text-xs text-green-600 mt-4">↗ Active learners</p>
             </div>
-
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -161,6 +176,29 @@ const EnrolledStudents = () => {
                 </div>
               </div>
               <p className="text-xs text-emerald-600 mt-4">↗ Active courses</p>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-600">
+                    Total Revenue
+                  </p>
+                  <p className="text-3xl font-bold text-green-600 mt-1">
+                    ₹{analytics.totalRevenue.toLocaleString()}
+                  </p>
+                </div>
+                <div className="bg-green-100 p-3 rounded-full">
+                  <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <p className="text-xs text-green-600 mt-4">↗ From enrollments</p>
             </div>
           </div>
 
@@ -257,9 +295,8 @@ const EnrolledStudents = () => {
 };
 
 const StudentCard = ({ data }) => {
-  const { student, course, progress, certificateIssued, videoProgress } = data;
-  const completedVideos =
-    videoProgress?.filter((vp) => vp.completed).length || 0;
+  const { student, course, progress, certificateIssued, videoProgress, paymentDetails } = data;
+  const completedVideos = videoProgress?.filter((vp) => vp.completed).length || 0;
   const totalVideos = videoProgress?.length || 0;
 
   return (
@@ -274,10 +311,8 @@ const StudentCard = ({ data }) => {
               .toUpperCase() || "NA"}
           </div>
           <div>
-            <h3 className="font-semibold text-slate-900">
-              {student?.name || "Unknown"}
-            </h3>
-            <p className="text-sm text-slate-500">{student?.email}</p>
+            <h3 className="font-semibold text-slate-900">{student?.name || "Unknown"}</h3>
+            <p className="text-sm text-slate-500">{student?.email || "No email"}</p>
           </div>
         </div>
         {certificateIssued && (
@@ -293,11 +328,22 @@ const StudentCard = ({ data }) => {
       </div>
 
       <div className="mb-4">
+        <p className="text-sm font-medium text-slate-600 mb-1">Payment Details</p>
+        <p className="text-sm text-slate-900">
+          Amount: ₹{paymentDetails?.amount?.toLocaleString() || "0"} {paymentDetails?.currency || ""}
+        </p>
+        <p className="text-sm text-slate-500">Payment ID: {paymentDetails?.paymentId || "N/A"}</p>
+        <p className="text-sm text-slate-500">
+          Status: <span className={paymentDetails?.status === "completed" ? "text-green-600" : "text-red-600"}>
+            {paymentDetails?.status || "N/A"}
+          </span>
+        </p>
+      </div>
+
+      <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-slate-600">Progress</span>
-          <span className="text-sm font-semibold text-slate-900">
-            {progress || 0}%
-          </span>
+          <span className="text-sm font-semibold text-slate-900">{progress || 0}%</span>
         </div>
         <div className="w-full bg-slate-200 rounded-full h-2">
           <div
@@ -316,26 +362,19 @@ const StudentCard = ({ data }) => {
         </div>
         <div className="flex items-center space-x-1 text-slate-600">
           <Clock className="w-4 h-4" />
-          <span>Active</span>
+          <span>{certificateIssued ? "Completed" : "Active"}</span>
         </div>
       </div>
 
       {videoProgress && videoProgress.length > 0 && (
         <div className="mt-4 pt-4 border-t border-slate-100">
-          <p className="text-sm font-medium text-slate-600 mb-2">
-            Recent Activity
-          </p>
+          <p className="text-sm font-medium text-slate-600 mb-2">Recent Activity</p>
           <div className="space-y-2">
             {videoProgress.slice(0, 2).map((vp, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between text-xs"
-              >
+              <div key={idx} className="flex items-center justify-between text-xs">
                 <span className="text-slate-600 truncate">{vp.videoTitle}</span>
                 <span
-                  className={`font-medium ${
-                    vp.completed ? "text-emerald-600" : "text-amber-600"
-                  }`}
+                  className={`font-medium ${vp.completed ? "text-emerald-600" : "text-amber-600"}`}
                 >
                   {vp.progressPercentage?.toFixed(0) || 0}%
                 </span>
@@ -355,32 +394,18 @@ const StudentTable = ({ data }) => {
         <table className="w-full">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
-              <th className="text-left py-4 px-6 font-semibold text-slate-900">
-                Student
-              </th>
-              <th className="text-left py-4 px-6 font-semibold text-slate-900">
-                Course
-              </th>
-              <th className="text-left py-4 px-6 font-semibold text-slate-900">
-                Progress
-              </th>
-              <th className="text-left py-4 px-6 font-semibold text-slate-900">
-                Certificate
-              </th>
-              <th className="text-left py-4 px-6 font-semibold text-slate-900">
-                Videos
-              </th>
-              <th className="text-left py-4 px-6 font-semibold text-slate-900">
-                Actions
-              </th>
+              <th className="text-left py-4 px-6 font-semibold text-slate-900">Student</th>
+              <th className="text-left py-4 px-6 font-semibold text-slate-900">Course</th>
+              <th className="text-left py-4 px-6 font-semibold text-slate-900">Payment Details</th>
+              <th className="text-left py-4 px-6 font-semibold text-slate-900">Progress</th>
+              <th className="text-left py-4 px-6 font-semibold text-slate-900">Certificate</th>
+              <th className="text-left py-4 px-6 font-semibold text-slate-900">Videos</th>
+              <th className="text-left py-4 px-6 font-semibold text-slate-900">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200">
             {data.map((entry) => (
-              <tr
-                key={entry._id}
-                className="hover:bg-slate-50 transition-colors"
-              >
+              <tr key={entry._id} className="hover:bg-slate-50 transition-colors">
                 <td className="py-4 px-6">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
@@ -391,18 +416,23 @@ const StudentTable = ({ data }) => {
                         .toUpperCase() || "NA"}
                     </div>
                     <div>
-                      <p className="font-medium text-slate-900">
-                        {entry.student?.name || "Unknown"}
-                      </p>
-                      <p className="text-sm text-slate-500">
-                        {entry.student?.email}
-                      </p>
+                      <p className="font-medium text-slate-900">{entry.student?.name || "Unknown"}</p>
+                      <p className="text-sm text-slate-500">{entry.student?.email || "No email"}</p>
                     </div>
                   </div>
                 </td>
                 <td className="py-4 px-6">
-                  <p className="font-medium text-slate-900">
-                    {entry.course?.title || "Unknown Course"}
+                  <p className="font-medium text-slate-900">{entry.course?.title || "Unknown Course"}</p>
+                </td>
+                <td className="py-4 px-6">
+                  <p className="text-sm text-slate-900">
+                    ₹{entry.paymentDetails?.amount?.toLocaleString() || "0"} {entry.paymentDetails?.currency || ""}
+                  </p>
+                  <p className="text-sm text-slate-500">ID: {entry.paymentDetails?.paymentId || "N/A"}</p>
+                  <p className="text-sm">
+                    Status: <span className={entry.paymentDetails?.status === "completed" ? "text-green-600" : "text-red-600"}>
+                      {entry.paymentDetails?.status || "N/A"}
+                    </span>
                   </p>
                 </td>
                 <td className="py-4 px-6">
@@ -413,9 +443,7 @@ const StudentTable = ({ data }) => {
                         style={{ width: `${entry.progress || 0}%` }}
                       />
                     </div>
-                    <span className="text-sm font-medium text-slate-900">
-                      {entry.progress || 0}%
-                    </span>
+                    <span className="text-sm font-medium text-slate-900">{entry.progress || 0}%</span>
                   </div>
                 </td>
                 <td className="py-4 px-6">
@@ -433,9 +461,7 @@ const StudentTable = ({ data }) => {
                 </td>
                 <td className="py-4 px-6">
                   <p className="text-sm text-slate-600">
-                    {entry.videoProgress?.filter((vp) => vp.completed).length ||
-                      0}{" "}
-                    / {entry.videoProgress?.length || 0}
+                    {entry.videoProgress?.filter((vp) => vp.completed).length || 0} / {entry.videoProgress?.length || 0}
                   </p>
                 </td>
                 <td className="py-4 px-6">

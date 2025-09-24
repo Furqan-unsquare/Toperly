@@ -104,7 +104,7 @@ const DarkAIHero = () => {
   });
 
   return (
-    <motion.section 
+    <motion.tion 
       ref={ref}
       className="min-h-screen flex items-left justify-center relative overflow-hidden py-20"
       style={getBackgroundStyle()}
@@ -156,7 +156,7 @@ const DarkAIHero = () => {
         />
       </div>
 
-      <div className="container mx-auto px-6 lg:px-8 relative z-10">
+      <div className="container mx-auto px-6 lg:px-8 relative ">
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 gap-16 mt-4 md:mt-10 items-left"
           variants={container}
@@ -194,10 +194,9 @@ const DarkAIHero = () => {
             
             {/* Subtitle */}
             <motion.p 
-              className="text-xs sm:text-lg mb-10 mx-auto text-justify leading-relaxed text-gray-300"
+              className="text-md sm:text-lg mb-10 mx-auto text-justify leading-relaxed text-gray-300"
               variants={zoomOut}
-              transition={{ delay: 0.3 }}
-            >
+              transition={{ delay: 0.3 }}>
                  <span className="font-semibold text-blue-400">AI</span> isn’t just for tech anymore - it’s changing healthcare,  fashion, business, and design. At Toperly, we make learning AI simple, so you can grow in your field and stay on Top
             </motion.p>
 
@@ -205,12 +204,9 @@ const DarkAIHero = () => {
             <motion.div 
               className="flex flex-col sm:flex-row gap-6 justify-start mb-10"
               variants={fadeIn}
-              transition={{ delay: 0.6 }}
-            >
+              transition={{ delay: 0.6 }}>
               <Button />
             </motion.div>
-
-         
           </div>
 
           {/* Right Column - Optional AI Visualization */}
@@ -357,7 +353,7 @@ const DarkAIHero = () => {
               variants={container}
             >
               {[
-                { value: 'Regional Languages', label: 'Learn in the language you’re most comfortable with.', icon: Users },
+                { value: 'Regional Language', label: 'Learn in the language you’re most comfortable with.', icon: Users },
                 { value: 'Expert-Led', label: 'Courses designed and taught by industry professionals.', icon: Cpu },
                 { value: 'Certified Learning', label: 'Earn certifications that add real value to your career.', icon: TrendingUp }
               ].map((stat, index) => (
@@ -377,7 +373,7 @@ const DarkAIHero = () => {
                         {stat.value}
                       </div>
                     </div>
-                    <div className="text-xs font-medium text-gray-300">
+                    <div className="hidden md:block text-xs font-medium text-gray-300">
                       {stat.label}
                     </div>
                     <div className="w-full h-1 rounded-full mt-3 bg-blue-200/20">
@@ -396,7 +392,7 @@ const DarkAIHero = () => {
               ))}
             </motion.div>
       </div>
-    </motion.section>
+    </motion.tion>
   );
 };
 

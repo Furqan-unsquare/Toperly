@@ -483,6 +483,83 @@ export const getUserDetails = async (req, res) => {
   }
 };
 
+export const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params; 
+
+    // First check what kind of user this is
+    let user = await Student.findById(id).lean();
+    if (user) {
+      const [
+        enrolledCourses,
+        certificates,
+        quizAttempts,
+        reviews,
+        transactions,
+        wishlist,
+      ] = await Promise.all([
+        EnrolledCourse.find({ student: user._id }).populate("course").lean(),
+        Certificate.find({ student: user._id }).populate("course").lean(),
+        QuizAttempt.find({ student: user._id }).populate("quiz course").lean(),
+        Review.find({ student: user._id }).populate("course").lean(),
+        Transaction.find({ student: user._id }).populate("course").lean(),
+        Wishlist.find({ student: user._id }).populate("course").lean(),
+      ]);
+
+      return res.json({
+        role: "student",
+        profile: user,
+        enrolledCourses,
+        certificates,
+        quizAttempts,
+        reviews,
+        transactions,
+        wishlist,
+      });
+    }
+
+    user = await Instructor.findById(id).lean();
+    if (user) {
+      const courses = await Course.find({ instructor: user._id }).lean();
+      const courseIds = courses.map((c) => c._id);
+
+      const [reviews, certificates] = await Promise.all([
+        Review.find({ course: { $in: courseIds } })
+          .populate("student course")
+          .lean(),
+        Certificate.find({ course: { $in: courseIds } }).lean(),
+      ]);
+
+      return res.json({
+        role: "instructor",
+        profile: user,
+        courses,
+        reviews,
+        certificatesIssued: certificates,
+      });
+    }
+
+    user = await Admin.findById(id).lean();
+    if (user) {
+      return res.json({
+        role: "admin",
+        profile: user,
+        managedUsersCount: {
+          students: await Student.countDocuments(),
+          instructors: await Instructor.countDocuments(),
+          courses: await Course.countDocuments(),
+        },
+      });
+    }
+
+    return res.status(404).json({ message: "User not found" });
+  } catch (err) {
+    console.error("getUserById error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+
 // For updateUserInfo, add sync to Auth0 if role changes
 export const updateUserInfo = async (req, res) => {
   try {

@@ -36,7 +36,6 @@ import NotFound from "./pages/NotFound";
 
 // 🎓 Student Components
 import Dashboard from "./pages/Student/Dashboard";
-import CoursesCatalog from "./pages/Student/CoureseCatalog";
 import InstructorRole from "./pages/Student/InstructorRole";
 import CourseDetail from "./components/student/CourseDetail";
 import QuizPage from "./components/student/QuizPage";
@@ -50,8 +49,6 @@ import InstructorDashboard from "./pages/Instructor/InstructorDashboard";
 import CourseManagementSystem from "./pages/Instructor/Course";
 import EnrolledStudents from "./pages/Instructor/EnrolledStudents";
 import AdminCoursesReviews from "./pages/Instructor/Reviews";
-import Approval from "./pages/Instructor/Approval";
-import Createcourse from "./pages/Instructor/Createcourse";
 import Quizz from "./pages/Instructor/Quizz";
 import Materials from "./pages/Instructor/materials";
 import ChangePassword from "./pages/Instructor/ChangePassword";
@@ -164,88 +161,17 @@ const App = () => (
             <Route element={ <ProtectedRoute allowedRoles={["instructor"]}><InstructorLayout /></ProtectedRoute>} >
               <Route path="/dashboard" element={<InstructorRoutes><InstructorDashboard /></InstructorRoutes>}/>
               <Route path="/instructor/all-courses" element={<InstructorRoutes><CourseManagementSystem /></InstructorRoutes>}/>
-              <Route path="/instructor/create-course" element={<InstructorRoutes><Createcourse /></InstructorRoutes>}/>
               <Route path="/instructor/all-quizzes" element={<InstructorRoutes><Quizz /></InstructorRoutes>}/>
-              <Route
-                path="/instructor/materials"
-                element={
-                  <InstructorRoutes>
-                    <Materials />
-                  </InstructorRoutes>
-                }
-              />
-              <Route
-                path="/instructor/reviews-feedback"
-                element={
-                  <InstructorRoutes>
-                    <AdminCoursesReviews />
-                  </InstructorRoutes>
-                }
-              />
-              <Route
-                path="/instructor/revenue-dashboard"
-                element={
-                  <InstructorRoutes>
-                    <Revenue />
-                  </InstructorRoutes>
-                }
-              />
-              <Route
-                path="/instructor/all-students"
-                element={
-                  <InstructorRoutes>
-                    <EnrolledStudents />
-                  </InstructorRoutes>
-                }
-              />
-              <Route
-                path="/instructor/change-password"
-                element={
-                  <InstructorRoutes>
-                    <ChangePassword />
-                  </InstructorRoutes>
-                }
-              />
-              <Route
-                path="/instructor/user-profile"
-                element={
-                  <InstructorRoutes>
-                    <ProfileSettings />
-                  </InstructorRoutes>
-                }
-              />
-              <Route
-                path="/instructor/security"
-                element={
-                  <InstructorRoutes>
-                    <Security />
-                  </InstructorRoutes>
-                }
-              />
-              <Route
-                path="/instructor/helpcenter"
-                element={
-                  <InstructorRoutes>
-                    <InstructorHelpCenter />
-                  </InstructorRoutes>
-                }
-              />
-              <Route
-                path="/instructor/notifications"
-                element={
-                  <InstructorRoutes>
-                    <Notifications />
-                  </InstructorRoutes>
-                }
-              />
-              <Route
-                path="/instructor/course-content"
-                element={
-                  <InstructorRoutes>
-                    <CourseContentForms />
-                  </InstructorRoutes>
-                }
-              />
+              <Route path="/instructor/materials" element={<InstructorRoutes><Materials /></InstructorRoutes>}/>
+              <Route path="/instructor/reviews-feedback"element={<InstructorRoutes><AdminCoursesReviews /></InstructorRoutes>}/>
+              <Route path="/instructor/revenue-dashboard" element={<InstructorRoutes><Revenue /></InstructorRoutes>}/>
+              <Route path="/instructor/all-students" element={<InstructorRoutes><EnrolledStudents /></InstructorRoutes>}/>
+              <Route path="/instructor/change-password" element={<InstructorRoutes><ChangePassword /></InstructorRoutes>}/>
+              <Route path="/instructor/user-profile" element={<InstructorRoutes><ProfileSettings /></InstructorRoutes>}/>
+              <Route path="/instructor/security" element={<InstructorRoutes><Security /></InstructorRoutes>}/>
+              <Route path="/instructor/helpcenter" element={<InstructorRoutes><InstructorHelpCenter /></InstructorRoutes>}/>
+              <Route path="/instructor/notifications" element={<InstructorRoutes><Notifications /></InstructorRoutes>}/>
+              <Route path="/instructor/course-content" element={<InstructorRoutes><CourseContentForms /></InstructorRoutes>}/>
             </Route>
 
             {/* Admin Routes */}

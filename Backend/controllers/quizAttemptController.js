@@ -6,18 +6,8 @@ export const submitQuizAttempt = async (req, res) => {
     const { student, studentCustomId, course, lesson, quiz, answers } = req.body;
 
     // Validate required fields
-    if (!student || !studentCustomId || !course || !lesson || !quiz || !answers) {
+    if (!student || !studentCustomId || !course || !lesson || !quiz || !answers === undefined) {
       return res.status(400).json({ success: false, message: 'Missing required fields' });
-    }
-
-    // Check if already attempted
-    const existingAttempt = await QuizAttempt.findOne({ student, quiz });
-    if (existingAttempt) {
-      return res.status(409).json({
-        success: false,
-        message: 'You have already attempted this quiz',
-        data: existingAttempt
-      });
     }
 
     // Get correct quiz data
@@ -37,6 +27,10 @@ export const submitQuizAttempt = async (req, res) => {
 
     const percentage = Math.round((correctCount / quizDoc.questions.length) * 100);
 
+    // Check if previous attempts exist
+    const previousAttempts = await QuizAttempt.find({ student, quiz }).sort({ attemptNumber: -1 });
+    const attemptNumber = previousAttempts.length > 0 ? previousAttempts[0].attemptNumber + 1 : 1;
+
     // Save attempt
     const attempt = new QuizAttempt({
       student,
@@ -45,7 +39,8 @@ export const submitQuizAttempt = async (req, res) => {
       lesson,
       quiz,
       answers,
-      score: percentage
+      score: percentage,
+      attemptNumber
     });
 
     await attempt.save();
@@ -74,13 +69,15 @@ export const getQuizAttempt = async (req, res) => {
       return res.status(400).json({ success: false, message: 'studentId and quizId required' });
     }
 
-    const attempt = await QuizAttempt.findOne({ student: studentId, quiz: quizId });
+    const attempts = await QuizAttempt.find({ student: studentId, quiz: quizId })
+      .sort({ attemptNumber: -1 })
+      .limit(1); // Get the latest attempt
 
-    if (!attempt) {
+    if (!attempts || attempts.length === 0) {
       return res.status(404).json({ success: false, message: 'No attempt found' });
     }
 
-    res.status(200).json({ success: true, data: attempt });
+    res.status(200).json({ success: true, data: attempts[0] });
 
   } catch (error) {
     console.error('Get quiz attempt error:', error);

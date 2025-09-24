@@ -168,7 +168,6 @@ span.goog-text-highlight {
       border: none;
       cursor: pointer;
       transition: color 0.475s ease;
-      z-index: 0;
     }
     .toperly-navbar-btn:hover {
       color: #1f2937;

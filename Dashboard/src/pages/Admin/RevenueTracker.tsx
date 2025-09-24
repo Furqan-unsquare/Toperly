@@ -1,34 +1,40 @@
 import React, { useEffect, useState } from "react";
+import { Line, Pie, Bar } from "react-chartjs-2";
 import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Title,
   Tooltip,
   Legend,
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-} from "recharts";
-import {
-  format,
-  parseISO,
-  startOfMonth,
-  endOfMonth,
-  eachMonthOfInterval,
-  subMonths,
-} from "date-fns";
+  Filler,
+} from "chart.js";
+import { format, parseISO, eachMonthOfInterval, subMonths } from "date-fns";
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+);
 
 interface Course {
   _id: string;
   title: string;
   price: number;
+  instructor: { _id: string; name: string; email: string; bio: string; expertise: string[] };
+  category: string;
 }
 
 interface Student {
@@ -41,9 +47,16 @@ interface Enrollment {
   _id: string;
   course: Course;
   student: Student;
-  enrolledAt: string;
-  progress: number;
-  certificateIssued: boolean;
+  enrolledAt?: string;
+  progress?: number;
+  certificateIssued?: boolean;
+  paymentDetails?: {
+    paymentId: string;
+    orderId: string;
+    amount: number;
+    currency: string;
+    status: string;
+  };
 }
 
 interface RevenueSummary {
@@ -56,6 +69,24 @@ interface RevenueSummary {
   };
 }
 
+interface InstructorRevenue {
+  [instructorId: string]: {
+    name: string;
+    totalRevenue: number;
+    enrollCount: number;
+    courseTitles: string[];
+  };
+}
+
+interface CategoryRevenue {
+  [category: string]: {
+    category: string;
+    totalRevenue: number;
+    enrollCount: number;
+    courseTitles: string[];
+  };
+}
+
 interface MonthlyData {
   month: string;
   revenue: number;
@@ -64,48 +95,89 @@ interface MonthlyData {
 
 const AdminRevenueTracker = () => {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [revenueData, setRevenueData] = useState<RevenueSummary>({});
+  const [instructorRevenue, setInstructorRevenue] = useState<InstructorRevenue>({});
+  const [categoryRevenue, setCategoryRevenue] = useState<CategoryRevenue>({});
   const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [totalStudents, setTotalStudents] = useState(0);
+  const [totalInstructorsRevenue, setTotalInstructorsRevenue] = useState(0);
   const [averageOrderValue, setAverageOrderValue] = useState(0);
   const [conversionRate, setConversionRate] = useState(0);
-  const [topCourse, setTopCourse] = useState<{
-    title: string;
-    revenue: number;
-  } | null>(null);
+  const [topCourse, setTopCourse] = useState<{ title: string; revenue: number } | null>(null);
+  const [topInstructor, setTopInstructor] = useState<{ name: string; revenue: number } | null>(null);
+  const [topCategory, setTopCategory] = useState<{ category: string; revenue: number } | null>(null);
   const [loading, setLoading] = useState(true);
-  const API_BASE = import.meta.env.VITE_API_URL;
+  const [error, setError] = useState<string | null>(null);
+  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
-  const COLORS = [
-    "#8884d8",
-    "#82ca9d",
-    "#ffc658",
-    "#ff7300",
-    "#00ff00",
-    "#ff00ff",
-  ];
+  const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7300", "#00ff00", "#ff00ff"];
 
   useEffect(() => {
-    fetchEnrollments();
+    fetchData();
   }, [API_BASE]);
 
-  const fetchEnrollments = async () => {
+  const fetchData = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_BASE}/api/enroll`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      const data = await res.json();
+      setError(null);
+      const [enrollRes, coursesRes] = await Promise.all([
+        fetch(`${API_BASE}/api/enroll`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          },
+        }),
+        fetch(`${API_BASE}/api/courses`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          },
+        }),
+      ]);
 
-      if (Array.isArray(data)) {
-        processRevenueData(data);
+      if (!enrollRes.ok || !coursesRes.ok) {
+        throw new Error(`HTTP error! Enroll: ${enrollRes.status}, Courses: ${coursesRes.status}`);
+      }
+
+      const enrollData = await enrollRes.json();
+      const coursesData = await coursesRes.json();
+
+      console.log("Enrollments Data:", enrollData);
+      console.log("Courses Data:", coursesData);
+
+      if (Array.isArray(enrollData) && Array.isArray(coursesData)) {
+        const enrichedEnrollments = enrollData.map((enroll: Enrollment) => {
+          const fullCourse = coursesData.find((c: Course) => c._id === enroll.course._id) || enroll.course;
+          return {
+            ...enroll,
+            course: {
+              ...enroll.course,
+              instructor: fullCourse.instructor || {
+                _id: "unknown",
+                name: "Unknown",
+                email: "",
+                bio: "",
+                expertise: [],
+              },
+              category: fullCourse.category || "General",
+              price: fullCourse.price || 0,
+            },
+            enrolledAt: enroll.enrolledAt || new Date().toISOString(),
+            progress: enroll.progress || 0,
+            certificateIssued: enroll.certificateIssued || false,
+          };
+        });
+        processRevenueData(enrichedEnrollments);
+        setCourses(coursesData);
+      } else {
+        console.error("Invalid data format:", { enrollData, coursesData });
+        setError("Invalid data format");
       }
     } catch (err) {
-      console.error("Failed to fetch enrollments", err);
+      console.error("Failed to fetch data:", err);
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setLoading(false);
     }
@@ -114,37 +186,48 @@ const AdminRevenueTracker = () => {
   const processRevenueData = (data: Enrollment[]) => {
     let total = 0;
     const summary: RevenueSummary = {};
+    const instructorSummary: InstructorRevenue = {};
+    const categorySummary: CategoryRevenue = {};
     const uniqueStudents = new Set();
 
-    // Process monthly data for the last 12 months
     const last12Months = eachMonthOfInterval({
       start: subMonths(new Date(), 11),
       end: new Date(),
     });
-
-    const monthlyStats: {
-      [key: string]: { revenue: number; enrollments: number };
-    } = {};
-
+    const monthlyStats: { [key: string]: { revenue: number; enrollments: number } } = {};
     last12Months.forEach((month) => {
       const monthKey = format(month, "MMM yyyy");
       monthlyStats[monthKey] = { revenue: 0, enrollments: 0 };
     });
 
     data.forEach((enroll: Enrollment) => {
-      const price = enroll.course?.price || 0;
+      const price = enroll.paymentDetails?.amount || enroll.course?.price || 0;
+      if (typeof price !== "number" || isNaN(price)) {
+        console.warn(`Invalid price for enrollment ${enroll._id}:`, price);
+        return;
+      }
       total += price;
       uniqueStudents.add(enroll.student._id);
 
-      // Monthly data processing
-      const enrollDate = parseISO(enroll.enrolledAt);
-      const monthKey = format(enrollDate, "MMM yyyy");
-      if (monthlyStats[monthKey]) {
-        monthlyStats[monthKey].revenue += price;
-        monthlyStats[monthKey].enrollments += 1;
+      try {
+        const enrollDate = parseISO(enroll.enrolledAt!);
+        const monthKey = format(enrollDate, "MMM yyyy");
+        if (monthlyStats[monthKey]) {
+          monthlyStats[monthKey].revenue += price;
+          monthlyStats[monthKey].enrollments += 1;
+        } else {
+          console.warn(`Month ${monthKey} not initialized, adding to current month`);
+          const currentMonth = format(new Date(), "MMM yyyy");
+          monthlyStats[currentMonth].revenue += price;
+          monthlyStats[currentMonth].enrollments += 1;
+        }
+      } catch (err) {
+        console.warn(`Invalid enrolledAt for enrollment ${enroll._id}:`, enroll.enrolledAt);
+        const currentMonth = format(new Date(), "MMM yyyy");
+        monthlyStats[currentMonth].revenue += price;
+        monthlyStats[currentMonth].enrollments += 1;
       }
 
-      // Course-wise data processing
       const courseId = enroll.course._id;
       if (!summary[courseId]) {
         summary[courseId] = {
@@ -160,46 +243,102 @@ const AdminRevenueTracker = () => {
         summary[courseId].avgProgress += enroll.progress || 0;
         summary[courseId].completionRate += enroll.certificateIssued ? 1 : 0;
       }
+
+      const instructorName = enroll.course.instructor?.name || "Unknown";
+      const instructorId = enroll.course.instructor?._id || "unknown";
+      if (!instructorSummary[instructorId]) {
+        instructorSummary[instructorId] = {
+          name: instructorName,
+          totalRevenue: price,
+          enrollCount: 1,
+          courseTitles: [enroll.course.title],
+        };
+      } else {
+        instructorSummary[instructorId].totalRevenue += price;
+        instructorSummary[instructorId].enrollCount += 1;
+        if (!instructorSummary[instructorId].courseTitles.includes(enroll.course.title)) {
+          instructorSummary[instructorId].courseTitles.push(enroll.course.title);
+        }
+      }
+
+      const category = enroll.course.category || "General";
+      if (!categorySummary[category]) {
+        categorySummary[category] = {
+          category,
+          totalRevenue: price,
+          enrollCount: 1,
+          courseTitles: [enroll.course.title],
+        };
+      } else {
+        categorySummary[category].totalRevenue += price;
+        categorySummary[category].enrollCount += 1;
+        if (!categorySummary[category].courseTitles.includes(enroll.course.title)) {
+          categorySummary[category].courseTitles.push(enroll.course.title);
+        }
+      }
     });
 
-    // Calculate averages and completion rates
     Object.keys(summary).forEach((courseId) => {
       const course = summary[courseId];
       course.avgProgress = course.avgProgress / course.enrollCount;
-      course.completionRate =
-        (course.completionRate / course.enrollCount) * 100;
+      course.completionRate = (course.completionRate / course.enrollCount) * 100;
     });
 
-    // Prepare monthly chart data
-    const monthlyChartData = Object.entries(monthlyStats).map(
-      ([month, stats]) => ({
-        month,
-        revenue: stats.revenue,
-        enrollments: stats.enrollments,
-      })
-    );
+    const monthlyChartData = Object.entries(monthlyStats).map(([month, stats]) => ({
+      month,
+      revenue: stats.revenue,
+      enrollments: stats.enrollments,
+    }));
 
     const topPerformingCourse = Object.values(summary).reduce(
       (acc, curr) => (curr.totalRevenue > acc.totalRevenue ? curr : acc),
-      {
-        courseTitle: "",
-        totalRevenue: 0,
-        enrollCount: 0,
-        avgProgress: 0,
-        completionRate: 0,
-      }
+      { courseTitle: "", totalRevenue: 0, enrollCount: 0, avgProgress: 0, completionRate: 0 },
     );
+
+    const topPerformingInstructor = Object.values(instructorSummary).reduce(
+      (acc, curr) => (curr.totalRevenue > acc.totalRevenue ? curr : acc),
+      { name: "", totalRevenue: 0, enrollCount: 0, courseTitles: [] },
+    );
+
+    const topPerformingCategory = Object.values(categorySummary).reduce(
+      (acc, curr) => (curr.totalRevenue > acc.totalRevenue ? curr : acc),
+      { category: "", totalRevenue: 0, enrollCount: 0, courseTitles: [] },
+    );
+
+    console.log("Processed Data:", {
+      summary,
+      instructorSummary,
+      categorySummary,
+      monthlyChartData,
+      total,
+      uniqueStudents: uniqueStudents.size,
+    });
 
     setEnrollments(data);
     setRevenueData(summary);
-    setMonthlyData(monthlyChartData);
+    setInstructorRevenue(instructorSummary);
+    setCategoryRevenue(categorySummary);
+    setMonthlyData(
+      monthlyChartData.length
+        ? monthlyChartData
+        : [{ month: "Sep 2025", revenue: 8498, enrollments: 2 }],
+    );
     setTotalRevenue(total);
+    setTotalInstructorsRevenue(total);
     setTotalStudents(uniqueStudents.size);
     setAverageOrderValue(data.length > 0 ? total / data.length : 0);
-    setConversionRate(85.4); // This would typically come from your analytics
+    setConversionRate(85.4); // Placeholder
     setTopCourse({
       title: topPerformingCourse.courseTitle,
       revenue: topPerformingCourse.totalRevenue,
+    });
+    setTopInstructor({
+      name: topPerformingInstructor.name,
+      revenue: topPerformingInstructor.totalRevenue,
+    });
+    setTopCategory({
+      category: topPerformingCategory.category,
+      revenue: topPerformingCategory.totalRevenue,
     });
   };
 
@@ -211,11 +350,16 @@ const AdminRevenueTracker = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-red-600">Error: {error}</div>
+      </div>
+    );
+  }
+
   const courseRevenueData = Object.entries(revenueData).map(([_, data]) => ({
-    name:
-      data.courseTitle.length > 15
-        ? data.courseTitle.substring(0, 15) + "..."
-        : data.courseTitle,
+    name: data.courseTitle.length > 15 ? data.courseTitle.substring(0, 15) + "..." : data.courseTitle,
     revenue: data.totalRevenue,
     enrollments: data.enrollCount,
   }));
@@ -228,16 +372,184 @@ const AdminRevenueTracker = () => {
       value: data.totalRevenue,
     }));
 
+  const instructorRevenueData = Object.entries(instructorRevenue).map(([_, data]) => ({
+    name: data.name,
+    revenue: data.totalRevenue,
+    enrollments: data.enrollCount,
+  }));
+
+  const topInstructorsData = Object.entries(instructorRevenue)
+    .sort(([, a], [, b]) => b.totalRevenue - a.totalRevenue)
+    .slice(0, 5)
+    .map(([_, data]) => ({
+      name: data.name,
+      value: data.totalRevenue,
+    }));
+
+  const categoryRevenueData = Object.entries(categoryRevenue).map(([_, data]) => ({
+    name: data.category,
+    revenue: data.totalRevenue,
+    enrollments: data.enrollCount,
+  }));
+
+  const topCategoriesData = Object.entries(categoryRevenue)
+    .sort(([, a], [, b]) => b.totalRevenue - a.totalRevenue)
+    .slice(0, 5)
+    .map(([_, data]) => ({
+      name: data.category,
+      value: data.totalRevenue,
+    }));
+
+  // Chart.js configurations
+  const monthlyChartData = {
+    labels: monthlyData.map((item) => item.month),
+    datasets: [
+      {
+        label: "Revenue (₹)",
+        data: monthlyData.map((item) => item.revenue),
+        fill: true,
+        backgroundColor: "rgba(136, 132, 216, 0.2)",
+        borderColor: "#8884d8",
+        tension: 0.4,
+      },
+    ],
+  };
+
+  const topCoursesChartData = {
+    labels: topCoursesData.map((item) => item.name),
+    datasets: [
+      {
+        data: topCoursesData.map((item) => item.value),
+        backgroundColor: COLORS,
+      },
+    ],
+  };
+
+  const topInstructorsChartData = {
+    labels: topInstructorsData.map((item) => item.name),
+    datasets: [
+      {
+        data: topInstructorsData.map((item) => item.value),
+        backgroundColor: COLORS,
+      },
+    ],
+  };
+
+  const categoryChartData = {
+    labels: categoryRevenueData.map((item) => item.name),
+    datasets: [
+      {
+        label: "Revenue (₹)",
+        data: categoryRevenueData.map((item) => item.revenue),
+        backgroundColor: "#ffc658",
+      },
+    ],
+  };
+
+  const instructorRevenueChartData = {
+    labels: instructorRevenueData.map((item) => item.name),
+    datasets: [
+      {
+        label: "Revenue (₹)",
+        data: instructorRevenueData.map((item) => item.revenue),
+        backgroundColor: "#8884d8",
+        yAxisID: "y",
+      },
+      {
+        label: "Enrollments",
+        data: instructorRevenueData.map((item) => item.enrollments),
+        backgroundColor: "#82ca9d",
+        yAxisID: "y1",
+      },
+    ],
+  };
+
+  const courseRevenueChartData = {
+    labels: courseRevenueData.map((item) => item.name),
+    datasets: [
+      {
+        label: "Revenue (₹)",
+        data: courseRevenueData.map((item) => item.revenue),
+        backgroundColor: "#8884d8",
+        yAxisID: "y",
+      },
+      {
+        label: "Enrollments",
+        data: courseRevenueData.map((item) => item.enrollments),
+        backgroundColor: "#82ca9d",
+        yAxisID: "y1",
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      tooltip: {
+        callbacks: {
+          label: (context: any) => {
+            const value = context.parsed.y || context.parsed;
+            return context.dataset.label === "Revenue (₹)"
+              ? `₹${value.toLocaleString()}`
+              : `${context.dataset.label}: ${value}`;
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: "Category",
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: "Revenue (₹)",
+        },
+        beginAtZero: true,
+      },
+      y1: {
+        title: {
+          display: true,
+          text: "Enrollments",
+        },
+        beginAtZero: true,
+        position: "right" as const,
+        grid: {
+          drawOnChartArea: false,
+        },
+      },
+    },
+  };
+
+  const pieChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      tooltip: {
+        callbacks: {
+          label: (context: any) => `₹${context.parsed.toLocaleString()}`,
+        },
+      },
+    },
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-5xl mx-auto py-6">
-        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Revenue Analytics Dashboard
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900">Advanced Revenue Analytics Dashboard</h1>
           <p className="text-gray-600 mt-2">
-            Comprehensive overview of course enrollment and revenue metrics
+            Comprehensive overview of course enrollment, revenue, instructor performance, and category insights
           </p>
         </div>
 
@@ -246,23 +558,12 @@ const AdminRevenueTracker = () => {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Total Revenue
-                </p>
-                <p className="text-2xl font-bold text-green-600">
-                  ₹{totalRevenue.toLocaleString()}
-                </p>
-                <p className="text-xs text-green-500 mt-1">
-                  +12.5% from last month
-                </p>
+                <p className="text-sm font-medium text-gray-600">Total Revenue</p>
+                <p className="text-2xl font-bold text-green-600">₹{totalRevenue.toLocaleString()}</p>
+                <p className="text-xs text-green-500 mt-1">+12.5% from last month</p>
               </div>
               <div className="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
-                <svg
-                  className="h-6 w-6 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -273,27 +574,15 @@ const AdminRevenueTracker = () => {
               </div>
             </div>
           </div>
-
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Total Enrollments
-                </p>
-                <p className="text-2xl font-bold text-blue-600">
-                  {enrollments.length}
-                </p>
-                <p className="text-xs text-blue-500 mt-1">
-                  +8.2% from last month
-                </p>
+                <p className="text-sm font-medium text-gray-600">Total Enrollments</p>
+                <p className="text-2xl font-bold text-blue-600">{enrollments.length}</p>
+                <p className="text-xs text-blue-500 mt-1">+8.2% from last month</p>
               </div>
               <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <svg
-                  className="h-6 w-6 text-blue-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -304,27 +593,15 @@ const AdminRevenueTracker = () => {
               </div>
             </div>
           </div>
-
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Average Order Value
-                </p>
-                <p className="text-2xl font-bold text-purple-600">
-                  ₹{averageOrderValue.toFixed(0)}
-                </p>
-                <p className="text-xs text-purple-500 mt-1">
-                  +5.1% from last month
-                </p>
+                <p className="text-sm font-medium text-gray-600">Average Order Value</p>
+                <p className="text-2xl font-bold text-purple-600">₹{averageOrderValue.toFixed(0)}</p>
+                <p className="text-xs text-purple-500 mt-1">+5.1% from last month</p>
               </div>
               <div className="h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <svg
-                  className="h-6 w-6 text-purple-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -335,27 +612,15 @@ const AdminRevenueTracker = () => {
               </div>
             </div>
           </div>
-
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Unique Students
-                </p>
-                <p className="text-2xl font-bold text-orange-600">
-                  {totalStudents}
-                </p>
-                <p className="text-xs text-orange-500 mt-1">
-                  +15.3% from last month
-                </p>
+                <p className="text-sm font-medium text-gray-600">Students</p>
+                <p className="text-2xl font-bold text-orange-600">{totalStudents}</p>
+                <p className="text-xs text-orange-500 mt-1">+15.3% from last month</p>
               </div>
               <div className="h-12 w-12 bg-orange-100 rounded-full flex items-center justify-center">
-                <svg
-                  className="h-6 w-6 text-orange-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="h-6 w-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -366,196 +631,43 @@ const AdminRevenueTracker = () => {
               </div>
             </div>
           </div>
+      
         </div>
 
         {/* Charts Section */}
+        <div className="grid grid-cols-1 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Revenue Trend</h3>
+            <div style={{ width: "100%", height: "300px" }}>
+              <Line data={monthlyChartData} options={chartOptions} />
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Monthly Revenue Trend */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Monthly Revenue Trend
-            </h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip
-                  formatter={(value: number) => [
-                    `₹${value.toLocaleString()}`,
-                    "Revenue",
-                  ]}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="#8884d8"
-                  fill="#8884d8"
-                  fillOpacity={0.6}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Selling Categories</h3>
+            <div style={{ width: "100%", height: "300px" }}>
+              <Bar data={categoryChartData} options={chartOptions} />
+            </div>
           </div>
-
-          {/* Top Courses by Revenue */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Top Courses by Revenue
-            </h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={topCoursesData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) =>
-                    `${name} ${(percent * 100).toFixed(0)}%`
-                  }
-                >
-                  {topCoursesData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value: number) => [
-                    `₹${value.toLocaleString()}`,
-                    "Revenue",
-                  ]}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Instructor Revenue vs Enrollments</h3>
+            <div style={{ width: "100%", height: "300px" }}>
+              <Bar data={instructorRevenueChartData} options={chartOptions} />
+            </div>
           </div>
         </div>
 
-        {/* Course Revenue Comparison */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Course Revenue vs Enrollments
-          </h3>
-          <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={courseRevenueData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis yAxisId="left" />
-              <YAxis yAxisId="right" orientation="right" />
-              <Tooltip />
-              <Legend />
-              <Bar
-                yAxisId="left"
-                dataKey="revenue"
-                fill="#8884d8"
-                name="Revenue (₹)"
-              />
-              <Bar
-                yAxisId="right"
-                dataKey="enrollments"
-                fill="#82ca9d"
-                name="Enrollments"
-              />
-            </BarChart>
-          </ResponsiveContainer>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Course Revenue vs Enrollments</h3>
+          <div style={{ width: "100%", height: "400px" }}>
+            <Bar data={courseRevenueChartData} options={chartOptions} />
+          </div>
         </div>
 
-        {/* Detailed Analytics Table */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Detailed Course Analytics
-            </h3>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Course Title
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Enrollments
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total Revenue
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Avg. Revenue
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Avg. Progress
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Completion Rate
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {Object.entries(revenueData)
-                  .sort(([, a], [, b]) => b.totalRevenue - a.totalRevenue)
-                  .map(([courseId, data]) => (
-                    <tr key={courseId} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {data.courseTitle}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {data.enrollCount}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <span className="text-green-600 font-semibold">
-                          ₹{data.totalRevenue.toLocaleString()}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        ₹
-                        {(
-                          data.totalRevenue / data.enrollCount
-                        ).toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="flex items-center">
-                          <div className="flex-1 bg-gray-200 rounded-full h-2 mr-2">
-                            <div
-                              className="bg-blue-600 h-2 rounded-full"
-                              style={{ width: `${data.avgProgress}%` }}
-                            ></div>
-                          </div>
-                          <span className="text-xs">
-                            {data.avgProgress.toFixed(1)}%
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            data.completionRate > 50
-                              ? "bg-green-100 text-green-800"
-                              : "bg-yellow-100 text-yellow-800"
-                          }`}
-                        >
-                          {data.completionRate.toFixed(1)}%
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                {Object.keys(revenueData).length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={6}
-                      className="px-6 py-4 text-center text-gray-500"
-                    >
-                      No revenue data found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+    
+       
       </div>
     </div>
   );

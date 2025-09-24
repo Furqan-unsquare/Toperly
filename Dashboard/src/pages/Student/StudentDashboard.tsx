@@ -240,20 +240,20 @@ export const StudentDashboard = () => {
       color: "bg-green-50 text-green-600",
     },
     {
-      id: "categories",
-      title: "Top Category",
-      value: topCategory,
-      subtitle: "Category with most progress",
-      icon: TargetIcon,
-      color: "bg-purple-50 text-purple-600",
-    },
-    {
       id: "quizzes",
       title: "Average Quiz Score",
       value: `${averageQuizScore}%`,
       subtitle: "Average across all attempts",
       icon: BarChart3,
       color: "bg-orange-50 text-orange-600",
+    },
+    {
+      id: "categories",
+      title: "Top Category",
+      value: topCategory,
+      // subtitle: "Category with most progress",
+      icon: TargetIcon,
+      color: "bg-purple-50 text-purple-600",
     },
   ];
 
@@ -578,22 +578,6 @@ export const StudentDashboard = () => {
             </div>
           </CardContent>
         </Card>
-
-        {/* GitHub-style Activity */}
-        {/* <Card className="border-0 shadow-sm">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center text-lg font-semibold">
-              <Calendar className="w-5 h-5 mr-2 text-green-500" />
-              Learning Activity
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ContributionGrid />
-            <div className="mt-6 text-sm text-gray-600">
-              <p>Each square represents a day of learning activity. The darker the color, the more active you were.</p>
-            </div>
-          </CardContent>
-        </Card> */}
       </div>
     </div>
   );

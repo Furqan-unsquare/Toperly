@@ -249,7 +249,7 @@ const StudentProfileSettings = () => {
                 <div className="mt-4 sm:mt-0">
                   <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                     <Shield className="w-4 h-4 mr-1" />
-                    Student Account
+                    Instructor Account
                   </div>
                 </div>
               </div>

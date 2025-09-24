@@ -54,7 +54,7 @@ export default function LanguageSwitcher() {
       {/* button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-500 px-3 py-2 rounded-md w-full md:w-auto border border-gray-200 md:border-0"
+        className="z-[9999] flex items-center text-sm font-medium text-gray-700 hover:text-gray-500 px-3 py-2 rounded-md w-full md:w-auto border border-gray-200 md:border-0"
       >
         <Globe className="h-4 w-4 mr-1" />
         {languages.find((l) => l.code === language)?.label}

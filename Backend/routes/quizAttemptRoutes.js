@@ -4,6 +4,6 @@ import { submitQuizAttempt, getQuizAttempt } from '../controllers/quizAttemptCon
 const router = express.Router();
 
 router.post('/', submitQuizAttempt);
-router.get('/', getQuizAttempt); // e.g. /api/quiz-attempts?studentId=xxx&quizId=yyy
+router.get('/', getQuizAttempt);
 
 export default router;
