@@ -6,7 +6,7 @@ const ContactPage = () => {
   return (
     <div>
       <Hero  />
-      <FAQSection />
+      {/* <FAQSection /> */}
     </div>
   );
 };

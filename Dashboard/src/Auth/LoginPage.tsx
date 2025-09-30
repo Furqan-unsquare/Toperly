@@ -52,7 +52,7 @@ export default function InstructorLogin() {
         <div className="w-full max-w-xl">
           {/* Form Header */}
           <div className="mb-8">
-            <h2 className="text-2xl md:text-5xl font-bold text-gray-900 mb-2">Become Student Now</h2>
+            <h2 className="text-2xl md:text-5xl font-bold text-gray-900 mb-2">The Smarter way to reach the Top</h2>
             <p className="text-sm text-gray-600">Please sign up or Log in to your account to continue</p>
           </div>
 

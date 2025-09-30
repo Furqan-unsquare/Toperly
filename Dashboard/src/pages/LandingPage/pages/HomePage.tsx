@@ -6,6 +6,8 @@ import MentorAccessSection from "@/LandingPage/components/Home/MentorAccessSecti
 import InDemand from "@/LandingPage/components/Home/InDemand";
 import TopRated from "@/LandingPage/components/Home/TopRated";
 import SubscriptionPlans from "@/LandingPage/components/Home/SubscriptionPlans";
+import FAQSection from "@/LandingPage/components/Contact/FAQ";
+import AIToolsShowcase from "@/LandingPage/components/Home/AITools";
 
 const Index = () => {
   return (
@@ -15,8 +17,10 @@ const Index = () => {
       <InDemand />
       <FeaturesSection />
       <MentorAccessSection />
+      <AIToolsShowcase />
       <SubscriptionPlans />
       <TestimonialsSection />
+      <FAQSection />
     </div>
   );
 };
