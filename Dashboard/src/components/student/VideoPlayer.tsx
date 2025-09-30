@@ -17,9 +17,10 @@ import {
   Clock,
   AlertCircle,
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext"; // Import AuthContext to get user details
+import BotPopup from "../BotPopup";
 
 const API_BASE = `${import.meta.env.VITE_API_URL}/api`;
-
 
 const AdvancedVideoPlayer = ({
   video,
@@ -75,6 +76,10 @@ const AdvancedVideoPlayer = ({
     chaptersCompleted: [],
   });
 
+  // New state for BotPopup
+  const [showCompletionPopup, setShowCompletionPopup] = useState(false);
+  const { user } = useAuth(); // Get user from AuthContext
+
   // Sample chapters data
   const chapters = [
     { id: 1, title: "Introduction", startTime: 0, endTime: 120 },
@@ -123,7 +128,6 @@ const AdvancedVideoPlayer = ({
   // 💾 PROGRESS MANAGEMENT
   const saveProgress = useCallback(
     (immediate = false) => {
-      console.log("jkjdfhf");
       const videoElement = videoRef.current;
       if (!videoElement || !video?.title || !isEnrolled) return;
 
@@ -143,7 +147,7 @@ const AdvancedVideoPlayer = ({
           duration,
           progressPercentage,
           completed: isCompleted,
-          watchTime: videoProgress.watchTime + (immediate ? 0 : 5), // Increment watch time by interval
+          watchTime: videoProgress.watchTime + (immediate ? 0 : 5),
           chaptersCompleted: getCurrentChapterProgress(currentTime),
           quality: videoState.quality,
           playbackRate: videoState.playbackRate,
@@ -163,6 +167,13 @@ const AdvancedVideoPlayer = ({
             setVideoProgress(progressData);
             if (isCompleted && !videoProgress.completed && showToast) {
               showToast("🎉 Video completed! Great job!", "success");
+              // Check if popup has not been shown before for this video
+              const popupKey = `topsyCompletion_${course._id}_${video.title}`;
+              const hasSeenPopup = localStorage.getItem(popupKey);
+              if (!hasSeenPopup) {
+                setShowCompletionPopup(true);
+                localStorage.setItem(popupKey, "true");
+              }
             }
           } else {
             // Fallback to fetch if sendBeacon fails
@@ -179,6 +190,13 @@ const AdvancedVideoPlayer = ({
                 setVideoProgress(progressData);
                 if (isCompleted && !videoProgress.completed && showToast) {
                   showToast("🎉 Video completed! Great job!", "success");
+                  // Check if popup has not been shown before for this video
+                  const popupKey = `topsyCompletion_${course._id}_${video.title}`;
+                  const hasSeenPopup = localStorage.getItem(popupKey);
+                  if (!hasSeenPopup) {
+                    setShowCompletionPopup(true);
+                    localStorage.setItem(popupKey, "true");
+                  }
                 }
               })
               .catch(() => {
@@ -192,7 +210,6 @@ const AdvancedVideoPlayer = ({
         if (immediate) {
           saveAction();
         } else {
-          // Throttle non-immediate saves
           if (!progressSaveIntervalRef.current) {
             saveAction();
           }
@@ -492,7 +509,6 @@ const AdvancedVideoPlayer = ({
 
   useEffect(() => {
     if (videoState.isPlaying && isEnrolled) {
-      // Start interval for periodic progress saving (random 5-15s)
       progressSaveIntervalRef.current = setInterval(() => {
         saveProgress();
       }, Math.floor(Math.random() * (15000 - 5000 + 1)) + 5000);
@@ -556,25 +572,6 @@ const AdvancedVideoPlayer = ({
           <Lock size={48} className="mx-auto mb-4 opacity-60" />
           <h3 className="text-xl font-semibold mb-2">Premium Content</h3>
           <p className="text-gray-300 mb-6 max-w-md">No video to play</p>
-          {/* <button
-            onClick={onEnroll}
-            disabled={enrollmentLoading}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 
-                     text-white px-8 py-3 rounded-lg font-semibold disabled:opacity-50 
-                     transform hover:scale-105 transition-all duration-200 flex items-center gap-2 mx-auto"
-          >
-            {enrollmentLoading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Enrolling...
-              </>
-            ) : (
-              <>
-                <Play size={16} />
-                {course?.price === 0 ? "Enroll for Free" : "No Video"}
-              </>
-            )}
-          </button> */}
         </div>
       </div>
     );
@@ -627,6 +624,18 @@ const AdvancedVideoPlayer = ({
         <track kind="captions" src="" srcLang="en" label="English" default />
         Your browser does not support the video tag.
       </video>
+
+      {/* Topsy Completion Popup */}
+      <BotPopup
+        isOpen={showCompletionPopup}
+        onClose={() => setShowCompletionPopup(false)}
+        studentName={user?.name || "Student"}
+        title="Great Job!"
+        description={`Congratulations on completing "${video.title}"! Ready for the next lesson?`}
+        buttonText="Continue Learning"
+        buttonLink={`/student/courses/${course._id}`}
+        botImage="/Bot-image-purchase.png"
+      />
 
       {/* Loading Overlay */}
       {videoState.isLoading && (

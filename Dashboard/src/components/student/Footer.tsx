@@ -1,257 +1,235 @@
-// components/Footer.tsx
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  Facebook,
-  Twitter,
-  Instagram,
-  Linkedin,
-  Youtube,
-  Mail,
-  Phone,
-  MapPin,
-  BookOpen,
-  Users,
-  Award,
-  Globe,
-  ArrowRight,
-  Heart,
-} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Mail, Phone, MapPin, Twitter, Linkedin, Youtube,Instagram } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
-const Footer: React.FC = () => {
-  const navigate = useNavigate();
-  const currentYear = new Date().getFullYear();
-
-  const quickLinks = [
-    { name: "About Us", href: "/about" },
-    { name: "Courses", href: "/courses" },
-    { name: "Instructors", href: "/instructors" },
-    { name: "Blog", href: "/blog" },
-    { name: "Contact", href: "/contact" },
-    { name: "Help Center", href: "/help" },
-  ];
-
-  const categories = [
-    { name: "Web Development", href: "/courses?category=web-development" },
-    { name: "Mobile Development", href: "/courses?category=mobile-development" },
-    { name: "Data Science", href: "/courses?category=data-science" },
-    { name: "Design", href: "/courses?category=design" },
-    { name: "Business", href: "/courses?category=business" },
-    { name: "Marketing", href: "/courses?category=marketing" },
-  ];
-
-  const policies = [
-    { name: "Privacy Policy", href: "/privacy" },
-    { name: "Terms of Service", href: "/terms" },
-    { name: "Cookie Policy", href: "/cookies" },
-    { name: "Refund Policy", href: "/refund" },
-    { name: "Community Guidelines", href: "/guidelines" },
-  ];
+const Footer = () => {
+  const footerRef = useRef<HTMLDivElement | null>(null);
+  const [isInView, setIsInView] = useState(false);
+  const footerLinks = {
+    courses: [
+      { name: "Machine Learning", href: "/courses/category/Machine%20Learning" },
+      { name: "Artificial Intelligence", href: "/courses/category/Artificial%20Intelligence" },
+      { name: "Computer Vision", href: "/courses/category/Artificial%20Intelligence" },
+      { name: "Python Fundamental", href: "/courses/category/Python" }
+    ],
+    company: [
+      { name: "About Us", href: "#" },
+      // { name: "Our Team", href: "#" },
+      { name: "Careers", href: "#" },
+      // { name: "Press", href: "#" },
+      { name: "Contact", href: "/contact-us" }
+    ],
+    resources: [
+      { name: "Blog", href: "/blogs" },
+      { name: "Community", href: "#" },
+      // { name: "Help Center", href: "#" },
+      // { name: "Certificates", href: "#" }`
+    ],
+    legal: [
+      { name: "Privacy Policy", href: "#" },
+      { name: "Terms of Service", href: "#" },
+      { name: "Cookie Policy", href: "#" },
+      { name: "Accessibility", href: "#" }
+    ]
+  };
 
   const socialLinks = [
-    { icon: Facebook, href: "https://facebook.com", label: "Facebook" },
-    { icon: Twitter, href: "https://twitter.com", label: "Twitter" },
-    { icon: Instagram, href: "https://instagram.com", label: "Instagram" },
-    { icon: Linkedin, href: "https://linkedin.com", label: "LinkedIn" },
-    { icon: Youtube, href: "https://youtube.com", label: "YouTube" },
+    { icon: Twitter, href: "#", label: "https://x.com/ToperlyAI" },
+    // { icon: Linkedin, href: "#", label: "LinkedIn" },
+    { icon: Instagram, href: "#", label: "https://www.instagram.com/toperly.ai/" },
+    // { icon: Youtube, href: "#", label: "YouTube" }
   ];
 
-  const stats = [
-    { icon: Users, value: "50K+", label: "Students" },
-    { icon: BookOpen, value: "1000+", label: "Courses" },
-    { icon: Award, value: "100+", label: "Instructors" },
-    { icon: Globe, value: "50+", label: "Countries" },
-  ];
+  // useEffect(() => {
+  //   const observer = new IntersectionObserver(
+  //     ([entry]) => {
+  //       setIsInView(entry.isIntersecting);
+  //     },
+  //     {
+  //       threshold: 0.2, // Trigger when 10% of footer is visible
+  //     }
+  //   );
+
+  //   if (footerRef.current) {
+  //     observer.observe(footerRef.current);
+  //   }
+
+  //   return () => {
+  //     if (footerRef.current) {
+  //       observer.unobserve(footerRef.current);
+  //     }
+  //   };
+  // }, []);
 
   return (
-    <footer className="bg-gray-900 text-white">
-      {/* Stats Section */}
-      <div className="border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="flex items-center justify-center w-12 h-12 bg-blue-600 rounded-lg mx-auto mb-3">
-                  <stat.icon size={24} className="text-white" />
-                </div>
-                <div className="text-2xl font-bold text-white mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-gray-400 text-sm">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
+    <footer
+    // ref={footerRef}
+   className={`bg-white top-0 w-full transition-all duration-500 ${
+    isInView ? "bg-white" : "bg-[#EBF2FE]"
+  }`}
+  //    style={{
+  //   backgroundImage: 'linear-gradient(to top, black, black, black, black, black, #3B82F619)'
+  // }}  save for later undo
+  >
+      <div className="px-4  md:px-8  md:pt-10 mx-auto ">
+        <div className="bg-white max-w-5xl mx-auto rounded-t-sm ">
+        {/* Centered Logo Section */}
+        <div className="-mt-10 mr-5">
+          <div className="text-center">
+            <div className="flex justify-center ">
+              <img src="/ai.png" alt="Company Logo" className="w-[48rem] md:w-[30rem] md:-ml-10 h-auto rounded-xl" />
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-          {/* Company Info */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                <BookOpen size={24} className="text-white" />
-              </div>
-              <h3 className="text-2xl font-bold">Toperly</h3>
-            </div>
-            
-            <p className="text-gray-400 mb-6 leading-relaxed">
-              Transform your career with our comprehensive online courses. Learn from industry experts, 
-              build real-world projects, and join a community of lifelong learners.
+         
+        {/* Newsletter Section */}
+        <div className="pb-12 border-b border-gray-200 bg-white">
+          <div className="text-center max-w-4xl mx-auto">
+            <h3 className="text-3xl md:text-5xl md:mx-40 font-bold mb-4 text-gray-700">
+              Be the {" "}
+              <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                First
+              </span> {""}
+              to Know
+            </h3>
+            <p className="text-sm md:text-xl md:mx-10 text-gray-400 mb-6">
+              Weekly insights in AI, ML, and beyond — curated to keep you ahead and in demand.
             </p>
-
-            {/* Contact Info */}
-            <div className="space-y-3 mb-6">
-              <div className="flex items-center gap-3 text-gray-400">
-                <Mail size={16} />
-                <span>support@Toperly.com</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-400">
-                <Phone size={16} />
-                <span>+1 (555) 123-4567</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-400">
-                <MapPin size={16} />
-                <span>123 Education St, Learning City, LC 12345</span>
-              </div>
-            </div>
-
-            {/* Social Links */}
-            <div className="flex items-center gap-4">
-              {socialLinks.map((social, index) => (
-                <a
-                  key={index}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors duration-200 group"
-                  aria-label={social.label}
-                >
-                  <social.icon 
-                    size={18} 
-                    className="text-gray-400 group-hover:text-white transition-colors duration-200" 
-                  />
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* Quick Links */}
-          <div>
-            <h4 className="text-lg font-semibold mb-6">Quick Links</h4>
-            <ul className="space-y-3">
-              {quickLinks.map((link, index) => (
-                <li key={index}>
-                  <button
-                    onClick={() => navigate(link.href)}
-                    className="text-gray-400 hover:text-white transition-colors duration-200 flex items-center group"
-                  >
-                    <span>{link.name}</span>
-                    <ArrowRight 
-                      size={14} 
-                      className="ml-2 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-200" 
-                    />
-                  </button>
-                 
-                </li>
-              ))} 
-             <button
-  onClick={() => window.open("/become-instructor", "_self")} 
-  className="text-gray-400 hover:text-white transition-colors duration-200 flex items-center group"
->
-  <span>Become An Instructor</span>
-  <ArrowRight 
-    size={14} 
-    className="ml-2 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-200" 
-  />
-</button>
-
-            </ul>
-          </div>
-
-          {/* Categories */}
-          <div>
-            <h4 className="text-lg font-semibold mb-6">Categories</h4>
-            <ul className="space-y-3">
-              {categories.map((category, index) => (
-                <li key={index}>
-                  <button
-                    onClick={() => navigate(category.href)}
-                    className="text-gray-400 hover:text-white transition-colors duration-200 flex items-center group"
-                  >
-                    <span>{category.name}</span>
-                    <ArrowRight 
-                      size={14} 
-                      className="ml-2 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-200" 
-                    />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Policies & Newsletter */}
-          <div>
-            <h4 className="text-lg font-semibold mb-6">Legal</h4>
-            <ul className="space-y-3 mb-8">
-              {policies.map((policy, index) => (
-                <li key={index}>
-                  <button
-                    onClick={() => navigate(policy.href)}
-                    className="text-gray-400 hover:text-white transition-colors duration-200 flex items-center group"
-                  >
-                    <span className="text-sm">{policy.name}</span>
-                    <ArrowRight 
-                      size={12} 
-                      className="ml-2 opacity-0 group-hover:opacity-100 transform translate-x-0 group-hover:translate-x-1 transition-all duration-200" 
-                    />
-                  </button>
-                </li>
-              ))}
-            </ul>
-
-            {/* Newsletter */}
-            <div>
-              <h5 className="font-medium mb-3">Stay Updated</h5>
-              <p className="text-gray-400 text-sm mb-3">
-                Get the latest courses and updates
-              </p>
-              <div className="flex">
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-l-lg text-sm focus:outline-none focus:border-blue-600 transition-colors duration-200"
-                />
-                <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-r-lg transition-colors duration-200">
-                  <ArrowRight size={16} />
+            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="flex-1 px-4 py-2 rounded-lg border border-gray-200 bg-gray-200 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+               <button className="toperly-navbar-btn bg-[#2721F7] rounded-lg">
+                  <span className="toperly-navbar-btn-content">Get Started Now</span>
                 </button>
-              </div>
             </div>
           </div>
         </div>
-      </div>
+        </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-gray-400 text-sm">
-              <span>© {currentYear} Toperly. All rights reserved.</span>
-              <span>•</span>
-              <span className="flex items-center gap-1">
-                Made with <Heart size={12} className="text-red-500 fill-current" /> by Unsquare Labs
-              </span>
+        {/* Responsive grid/footer main */}
+        <div
+          className="
+            py-2 md:py-12
+            grid
+            gap-2 md:gap-8
+            md:grid-cols-2
+            lg:grid-cols-6
+            grid-cols-1
+            bg-white
+          ">       
+          {/* Brand & contact: mobile - flex row; md+ - block */}
+          <div className="lg:col-span-2 flex flex-col md:flex-row md:space-x-6 lg:flex-col lg:space-x-0">
+            {/* Logo */}
+            <div className="flex-shrink-0 flex items-center md:mb-4 ">
+              <img src="/logo.png" alt="" className="w-40" />
             </div>
-            
-            <div className="flex items-center gap-6 text-sm text-gray-400">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span>All systems operational</span>
+            {/* Contact Info */}
+            <div className="space-y-2 text-sm text-gray-600 mb-6 max-w-sm">
+              <p className="mb-4 text-gray-600">
+                Making India Ready for the Future with AI
+              </p>
+              <div className="flex items-center space-x-2">
+                <Mail className="w-4 h-4" />
+                <span>toperly.ai@gmail.com</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Phone className="w-4 h-4" />
+                <span>+91 8178946715</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <MapPin className="w-4 h-4" />
+                <span>Sector 42, Gurugram, HR</span>
               </div>
             </div>
+          </div>
+
+          {/* Links: grid-cols-2 on mobile/tablet, original on desktop */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 col-span-2 lg:col-span-4">
+            {/* First row: Courses & Company */}
+            <div>
+              <h4 className="font-semibold md:mb-4 text-white">Courses</h4>
+              <ul className="space-y-2">
+                {footerLinks.courses.map((link) => (
+                  <li key={link.name}>
+                    <a
+                      href={link.href}
+                      className="text-sm text-gray-600 hover:text-blue-400 transition-colors"
+                    >
+                      {link.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold md:mb-4 text-white">Company</h4>
+              <ul className="space-y-2">
+                {footerLinks.company.map((link) => (
+                  <li key={link.name}>
+                    <a
+                      href={link.href}
+                      className="text-sm text-gray-600 hover:text-blue-400 transition-colors"
+                    >
+                      {link.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* Second row: Resources & Legal */}
+            <div>
+              <h4 className="font-semibold md:mb-4 text-white">Resources</h4>
+              <ul className="space-y-2">
+                {footerLinks.resources.map((link) => (
+                  <li key={link.name}>
+                    <a
+                      href={link.href}
+                      className="text-sm text-gray-600 hover:text-blue-400 transition-colors"
+                    >
+                      {link.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold md:mb-4 text-white">Legal</h4>
+              <ul className="space-y-2">
+                {footerLinks.legal.map((link) => (
+                  <li key={link.name}>
+                    <a
+                      href={link.href}
+                      className="text-sm text-gray-600 hover:text-blue-400 transition-colors"
+                    >
+                      {link.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Section */}
+        <div className="py-6 border-t border-gray-200 bg-white flex flex-col md:flex-row items-center justify-between">
+          <div className="text-sm text-gray-500 mb-4 md:mb-0">
+            ©2025 Unsquare Labs. All rights reserved.
+          </div>
+          {/* Social Links */}
+          <div className="flex items-center space-x-4">
+            {socialLinks.map((social) => (
+              <a
+                key={social.label}
+                href={social.href}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 hover:bg-blue-500 text-gray-400 hover:text-white transition-all duration-300 hover:scale-110"
+                aria-label={social.label}
+              >
+                <social.icon className="w-4 h-4" />
+              </a>
+            ))}
           </div>
         </div>
       </div>

@@ -350,107 +350,106 @@ const CourseDetail = () => {
       {/* Hero Section - Hidden if enrolled */}
       {!isEnrolled ? (
         <div className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 text-white">
-          <div className="mx-auto px-4 sm:px-6 lg:px-0 lg:pl-40 lg:pr-10 py-10">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-              <div className="lg:col-span-2">
-                <div className="mb-10">
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      course.level === "beginner"
-                        ? "bg-green-100 text-green-800"
-                        : course.level === "intermediate"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {course.level?.charAt(0).toUpperCase() +
-                      course.level?.slice(1)}{" "}
-                    Level
-                  </span>
-                </div>
+  <div className="mx-auto px-4 sm:px-6 lg:px-0 lg:pl-40 lg:pr-10 py-8">
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+      
+      {/* Left Content - Compact */}
+      <div className="lg:col-span-2 space-y-4">
+        
+        {/* Badge */}
+        <div className="mb-4">
+          <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+            course.level === "beginner" ? "bg-green-100 text-green-800" :
+            course.level === "intermediate" ? "bg-yellow-100 text-yellow-800" :
+            "bg-red-100 text-red-800"
+          }`}>
+            {course.level?.charAt(0).toUpperCase() + course.level?.slice(1)} Level
+          </span>
+        </div>
 
-                <h1 className="text-3xl lg:text-4xl font-bold mb-4 leading-tight">
-                  {course.title}
-                </h1>
+        {/* Title - Compact */}
+        <h1 className="text-3xl lg:text-4xl font-bold mb-3 leading-tight">
+          {course.title}
+        </h1>
 
-                <p className="text-md line-clamp-2 text-gray-300 mb-6 leading-relaxed">
-                  {course.description
-                    ?.replace(/<[^>]*>/g, "")
-                    .substring(0, 200)}
-                  ...
-                </p>
+        {/* Description - Shorter */}
+        <p className="text-md text-gray-300 mb-4 leading-relaxed line-clamp-3">
+          {course.description?.replace(/<[^>]*>/g, "").substring(0, 150)}...
+        </p>
 
-                <div className="flex flex-wrap items-center gap-6 mb-6 text-sm">
-                  <div className="flex items-center text-yellow-400">
-                    <Star size={16} className="mr-1 fill-current" />
-                    <span className="font-semibold mr-1">{course.rating.toFixed(1)}</span>
-                    <span className="text-gray-300">({course.totalReviews.toLocaleString()} ratings)</span>
-                  </div>
-                  <div className="flex items-center text-gray-300">
-                    <Users size={16} className="mr-2" />
-                    <span>{course.enrolledStudents?.length || 0} students</span>
-                  </div>
-                  <div className="flex items-center text-gray-300">
-                    <Globe size={16} className="mr-2" />
-                    <span>English</span>
-                  </div>
-                </div>
+        {/* Stats Row - Inline */}
+        <div className="flex flex-wrap items-center gap-6 mb-4 text-sm">
+          <div className="flex items-center text-yellow-400">
+            <Star size={16} className="mr-1 fill-current" />
+            <span className="font-semibold mr-1">{course.rating.toFixed(1)}</span>
+            <span className="text-gray-300">({course.totalReviews.toLocaleString()})</span>
+          </div>
+          <div className="flex items-center text-gray-300">
+            <Users size={16} className="mr-2" />
+            <span>{course.enrolledStudents?.length || 0} students</span>
+          </div>
+          <div className="flex items-center text-gray-300">
+            <Globe size={16} className="mr-2" />
+            <span>English</span>
+          </div>
+        </div>
 
-                <div className="flex items-center mb-6">
-                  <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mr-4 text-white font-semibold text-lg">
-                    {instructor?.name?.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="text-blue-400 text-sm">Created by</p>
-                    <h3 className="font-semibold text-lg">
-                      {instructor?.name}
-                    </h3>
-                  </div>
-                </div>
+        {/* Instructor - Inline */}
+        <div className="flex items-center mb-4">
+          <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mr-4 text-white font-semibold text-lg">
+            {instructor?.name?.charAt(0)}
+          </div>
+          <div>
+            <p className="text-blue-400 text-sm">Created by</p>
+            <h3 className="font-semibold text-lg">{instructor?.name}</h3>
+          </div>
+        </div>
 
-                <div className="flex flex-wrap items-center gap-6 text-sm text-gray-300">
-                  <div className="flex items-center">
-                    <Clock size={16} className="mr-2" />
-                    <span>{course.duration || 0} total hours</span>
-                  </div>
-                  <div className="flex items-center">
-                    <BookOpen size={16} className="mr-2" />
-                    <span>{course.videos?.length || 0} lessons</span>
-                  </div>
-                  <div className="flex items-center">
-                    <PlayCircle size={16} className="mr-2" />
-                    <span>On-demand video</span>
-                  </div>
-                </div>
-              </div>
+        {/* Course Details - Horizontal */}
+        <div className="flex flex-wrap items-center gap-6 text-sm text-gray-300">
+          <div className="flex items-center">
+            <Clock size={16} className="mr-2" />
+            <span>{course.duration || 0} total hours</span>
+          </div>
+          <div className="flex items-center">
+            <BookOpen size={16} className="mr-2" />
+            <span>{course.videos?.length || 0} lessons</span>
+          </div>
+          <div className="flex items-center">
+            <PlayCircle size={16} className="mr-2" />
+            <span>On-demand video</span>
+          </div>
+        </div>
+      </div>
 
-              {/* Course Preview Section - Right Side */}
-              <div className="lg:col-span-2 ">
-                <div className="bg-gray-800 rounded-lg sm:rounded overflow-hidden shadow-xl">
-                  {/* Video Preview */}
-                  <div className="relative aspect-video bg-gray-700">
-                    <Preview />
-                    <div className="absolute bottom-4 right-4">
-                      <span className="bg-black/70 text-white text-xs font-medium px-2 py-1 rounded">
-                        {course.duration || 0} hours
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Mobile Enrollment Card - Hidden on desktop */}
-                <div className="lg:hidden mt-6">
-                  <EnrollmentCard
-                    course={course}
-                    isEnrolled={isEnrolled}
-                    onEnroll={handleEnroll}
-                    enrollmentLoading={enrollmentLoading || paymentLoading}
-                  />
-                </div>
-              </div>
+      {/* Right Side - Same Height */}
+      <div className="lg:col-span-2">
+        <div className="bg-gray-800 rounded-lg overflow-hidden shadow-xl h-full">
+          {/* Video Preview - Maintains aspect ratio */}
+          <div className="relative aspect-video bg-gray-700">
+            <Preview />
+            <div className="absolute bottom-4 right-4">
+              <span className="bg-black/70 text-white text-xs font-medium px-2 py-1 rounded">
+                {course.duration || 0} hours
+              </span>
             </div>
           </div>
         </div>
+
+        {/* Mobile Enrollment Card */}
+        <div className="lg:hidden mt-6">
+          <EnrollmentCard
+            course={course}
+            isEnrolled={isEnrolled}
+            onEnroll={handleEnroll}
+            enrollmentLoading={enrollmentLoading || paymentLoading}
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
       ) : (
         // New header for enrolled students
         <div className="bg-white border-b border-gray-200 shadow-sm">
