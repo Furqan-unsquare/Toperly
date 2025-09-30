@@ -136,7 +136,7 @@ const EnrollmentCard = ({ course, isEnrolled, onEnroll, enrollmentLoading }) => 
       return;
     }
 
-    console.log("User email for enrollment:", user.email); // Debug user email
+    console.log("User email for enrollment:", user.email);
 
     if (course.price === 0) {
       try {
@@ -159,20 +159,9 @@ const EnrollmentCard = ({ course, isEnrolled, onEnroll, enrollmentLoading }) => 
         showAlertMessage("Failed to enroll in the course", "error");
       }
     } else {
-      onEnroll(user.email); // Pass user.email to onEnroll
+      onEnroll(user.email);
     }
   };
-
-  const features = [
-    {
-      icon: <PlayCircle size={16} />,
-      text: `${course.videos?.length || 0} on-demand videos`,
-    },
-    { icon: <Download size={16} />, text: "Downloadable resources" },
-    { icon: <Tv size={16} />, text: "Access on mobile and TV" },
-    { icon: <Infinity size={16} />, text: "Full lifetime access" },
-    { icon: <Award size={16} />, text: "Certificate of completion" },
-  ];
 
   const AlertNotification = () =>
     showAlert.show && (
@@ -197,6 +186,26 @@ const EnrollmentCard = ({ course, isEnrolled, onEnroll, enrollmentLoading }) => 
 
   return (
     <>
+      <style jsx>{`
+        @keyframes shine {
+          0% { left: -75%; }
+          100% { left: 125%; }
+        }
+        .shine-button::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -75%;
+          height: 120%;
+          width: 10%;
+          background: rgba(255, 255, 255, 0.2);
+          transform: rotate(12deg);
+          filter: blur(8px);
+          z-index: 10;
+          animation: shine 2s linear infinite;
+        }
+      `}</style>
+
       <AlertNotification />
       <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
         <div className="relative h-48 overflow-hidden bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center">
@@ -229,50 +238,59 @@ const EnrollmentCard = ({ course, isEnrolled, onEnroll, enrollmentLoading }) => 
             <button
               onClick={handleEnroll}
               disabled={enrollmentLoading}
-              className={`w-full py-4 rounded-lg mb-4 font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-2 ${
+              className={`shine-button relative cursor-pointer w-full py-4 px-8 text-center font-semibold inline-flex justify-center text-lg uppercase text-white rounded-lg border-solid transition-transform duration-300 ease-in-out group outline-offset-4 focus:outline focus:outline-2 focus:outline-white focus:outline-offset-4 overflow-hidden mb-4 ${
                 course.price === 0
-                  ? "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
-                  : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-[#1ac6a7] hover:to-[#66E4CC] hover:text-black text-white"
+                  ? "bg-gradient-to-r from-green-600 to-emerald-600"
+                  : "bg-gradient-to-r from-purple-600 to-blue-600"
               } ${
                 enrollmentLoading
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:shadow-lg transform hover:-translate-y-0.5"
-              }`}>
-              {enrollmentLoading ? (
-                <>
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  {course.price === 0 ? "Enrolling..." : "Processing..."}
-                </>
-              ) : (
-                <>
-                  {course.price === 0 ? (
-                    <>
-                      <BookOpen size={20} />
-                      Enroll for Free
-                    </>
-                  ) : (
-                    <>
-                      <CreditCard size={20} />
-                      Buy Now
-                    </>
-                  )}
-                </>
-              )}
+              }`}
+            >
+              <span className="relative z-20 flex items-center gap-2">
+                {enrollmentLoading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    {course.price === 0 ? "Enrolling..." : "Processing..."}
+                  </>
+                ) : (
+                  <>
+                    {course.price === 0 ? (
+                      <>
+                        <BookOpen size={20} />
+                        Enroll for Free
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard size={20} />
+                        Buy Now
+                      </>
+                    )}
+                  </>
+                )}
+              </span>
+
+              {/* Corner borders */}
+              {/* <span className="w-1/2 drop-shadow-3xl transition-all duration-300 block border-[#D4EDF9] absolute h-[20%] rounded-tl-lg border-l-2 border-t-2 top-0 left-0"></span>
+              <span className="w-1/2 drop-shadow-3xl transition-all duration-300 block border-[#D4EDF9] absolute h-[60%] rounded-tr-lg border-r-2 border-t-2 top-0 right-0"></span>
+              <span className="w-1/2 drop-shadow-3xl transition-all duration-300 block border-[#D4EDF9] absolute h-[60%] rounded-bl-lg border-l-2 border-b-2 left-0 bottom-0"></span>
+              <span className="w-1/2 drop-shadow-3xl transition-all duration-300 block border-[#D4EDF9] absolute h-[20%] rounded-br-lg border-r-2 border-b-2 right-0 bottom-0"></span> */}
             </button>
           ) : (
             <div className="text-center py-4 bg-green-50 text-green-800 rounded-lg mb-4 font-semibold border-2 border-green-200">

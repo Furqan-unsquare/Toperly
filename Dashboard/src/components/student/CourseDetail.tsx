@@ -32,6 +32,7 @@ import PaymentModal from "../Payment/PaymentModal";
 import { usePayment } from "../../hooks/usePayment";
 import LearningObjectives from "../../components/student/LearningObjectives";
 import CourseRequirements from "../../components/student/CourseRequirements";
+import BotPopup from "../BotPopup";
 
 const API_BASE = `${import.meta.env.VITE_API_URL}/api`;
 
@@ -63,7 +64,8 @@ const CourseDetail = () => {
 
   const [certificateUrl, setCertificateUrl] = useState(null);
   const [certificateLoading, setCertificateLoading] = useState(false);
-
+  const [showPurchasePopup, setShowPurchasePopup] = useState(false);
+  const [showCertificatePopup, setShowCertificatePopup] = useState(false);
   // Dummy courses data for "Students also bought" section
   const dummyCourses = [
     {
@@ -149,17 +151,18 @@ const CourseDetail = () => {
   }, [user, course]);
 
   useEffect(() => {
-    if (paymentSuccess || paymentError) {
-      setShowPaymentModal(true);
-      setShowPaymentForm(false);
-
-      if (paymentSuccess) {
-        setTimeout(() => {
-          checkEnrollment();
-        }, 1000);
-      }
+  if (paymentSuccess) {
+    setShowPaymentModal(true);
+    setShowPaymentForm(false);
+    // Show Topsy popup for successful purchase
+    setShowPurchasePopup(true);
+    if (paymentSuccess) {
+      setTimeout(() => {
+        checkEnrollment();
+      }, 1000);
     }
-  }, [paymentSuccess, paymentError]);
+  }
+}, [paymentSuccess, paymentError]);
 
   const showToast = (text, type = "info") => {
     setToastMessage({ text, type });
@@ -186,41 +189,41 @@ const CourseDetail = () => {
   };
 
   const handleCertificate = async () => {
-    console.log(user);
-    if (!user?.id || !isEnrolled)
-      return showToast("You must be enrolled", "error");
+    
+  if (!user?.id || !isEnrolled) {
+    return showToast("You must be enrolled", "error");
+  }
 
-    try {
-      setCertificateLoading(true);
-      const res = await fetch(
-        `${API_BASE}/certificates/issue/${courseId}/${user.id}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data?.message || "Certificate download failed");
+  try {
+    setCertificateLoading(true);
+    const res = await fetch(
+      `${API_BASE}/certificates/issue/${courseId}/${user.id}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
       }
+    );
 
-      setCertificateUrl(data.data?.certificateUrl);
-      showToast("Certificate ready for download!", "success");
+    const data = await res.json();
 
-      window.open(data.data?.certificateUrl, "_blank");
-    } catch (err) {
-      console.error("Certificate error:", err);
-      showToast(err?.message || "Certificate generation failed", "error");
-    } finally {
-      setCertificateLoading(false);
+    if (!res.ok) {
+      throw new Error(data?.message || "Certificate download failed");
     }
-  };
 
+    setCertificateUrl(data.data?.certificateUrl);
+    showToast("Certificate ready for download!", "success");
+    setShowCertificatePopup(true); // Show Topsy popup
+    // window.open(data.data?.certificateUrl, "_blank");
+  } catch (err) {
+    console.error("Certificate error:", err);
+    showToast(err?.message || "Certificate generation failed", "error");
+  } finally {
+    setCertificateLoading(false);
+  }
+};
   const checkEnrollment = async () => {
     if (!user) return;
 
@@ -340,7 +343,6 @@ const CourseDetail = () => {
     { icon: <Infinity size={20} />, text: "Full lifetime access" },
     { icon: <Award size={20} />, text: "Certificate of completion" },
   ];
-
   return (
     <div className="min-h-screen bg-gray-50 ">
       <Toast message={toastMessage} />
@@ -481,14 +483,13 @@ const CourseDetail = () => {
 
               {/* Optional: Progress indicator or course status */}
               <div className="flex items-center space-x-6">
-                <div>
+               
                   <button
                     onClick={handleCertificate}
                     className="text-green-600 font-medium"
                   >
                     Certificate
                   </button>
-                </div>
                 <div className="flex items-center text-green-600">
                   <CheckCircle size={16} className="mr-1" />
                   <span className="text-sm font-medium">Enrolled</span>
@@ -754,6 +755,26 @@ const CourseDetail = () => {
               }
         }
       />
+      <BotPopup
+  isOpen={showPurchasePopup}
+  onClose={() => setShowPurchasePopup(false)}
+  studentName={user?.name || 'Student'}
+  title="Congratulations on Your New Course!"
+  description={`You've successfully enrolled in ${course?.title}! Dive in and start learning with Toperly!`}
+  buttonText="Start Learning"
+  buttonLink={`/student/courses/${courseId}`}
+  botImage="/Bot-image-purchase.png"
+/>
+<BotPopup
+  isOpen={showCertificatePopup}
+  onClose={() => setShowCertificatePopup(false)}
+  studentName={user?.name || 'Student'}
+  title="You've Earned Your Certificate!"
+  description="Congratulations on completing the course! Download your certificate and share your achievement!"
+  buttonText="View Certificate"
+  buttonLink={certificateUrl || '#'}
+  botImage="/Bot-image-purchase.png"
+/>
     </div>
   );
 };

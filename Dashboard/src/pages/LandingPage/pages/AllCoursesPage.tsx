@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BookOpen, Users, Star, ChevronRight as ChevronRightIcon, X, Filter, Clock, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import BotPopup from '@/components/BotPopup';
 
 interface Course {
   _id: string;
@@ -217,9 +218,32 @@ const ProfessionalCourseSection = () => {
   // Get unique categories and levels
   const categories = [...new Set(courses.map(course => course.category))].sort();
   const levels = ['Beginner', 'Intermediate', 'Advanced'];
+  // const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  // const handleButtonClick = () => {
+  //   console.log('Button clicked!');
+  //   setIsPopupOpen(false);
+  //   // Navigate to course or perform action
+  // };
 
   return (
     <div className="relative flex min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 ">
+      {/* <button 
+        onClick={() => setIsPopupOpen(true)}
+        className="bg-blue-500 text-white px-4 py-2 rounded"
+      >
+        Show Bot Popup
+      </button>
+      <BotPopup
+        isOpen={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+        studentName="John Doe"
+        title="Welcome to Your Learning Journey!"
+        description="Get ready to explore amazing courses tailored just for you. Let's make learning fun and engaging!"
+        buttonText="Start Learning"
+        buttonLink="https://your-course-link.com"
+        onButtonClick={handleButtonClick}
+      /> */}
       {/* Sidebar for Desktop */}
       <aside className="hidden md:block w-72 shadow-xl p-6 sticky mt-4 ml-8 border border-gray-200 rounded-lg">
         <div className="mb-4">
