@@ -476,7 +476,9 @@ app.use("/api/blogs", blogRoutes);
 app.use("/api/query", queryRoutes);
 app.use('/api/learning-points', learningPointsRoutes);
 app.use('/api/requirements', requirementsRoutes);
-
+app.get('/health', (req, res) => {
+  res.status(200).send('Server is healthy');
+});
 // Error Handler
 app.use(globalErrorHandler);
 
