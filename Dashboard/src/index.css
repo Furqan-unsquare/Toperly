@@ -6,6 +6,11 @@
 All colors MUST be HSL.
 */
 
+* {
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: -0.4px;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

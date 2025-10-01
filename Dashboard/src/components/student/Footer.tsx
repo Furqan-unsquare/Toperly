@@ -74,16 +74,16 @@ const Footer = () => {
       <div className="px-4  md:px-8  md:pt-10 mx-auto ">
         <div className="bg-white max-w-5xl mx-auto rounded-t-sm ">
         {/* Centered Logo Section */}
-        <div className="-mt-10 mr-5">
+        {/* <div className="-mt-10 mr-5">
           <div className="text-center">
             <div className="flex justify-center ">
               <img src="/ai.png" alt="Company Logo" className="w-[48rem] md:w-[30rem] md:-ml-10 h-auto rounded-xl" />
             </div>
           </div>
-        </div>
+        </div> */}
          
         {/* Newsletter Section */}
-        <div className="pb-12 border-b border-gray-200 bg-white">
+        {/* <div className="pb-12 border-b border-gray-200 bg-white">
           <div className="text-center max-w-4xl mx-auto">
             <h3 className="text-3xl md:text-5xl md:mx-40 font-bold mb-4 text-gray-700">
               Be the {" "}
@@ -106,7 +106,7 @@ const Footer = () => {
                 </button>
             </div>
           </div>
-        </div>
+        </div> */}
         </div>
 
         {/* Responsive grid/footer main */}

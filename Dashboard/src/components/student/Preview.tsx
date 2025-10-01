@@ -94,13 +94,13 @@ export const Preview = () => {
 
   return (
     <Card className="mx-auto border-0 shadow-sm">
-      <div className="relative w-full h-[200px] sm:h-full sm:max-h-[360px] overflow-hidden rounded-lg">
+      <div className="relative w-full h-[200px] sm:h-full sm:max-h-[380px] overflow-hidden rounded-lg">
         <video
           ref={videoRef}
           src={firstVideo.url}
           poster={courseData.thumbnail.url}
           className="w-full h-full object-cover max-h-88"
-          muted
+          
           onEnded={handleVideoEnd}
           onClick={togglePlay}
         />
@@ -108,7 +108,7 @@ export const Preview = () => {
         {/* Play button overlay - only shown when video is paused/not playing */}
         {!isPlaying && (
           <div 
-            className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer transition-opacity hover:bg-black/40"
+            className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer transition-opacity"
             onClick={togglePlay}
           >
             <div className="w-16 h-16 rounded-full border flex items-center justify-center shadow-lg hover:scale-105 transition-transform">

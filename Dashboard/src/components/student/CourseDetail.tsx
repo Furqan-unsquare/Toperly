@@ -16,6 +16,7 @@ import {
   CheckCircle,
   Heart,
   Play,
+  StarHalf,
 } from "lucide-react";
 
 import VideoPlayer from "./VideoPlayer";
@@ -347,119 +348,201 @@ const CourseDetail = () => {
 
       {/* Hero Section - Hidden if enrolled */}
       {!isEnrolled ? (
-        <div className="bg-gray-900 sm:bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 text-white">
-          <div className="mx-auto px-4 sm:px-6 lg:px-0 lg:pl-40 lg:pr-10 py-8">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-              {/* Left Content - Compact */}
-              <div className="lg:col-span-2 space-y-4">
-                {/* Badge */}
-                <div className="mb-4">
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      course.level === "beginner"
-                        ? "bg-green-100 text-green-800"
-                        : course.level === "intermediate"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {course.level?.charAt(0).toUpperCase() +
-                      course.level?.slice(1)}{" "}
-                    Level
-                  </span>
-                </div>
+        <div
+  className="text-white"
+  style={{
+    backgroundImage: `url('https://d2o2utebsixu4k.cloudfront.net/Data%20science-9ebefe6e77794815b69708b0ac1e9d13-af28611554944c678c0989ef967e8103.webp')`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  }}
+>
+  <div className="mx-auto px-4 sm:px-6 lg:px-0 lg:pl-40 lg:pr-10 py-8">
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+      {/* Left Content - Compact */}
+      <div className="lg:col-span-2 space-y-4">
+        {/* Badge */}
+        <div className="mb-4">
+          <span className="bg-[#ffffff29] text-white px-4 py-2 rounded-full text-sm font-medium">
+            {course.level + " course"}
+          </span>
+        </div>
 
-                {/* Title - Compact */}
-                <h1 className="text-3xl lg:text-4xl font-bold mb-3 leading-tight">
-                  {course.title}
-                </h1>
+        {/* Title - Adjusted font weight and size */}
+        <h1 className="text-3xl lg:text-4xl font-bold mb-4 leading-tight text-white">
+          {course.title}
+        </h1>
 
-                {/* Description - Shorter */}
-                <p className="text-md text-gray-300 mb-4 leading-relaxed line-clamp-3">
-                  {course.description
-                    ?.replace(/<[^>]*>/g, "")
-                    .substring(0, 250)}
-                  ...
-                </p>
+        {/* Description - Check icons and smaller fonts */}
+        <div className="space-y-3 mb-6">
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0 mt-1">
+              <svg 
+                width="16" 
+                height="16" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+                className="text-white"
+              >
+                <path 
+                  d="M20 6L9 17L4 12" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <p className="text-base text-gray-200 font-normal leading-relaxed">
+              Enroll into India's pioneering Online Machine Learning Program; learn from the latest 2025 curriculum.
+            </p>
+          </div>
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0 mt-1">
+              <svg 
+                width="16" 
+                height="16" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+                className="text-white"
+              >
+                <path 
+                  d="M20 6L9 17L4 12" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <p className="text-base text-gray-200 font-normal leading-relaxed">
+              Join an alumni network of ML Experts at Amazon, HSBC, ICICI, Kotak, Microsoft, Jio Digital, Lenskart, Swiggy, and more.
+            </p>
+          </div>
+        </div>
 
-                {/* Stats Row - Inline */}
-                <div className="flex flex-wrap items-center gap-6 mb-4 text-sm">
-                  <div className="flex items-center text-yellow-400">
-                    <Star size={16} className="mr-1 fill-current" />
-                    <span className="font-semibold mr-1">
-                      {course.rating.toFixed(1)}
-                    </span>
-                    <span className="text-gray-300">
-                      ({course.totalReviews.toLocaleString()})
-                    </span>
-                  </div>
-                  <div className="flex items-center text-gray-300">
-                    <Users size={16} className="mr-2" />
-                    <span>{course.enrolledStudents?.length || 0} students</span>
-                  </div>
-                  <div className="flex items-center text-gray-300">
-                    <Globe size={16} className="mr-2" />
-                    <span>English</span>
-                  </div>
-                </div>
+        {/* Stats Row - Dummy data fallbacks */}
+        <div className="flex items-center gap-4 text-sm mb-6">
+          {/* Alumni Image */}
+          <img
+            src="https://www.upgrad.com/_ww3-next/image/?url=https%3A%2F%2Fd2o2utebsixu4k.cloudfront.net%2Falumni%203-62e5a1d6511a4250b159727a80ee36a9.png&w=3840&q=75"
+            alt="alumni"
+            className="h-6"
+          />
 
-                {/* Instructor - Inline */}
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mr-4 text-white font-semibold text-lg">
-                    {instructor?.name?.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="text-blue-400 text-sm">Created by</p>
-                    <h3 className="font-semibold text-lg">
-                      {instructor?.name}
-                    </h3>
-                  </div>
-                </div>
+          {/* Alumni Count with dummy fallback */}
+          <span className="text-gray-200 font-medium text-sm">
+            Join{" "}
+            {course.enrolledStudents?.length > 0
+              ? course.enrolledStudents.length > 10000
+                ? "10k+"
+                : course.enrolledStudents.length
+              : "10k+"}{" "}
+            alumni
+          </span>
 
-                {/* Course Details - Horizontal */}
-                <div className="flex flex-wrap items-center gap-6 text-sm text-gray-300">
-                  <div className="flex items-center">
-                    <Clock size={16} className="mr-2" />
-                    <span>{course.duration || 0} total hours</span>
-                  </div>
-                  <div className="flex items-center">
-                    <BookOpen size={16} className="mr-2" />
-                    <span>{course.videos?.length || 0} lessons</span>
-                  </div>
-                  <div className="flex items-center">
-                    <PlayCircle size={16} className="mr-2" />
-                    <span>On-demand video</span>
-                  </div>
-                </div>
-              </div>
+          {/* Separator */}
+          <span className="text-gray-400">|</span>
 
-              {/* Right Side - Same Height */}
-              <div className="lg:col-span-2">
-                <div className="bg-gray-800 rounded-lg overflow-hidden shadow-xl h-full">
-                  {/* Video Preview - Maintains aspect ratio */}
-                  <div className="relative aspect-video bg-gray-700">
-                    <Preview />
-                    <div className="absolute bottom-4 right-4">
-                      <span className="bg-black/70 text-white text-xs font-medium px-2 py-1 rounded">
-                        {course.duration || 0} hours
-                      </span>
-                    </div>
-                  </div>
-                </div>
+          {/* Ratings with dummy fallbacks */}
+          <div className="flex items-center">
+            {/* Stars with half-star logic */}
+            <div className="flex text-yellow-400">
+              {Array.from({ length: 5 }, (_, i) => {
+                const rating = course.rating > 0 ? course.rating : 4.5; // Dummy rating
+                if (rating >= i + 1) {
+                  return (
+                    <Star key={i} size={14} className="fill-current" />
+                  ); // full star
+                } else if (rating >= i + 0.5) {
+                  return (
+                    <StarHalf
+                      key={i}
+                      size={14}
+                      className="fill-current"
+                    />
+                  ); // half star
+                } else {
+                  return (
+                    <Star key={i} size={14} className="opacity-40" />
+                  ); // empty star
+                }
+              })}
+            </div>
+            <span className="ml-2 font-semibold text-sm">
+              {course.rating > 0 ? course.rating.toFixed(1) : "4.5"}/5
+            </span>
+            <span className="ml-1 text-gray-300 font-normal text-sm">
+              ({course.totalReviews > 0 ? course.totalReviews.toLocaleString() : "7,812"} ratings)
+            </span>
+          </div>
+        </div>
 
-                {/* Mobile Enrollment Card */}
-                <div className="lg:hidden mt-6">
-                  <EnrollmentCard
-                    course={course}
-                    isEnrolled={isEnrolled}
-                    onEnroll={handleEnroll}
-                    enrollmentLoading={enrollmentLoading || paymentLoading}
-                  />
-                </div>
-              </div>
+        {/* Instructor - Smaller and less bold */}
+        <div className="flex items-center mb-6">
+          <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mr-3 text-white font-semibold text-lg">
+            {instructor?.name?.charAt(0)}
+          </div>
+          <div>
+            <p className="text-blue-300 text-xs font-normal">
+              Created by
+            </p>
+            <h3 className="font-semibold text-base text-white">
+              {instructor?.name}
+            </h3>
+          </div>
+        </div>
+
+        {/* Course Details - Smaller fonts */}
+        <div className="flex flex-wrap items-center gap-6 text-sm text-gray-200">
+          <div className="flex items-center">
+            <Clock size={16} className="mr-2 text-blue-400" />
+            <span className="font-normal">
+              {course.duration || 0} total hours
+            </span>
+          </div>
+          <div className="flex items-center">
+            <BookOpen size={16} className="mr-2 text-blue-400" />
+            <span className="font-normal">
+              {course.videos?.length || 0} lessons
+            </span>
+          </div>
+          <div className="flex items-center">
+            <PlayCircle size={16} className="mr-2 text-blue-400" />
+            <span className="font-normal">On-demand video</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Side - Same Height */}
+      <div className="lg:col-span-2">
+        <div className="bg-gray-900/90 rounded-xl overflow-hidden shadow-2xl h-full backdrop-blur-sm border border-gray-700">
+          {/* Video Preview - Maintains aspect ratio */}
+          <div className="relative aspect-video bg-gray-800">
+            <Preview />
+            <div className="absolute bottom-4 right-4">
+              <span className="bg-black/80 text-white text-xs font-medium px-2 py-1 rounded">
+                {course.duration || 0} hours
+              </span>
             </div>
           </div>
         </div>
+
+        {/* Mobile Enrollment Card */}
+        <div className="lg:hidden mt-6">
+          <EnrollmentCard
+            course={course}
+            isEnrolled={isEnrolled}
+            onEnroll={handleEnroll}
+            enrollmentLoading={enrollmentLoading || paymentLoading}
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
       ) : (
         // New header for enrolled students
         <div className="bg-white border-b border-gray-200 shadow-sm">
@@ -525,7 +608,6 @@ const CourseDetail = () => {
                 />
               </div>
             )}
-            
 
             {/* Tab Navigation - No card background */}
             <div className="mb-8">
@@ -535,6 +617,7 @@ const CourseDetail = () => {
                     { id: "overview", label: "Overview" },
                     { id: "instructor", label: "Instructor" },
                     { id: "reviews", label: "Reviews" },
+                    { id: "curriculum", label: "Curriculum" }
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -603,6 +686,16 @@ const CourseDetail = () => {
                 {/* Instructor Tab */}
                 {activeTab === "instructor" && (
                   <InstructorProfile instructorId={course.instructor} />
+                )}
+
+                {activeTab === "curriculum" && (
+                  <CourseContentList
+                  course={course}
+                  currentVideo={currentVideo}
+                  setCurrentVideo={setCurrentVideo}
+                  isEnrolled={isEnrolled}
+                  showToast={showToast}
+                />
                 )}
 
                 {/* Reviews Tab */}
@@ -701,7 +794,6 @@ const CourseDetail = () => {
 
           {/* Right Sidebar - Fixed/Sticky Course Content or Enrollment Card */}
           <div className="lg:col-span-1 z-50">
-          
             <div className="lg:sticky lg:top-16 hidden lg:block ">
               {isEnrolled ? (
                 <CourseContentList
@@ -711,7 +803,6 @@ const CourseDetail = () => {
                   isEnrolled={isEnrolled}
                   showToast={showToast}
                 />
-                
               ) : (
                 <EnrollmentCard
                   course={course}
