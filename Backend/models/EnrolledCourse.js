@@ -1,10 +1,19 @@
+// ...existing code...
 import mongoose from 'mongoose';
 import Course from './Course.js'; // Adjust the path as needed
+
+const noteSubSchema = new mongoose.Schema({
+  _id: { type: mongoose.Schema.Types.ObjectId, default: () => new mongoose.Types.ObjectId() },
+  title: { type: String, default: '' },
+  desc: { type: String, default: '' },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date }
+}, { _id: false });
 
 const enrolledCourseSchema = new mongoose.Schema({
   student: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: true },
   course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
-  category: { type: String}, // New field to store course category
+  category: { type: String},
   progress: { type: Number, default: 0 },
   completedLessons: [String],
   certificateIssued: { type: Boolean, default: false },
@@ -15,10 +24,10 @@ const enrolledCourseSchema = new mongoose.Schema({
     signature: String,
     amount: Number,
     currency: String,
-    method: String, 
-    bank: String, 
-    wallet: String, 
-    vpa: String,  
+    method: String,
+    bank: String,
+    wallet: String,
+    vpa: String,
     card: mongoose.Schema.Types.Mixed,
     status: { type: String, enum: ['pending', 'completed', 'failed'], default: 'completed' }
   },
@@ -33,7 +42,9 @@ const enrolledCourseSchema = new mongoose.Schema({
     quality: { type: String, default: 'auto' },
     playbackRate: { type: Number, default: 1 },
     lastWatched: { type: Date },
-  }]
+  }],
+  // replace single-note fields with an array
+  notes: { type: [noteSubSchema], default: [] }
 }, {
   timestamps: true
 });
@@ -60,3 +71,4 @@ enrolledCourseSchema.pre('save', async function (next) {
 const EnrolledCourse = mongoose.models.EnrolledCourse || mongoose.model('EnrolledCourse', enrolledCourseSchema);
 
 export default EnrolledCourse;
+// ...existing code...

@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Notes from "./Notes";
 
 const CourseContentList = ({
   course,
@@ -19,6 +20,7 @@ const CourseContentList = ({
 }) => {
   const [quizzes, setQuizzes] = useState([]);
   const [expandedSections, setExpandedSections] = useState({ 0: true });
+  const [notesOpen, setNotesOpen] = useState(false);
   const navigate = useNavigate();
 
   const API_BASE = import.meta.env.VITE_API_URL;
@@ -58,7 +60,6 @@ const CourseContentList = ({
     }));
   };
 
-  // Group videos by section title and calculate section stats
   const groupVideosBySection = (videos) => {
     if (!videos || videos.length === 0) return [];
 
@@ -71,15 +72,14 @@ const CourseContentList = ({
       return acc;
     }, {});
 
-    // Convert to array format with section stats
     return Object.entries(grouped).map(([title, lectures]) => {
-      // Sort lectures by order
-      const sortedLectures = lectures.sort((a, b) => (a.order || 0) - (b.order || 0));
-
-      // Calculate total duration for section
-      const totalDuration = sortedLectures.reduce((sum, video) => {
-        return sum + (video.duration || 0);
-      }, 0);
+      const sortedLectures = (lectures || []).sort(
+        (a, b) => (a.order || 0) - (b.order || 0)
+      );
+      const totalDuration = sortedLectures.reduce(
+        (sum, video) => sum + (video.duration || 0),
+        0
+      );
 
       return {
         title,
@@ -93,19 +93,21 @@ const CourseContentList = ({
   const hasRealContent = course?.videos && course.videos.length > 0;
   const sections = hasRealContent ? groupVideosBySection(course.videos) : [];
 
-  // Initialize expanded state for all sections
   useEffect(() => {
     if (hasRealContent) {
       const initialExpanded = {};
       sections.forEach((_, index) => {
-        initialExpanded[index] = index === 0; // Only first section expanded by default
+        initialExpanded[index] = index === 0;
       });
       setExpandedSections(initialExpanded);
     }
   }, [sections.length, hasRealContent]);
 
   const getTotalStats = () => {
-    const totalLectures = sections.reduce((sum, section) => sum + section.lectureCount, 0);
+    const totalLectures = sections.reduce(
+      (sum, section) => sum + section.lectureCount,
+      0
+    );
     const totalDuration = hasRealContent ? course.duration || 0 : 0;
     return { totalLectures, totalDuration };
   };
@@ -115,7 +117,9 @@ const CourseContentList = ({
   if (!hasRealContent) {
     return (
       <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
-        <p className="text-gray-500 text-sm">No content available for this course.</p>
+        <p className="text-gray-500 text-sm">
+          No content available for this course.
+        </p>
       </div>
     );
   }
@@ -123,13 +127,43 @@ const CourseContentList = ({
   return (
     <div className="bg-white border border-gray-200 rounded-lg">
       {/* Header */}
-      <div className="p-6 border-b border-gray-200">
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">
-          Course Content
-        </h3>
-        <div className="text-sm text-gray-600">
-          {sections.length} sections • {totalLectures} lectures •{" "}
-          {totalDuration}h total
+      <div className="p-6 border-b border-gray-200 flex items-start justify-between">
+        <div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            Course Content
+          </h3>
+          <div className="text-sm text-gray-600">
+            {sections.length} sections • {totalLectures} lectures • {totalDuration}
+            h total
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {isEnrolled && (
+            <button
+              onClick={() => {
+                setNotesOpen(true);
+                console.log("Notes button clicked, notesOpen: true"); // Debug log
+              }}
+              title="Open Notes"
+              className="inline-flex items-center gap-2 px-3 py-1.5 border rounded bg-white hover:bg-gray-50"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4 text-gray-700"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7h8M8 11h8M8 15h5"
+                />
+              </svg>
+              <span className="text-sm">Notes</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -159,10 +193,11 @@ const CourseContentList = ({
             {expandedSections[sectionIndex] && (
               <div className="bg-white">
                 {section.lectures.map((video, lectureIndex) => {
-                  // Calculate global index for locking logic
-                  const globalIndex = sections
-                    .slice(0, sectionIndex)
-                    .reduce((sum, s) => sum + s.lectureCount, 0) + lectureIndex;
+                  const globalIndex =
+                    sections
+                      .slice(0, sectionIndex)
+                      .reduce((sum, s) => sum + s.lectureCount, 0) +
+                    lectureIndex;
 
                   const isLocked = !isEnrolled && globalIndex > 0;
                   const isActive = currentVideo?._id === video._id;
@@ -179,10 +214,7 @@ const CourseContentList = ({
                         if (isEnrolled || globalIndex === 0) {
                           setCurrentVideo(video);
                         } else {
-                          showToast(
-                            "Please enroll to access all videos",
-                            "info"
-                          );
+                          showToast("Please enroll to access all videos", "info");
                         }
                       }}
                     >
@@ -221,7 +253,6 @@ const CourseContentList = ({
                           </div>
                         </div>
 
-                        {/* Progress indicator */}
                         {isEnrolled && !isLocked && (
                           <div className="flex-shrink-0">
                             <CheckCircle className="w-4 h-4 text-green-600" />
@@ -229,7 +260,6 @@ const CourseContentList = ({
                         )}
                       </div>
 
-                      {/* Quiz button */}
                       {isEnrolled && videoToQuizMap[video._id] && (
                         <button
                           onClick={(e) => {
@@ -254,7 +284,6 @@ const CourseContentList = ({
         ))}
       </div>
 
-      {/* Footer */}
       {!isEnrolled && (
         <div className="p-4 bg-gray-50 border-t border-gray-200 text-center">
           <p className="text-sm text-gray-600 flex items-center justify-center gap-2">
@@ -263,6 +292,14 @@ const CourseContentList = ({
           </p>
         </div>
       )}
+      {/* Notes sidebar */}
+      <Notes
+        courseId={course._id}
+        token={localStorage.getItem('token')}
+        isOpen={notesOpen}
+        onClose={() => setNotesOpen(false)}
+        showToast={showToast}
+      />
     </div>
   );
 };

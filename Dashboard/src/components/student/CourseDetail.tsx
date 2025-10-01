@@ -525,6 +525,7 @@ const CourseDetail = () => {
                 />
               </div>
             )}
+            
 
             {/* Tab Navigation - No card background */}
             <div className="mb-8">
@@ -700,6 +701,7 @@ const CourseDetail = () => {
 
           {/* Right Sidebar - Fixed/Sticky Course Content or Enrollment Card */}
           <div className="lg:col-span-1 z-50">
+          
             <div className="lg:sticky lg:top-16 hidden lg:block ">
               {isEnrolled ? (
                 <CourseContentList
@@ -709,6 +711,7 @@ const CourseDetail = () => {
                   isEnrolled={isEnrolled}
                   showToast={showToast}
                 />
+                
               ) : (
                 <EnrollmentCard
                   course={course}

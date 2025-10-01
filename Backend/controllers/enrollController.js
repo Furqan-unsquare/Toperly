@@ -1,5 +1,6 @@
 import EnrolledCourse from '../models/EnrolledCourse.js';
 import Course from '../models/Course.js';
+import mongoose from 'mongoose';
 
 export const enrollStudent = async (req, res) => {
   const studentId = req.user.id;
@@ -195,5 +196,119 @@ export const getVideoProgress = async (req, res) => {
   } catch (err) {
     console.error('Get Progress Error:', err);
     res.status(500).json({ message: 'Failed to fetch video progress' });
+  }
+};
+
+// Get all notes for a student's enrollment
+export const getNotes = async (req, res) => {
+  try {
+    const studentId = req.user?.id;
+    const courseId = req.params.courseId;
+    const enrollment = await EnrolledCourse.findOne({ student: studentId, course: courseId }).lean();
+    if (!enrollment) {
+      return res.status(404).json({ success: false, message: 'Enrollment not found' });
+    }
+    return res.status(200).json({ success: true, data: enrollment.notes || [] });
+  } catch (err) {
+    console.error('Get Notes Error:', err);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+// Create a new note
+export const createNote = async (req, res) => {
+  try {
+    const studentId = req.user?.id;
+    const courseId = req.params.courseId;
+    const { title = '', desc = '' } = req.body;
+
+    if (!title.trim()) {
+      return res.status(400).json({ success: false, message: 'Title is required' });
+    }
+
+    const enrollment = await EnrolledCourse.findOne({ student: studentId, course: courseId });
+    if (!enrollment) {
+      return res.status(404).json({ success: false, message: 'Enrollment not found' });
+    }
+
+    const newNote = {
+      _id: new mongoose.Types.ObjectId(),
+      title,
+      desc,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    enrollment.notes.push(newNote);
+    await enrollment.save();
+
+    return res.status(201).json({ success: true, data: newNote });
+  } catch (err) {
+    console.error('Create Note Error:', err);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+// Update an existing note
+export const updateNote = async (req, res) => {
+  try {
+    const studentId = req.user?.id;
+    const courseId = req.params.courseId;
+    const noteId = req.params.noteId;
+    const { title, desc } = req.body;
+
+    if (typeof title !== 'undefined' && !title.trim()) {
+      return res.status(400).json({ success: false, message: 'Title is required' });
+    }
+
+    const enrollment = await EnrolledCourse.findOne({ student: studentId, course: courseId });
+    if (!enrollment) {
+      return res.status(404).json({ success: false, message: 'Enrollment not found' });
+    }
+
+    const note = enrollment.notes.id(noteId);
+    if (!note) {
+      return res.status(404).json({ success: false, message: 'Note not found' });
+    }
+
+    if (typeof title !== 'undefined') note.title = title;
+    if (typeof desc !== 'undefined') note.desc = desc;
+    note.updatedAt = new Date();
+
+    await enrollment.save();
+
+    return res.status(200).json({ success: true, data: note });
+  } catch (err) {
+    console.error('Update Note Error:', err);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+// Delete a note
+export const deleteNote = async (req, res) => {
+  try {
+    const studentId = req.user?.id;
+    const courseId = req.params.courseId;
+    const noteId = req.params.noteId;
+
+    const enrollment = await EnrolledCourse.findOne({ student: studentId, course: courseId });
+    if (!enrollment) {
+      return res.status(404).json({ success: false, message: 'Enrollment not found' });
+    }
+
+    // Use $pull to remove the note from the notes array
+    const updateResult = await EnrolledCourse.updateOne(
+      { _id: enrollment._id, 'notes._id': noteId },
+      { $pull: { notes: { _id: noteId } } }
+    );
+
+    if (updateResult.modifiedCount === 0) {
+      return res.status(404).json({ success: false, message: 'Note not found' });
+    }
+
+    return res.status(200).json({ success: true, message: 'Note deleted' });
+  } catch (err) {
+    console.error('Delete Note Error:', err);
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 };

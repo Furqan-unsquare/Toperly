@@ -5,6 +5,10 @@ import {
   saveVideoProgress,
   getVideoProgress,
   getAllEnrollments,
+  getNotes,
+  createNote,
+  updateNote,
+  deleteNote,
 } from "../controllers/enrollController.js";
 import { isStudent, verifyAuth0Token } from "../middlewares/auth.middleware.js";
 
@@ -24,6 +28,12 @@ router.get(
   isStudent,
   getVideoProgress
 );
+// Notes routes
+router.get('/:courseId/notes', verifyAuth0Token, isStudent, getNotes);
+router.post('/:courseId/notes', verifyAuth0Token, isStudent, createNote);
+router.put('/:courseId/notes/:noteId', verifyAuth0Token, isStudent, updateNote);
+router.delete('/:courseId/notes/:noteId', verifyAuth0Token, isStudent, deleteNote);
+
 router.get("/", verifyAuth0Token, getAllEnrollments);
 
 export default router;
