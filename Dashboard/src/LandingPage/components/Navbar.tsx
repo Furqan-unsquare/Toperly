@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 import debounce from 'lodash/debounce';
 import { useAuth } from '@/contexts/AuthContext';
-import Translate from "@/pages/GoogleTranslate"
+import Translate from "@/pages/GoogleTranslate";
 
 // Animated AI Wave Component
 const AnimatedAIWave = () => (
@@ -99,42 +99,42 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
-  
-const API_BASE = import.meta.env.VITE_API_URL;
 
-// Fetch courses and derive categories
-useEffect(() => {
-  const fetchCourses = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const res = await axios.get(`${API_BASE}/api/courses/`); // ✅ use API_BASE
-      const courseData = Array.isArray(res.data) ? res.data : [res.data];
+  const API_BASE = import.meta.env.VITE_API_URL;
 
-      if (
-        courseData.every(
-          (course) => course._id && course.title && course.price
-        )
-      ) {
-        setCourses(courseData);
+  // Fetch courses and derive categories
+  useEffect(() => {
+    const fetchCourses = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const res = await axios.get(`${API_BASE}/api/courses/`);
+        const courseData = Array.isArray(res.data) ? res.data : [res.data];
 
-        const uniqueCategories = [
-          ...new Set(courseData.map((course) => course.category)),
-        ].filter(Boolean);
+        if (
+          courseData.every(
+            (course) => course._id && course.title && course.price
+          )
+        ) {
+          setCourses(courseData);
 
-        setCategories(uniqueCategories);
-      } else {
-        setError("Invalid course data format");
+          const uniqueCategories = [
+            ...new Set(courseData.map((course) => course.category)),
+          ].filter(Boolean);
+
+          setCategories(uniqueCategories);
+        } else {
+          setError("Invalid course data format");
+        }
+      } catch (err) {
+        setError("Failed to fetch courses. Please try again later.");
+        console.error("Failed to fetch courses:", err);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (err) {
-      setError("Failed to fetch courses. Please try again later.");
-      console.error("Failed to fetch courses:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  fetchCourses();
-}, []);
+    };
+    fetchCourses();
+  }, []);
 
   // Handle scroll for navbar styling
   useEffect(() => {
@@ -218,15 +218,17 @@ useEffect(() => {
     { label: 'Blog', href: '/blogs', icon: 'pen' },
     { label: 'Contact', href: '/contact-us', icon: 'mail' },
   ];
+
   const topNavItems = [
-    { label: 'Become an Instructor', href: '/auth/login' },
-    { label: 'My learning', href: '/auth/login' },
+    { label: 'Become an Instructor', href: '/auth/login', icon: 'sparkles' },
+    { label: 'My learning', href: '/auth/login', icon: 'book' },
   ];
+
   const languages = ['Eng', 'Hin', 'Mar'];
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-[51] transition-all duration-500 ${
+      className={`fixed top-0 left-0 right-0 z-[53] transition-all duration-500 ${
         isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-white'
       }`}
     >
@@ -254,7 +256,6 @@ useEffect(() => {
 
       {/* Main navbar */}
       <div className="h-16 flex items-center justify-between max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-        
         {/* Logo & Categories */}
         <div className="flex items-center">
           <div className="flex items-center space-x-3">
@@ -405,14 +406,16 @@ useEffect(() => {
             ) : (
               <div className="flex items-center space-x-2">
                 <button className="toperly-navbar-btn bg-[#2721F7] rounded-lg">
-                  <span className="toperly-navbar-btn-content" onClick={() => navigate('/auth/login')}>Login</span>
+                  <span className="toperly-navbar-btn-content" onClick={() => navigate('/auth/login')}>
+                    Login
+                  </span>
                 </button>
               </div>
             )}
           </div>
 
           {/* Language Selector */}
-         <Translate />
+          <Translate />
 
           {/* Mobile menu button */}
           <button
@@ -500,12 +503,20 @@ useEffect(() => {
 
                   {/* Main nav links */}
                   <nav className="flex flex-col space-y-1 mb-3">
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.05 }}
+                      className="group block py-3 px-4 rounded-lg hover:bg-blue-50/50 transition-all duration-200"
+                    >
+                      
+                    </motion.div>
                     {mainNavItems.map((item, index) => (
                       <motion.a
-                        key={index}
+                        key={item.label}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 + 0.1 }}
+                        transition={{ delay: (index + 1) * 0.05 + 0.1 }}
                         href={item.href}
                         className="group block py-3 px-4 rounded-lg hover:bg-blue-50/50 transition-all duration-200"
                         onClick={(e) => {
@@ -530,6 +541,33 @@ useEffect(() => {
                         </div>
                       </motion.a>
                     ))}
+                    {topNavItems.map((item, index) => (
+                      <motion.a
+                        key={item.label}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: (mainNavItems.length + index + 1) * 0.05 + 0.1 }}
+                        href={item.href}
+                        className="group block py-3 px-4 rounded-lg hover:bg-blue-50/50 transition-all duration-200"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          navigate(item.href);
+                          toggleMobileMenu();
+                        }}
+                      >
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 flex items-center justify-center mr-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
+                            <span className="text-blue-600 group-hover:text-blue-800 transition-colors">
+                              {item.icon === 'sparkles' && <Sparkles size={18} />}
+                              {item.icon === 'book' && <BookOpen size={18} />}
+                            </span>
+                          </div>
+                          <span className="text-lg font-medium text-gray-700 group-hover:text-blue-600 transition-colors">
+                            {item.label}
+                          </span>
+                        </div>
+                      </motion.a>
+                    ))}
                   </nav>
 
                   {/* Categories */}
@@ -537,7 +575,7 @@ useEffect(() => {
                     <motion.button
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: mainNavItems.length * 0.05 + 0.1 }}
+                      transition={{ delay: (mainNavItems.length + topNavItems.length + 1) * 0.05 + 0.1 }}
                       className="flex items-center justify-between w-full font-medium text-gray-900 focus:outline-none rounded-xl bg-blue-50/50 px-4 py-3 hover:bg-blue-100 transition-colors duration-300 group"
                       onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
                       aria-expanded={isCategoriesOpen}
@@ -592,67 +630,13 @@ useEffect(() => {
                     </motion.div>
                   </div>
 
-                  {/* Language Selector in Mobile */}
-                  <div className="mt-4">
-                    <motion.button
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: (mainNavItems.length + 1) * 0.05 + 0.1 }}
-                      className="flex items-center justify-between w-full font-medium text-gray-900 focus:outline-none rounded-xl bg-blue-50/50 px-4 py-3 hover:bg-blue-100 transition-colors duration-300 group"
-                      onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
-                      aria-expanded={isCategoriesOpen}
-                    >
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 flex items-center justify-center mr-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
-                          <Globe className="text-blue-600" size={18} />
-                        </div>
-                        <span className="text-lg font-medium">Language: {language}</span>
-                      </div>
-                      <ChevronDown
-                        className={`h-5 w-5 text-gray-500 transition-transform duration-300 ${
-                          isCategoriesOpen ? 'rotate-180' : ''
-                        }`}
-                      />
-                    </motion.button>
-                    <motion.div
-                      initial={false}
-                      animate={{
-                        height: isCategoriesOpen ? 'auto' : 0,
-                        opacity: isCategoriesOpen ? 1 : 0,
-                      }}
-                      transition={{ duration: 0.3 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="pl-2">
-                        {languages.map((lang, index) => (
-                          <motion.div
-                            key={lang}
-                            initial={{ opacity: 0, x: 10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.05 + 0.15 }}
-                            className="flex items-center py-2 px-4 text-base text-gray-600 hover:text-blue-600 cursor-pointer transition-colors duration-200 group"
-                            onClick={() => {
-                              setLanguage(lang);
-                              toggleMobileMenu();
-                            }}
-                          >
-                            <span className="w-2 h-2 mr-3 bg-blue-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
-                            <span className="group-hover:translate-x-1 transition-transform duration-200">
-                              {lang}
-                            </span>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  </div>
-
                   {/* Profile Dropdown in Mobile */}
                   {user && (
                     <div className="mt-4">
                       <motion.button
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: (mainNavItems.length + 2) * 0.05 + 0.1 }}
+                        transition={{ delay: (mainNavItems.length + topNavItems.length + 3) * 0.05 + 0.1 }}
                         className="flex items-center justify-between w-full font-medium text-gray-900 focus:outline-none rounded-xl bg-blue-50/50 px-4 py-3 hover:bg-blue-100 transition-colors duration-300 group"
                         onClick={() => setIsProfileOpen(!isProfileOpen)}
                         aria-expanded={isProfileOpen}

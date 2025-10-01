@@ -8,7 +8,7 @@ export default function PublicLayout() {
   return (
     <div>
       <Navbar />
-      <main>
+      <main className="-mt-10 sm:mt-0">
         <Outlet />
       </main>
       <Topsy />

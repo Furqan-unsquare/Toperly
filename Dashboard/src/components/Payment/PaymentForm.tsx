@@ -1,191 +1,154 @@
-import React, { useState } from 'react';
-import { Course } from '../../types/payment';
+import React, { useState } from "react";
+import { Course } from "../../types/payment";
 
 interface PaymentFormProps {
   course: Course;
-  onSubmit: (userDetails: { name: string; email: string; contact: string }) => void;
+  onSubmit: (u: { name: string; email: string; contact: string }) => void;
   onCancel: () => void;
   loading: boolean;
 }
 
-const PaymentForm: React.FC<PaymentFormProps> = ({ 
-  course, 
-  onSubmit, 
-  onCancel, 
-  loading 
+const PaymentForm: React.FC<PaymentFormProps> = ({
+  course,
+  onSubmit,
+  onCancel,
+  loading,
 }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    contact: '',
-  });
-
+  const [formData, setFormData] = useState({ name: "", email: "", contact: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Invalid email format';
-    }
-
-    if (!formData.contact.trim()) {
-      newErrors.contact = 'Contact number is required';
-    } else if (!/^[6-9]\d{9}$/.test(formData.contact)) {
-      newErrors.contact = 'Invalid contact number';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    const e: Record<string, string> = {};
+    if (!formData.name.trim()) e.name = "Name is required";
+    if (!formData.email.trim()) e.email = "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
+      e.email = "Invalid email format";
+    if (!formData.contact.trim()) e.contact = "Contact number is required";
+    else if (!/^[6-9]\d{9}$/.test(formData.contact))
+      e.contact = "Invalid contact number";
+    setErrors(e);
+    return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validateForm()) {
-      onSubmit(formData);
-    }
+  const handleSubmit = (evt: React.FormEvent) => {
+    evt.preventDefault();
+    if (validateForm()) onSubmit(formData);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
+    setFormData((p) => ({ ...p, [name]: value }));
+    if (errors[name]) setErrors((p) => ({ ...p, [name]: "" }));
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">
-          Complete Your Purchase
-        </h2>
-        
-        <div className="bg-gray-50 rounded-lg p-4 mb-6">
-          <h3 className="font-semibold text-gray-800">{course.name}</h3>
-          <p className="text-2xl font-bold text-blue-600 mt-2">
-            ₹{course.price.toLocaleString()}
-          </p>
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full overflow-hidden">
+        {/* ----- two-column grid ----- */}
+        <div className="grid grid-cols-1 md:grid-cols-2 h-full">
+          {/* left – illustration */}
+          <div className="hidden md:flex items-center justify-center bg-gray-50">
+            {/* replace src with the illustration you need */}
+            <img
+              src="/payment-form.png"
+              alt="course success illustration"
+              className="max-h-96 object-contain"
+            />
+          </div>
+
+          {/* right – form */}
+          <div className="p-6 md:p-10">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+              Complete your purchase
+            </h2>
+
+            {/* brief course card */}
+            <div className="bg-gray-100 rounded-lg p-4 mb-6">
+              <h3 className="font-semibold">{course.name}</h3>
+              <p className="text-xl font-bold text-blue-600">
+                ₹{course.price.toLocaleString()}
+              </p>
+            </div>
+
+            {/* form fields */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {["name", "email", "contact"].map((field) => (
+                <div key={field}>
+                  <label className="block text-sm font-medium mb-1 capitalize">
+                    {field} *
+                  </label>
+                  <input
+                    type={field === "email" ? "email" : "text"}
+                    name={field}
+                    value={formData[field as keyof typeof formData]}
+                    onChange={handleChange}
+                    maxLength={field === "contact" ? 10 : undefined}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
+                      errors[field] ? "border-red-500" : "border-gray-300"
+                    }`}
+                  />
+                  {errors[field] && (
+                    <p className="text-red-500 text-sm mt-1">{errors[field]}</p>
+                  )}
+                </div>
+              ))}
+
+              {/* buttons */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  disabled={loading}
+                  className="flex-1 border border-gray-300 text-gray-700 rounded-lg py-3 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+
+                {/* shine button */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`shine-button flex-1 relative overflow-hidden py-3 px-1 rounded-lg text-white font-semibold uppercase inline-flex justify-center items-center gap-2 transition-transform duration-300 ease-in-out ${
+                    course.price === 0
+                      ? "bg-gradient-to-r from-green-600 to-emerald-600"
+                      : "bg-gradient-to-r from-purple-600 to-blue-600"
+                  } ${
+                    loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:shadow-lg hover:-translate-y-0.5"
+                  }`}
+                >
+                  {loading ? (
+                    <>
+                      <svg
+                        className="h-4 w-4 animate-spin"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                        />
+                      </svg>
+                      Processing...
+                    </>
+                  ) : (
+                    "Proceed to payment"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name *
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.name ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="Enter your full name"
-            />
-            {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email Address *
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.email ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="Enter your email address"
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Contact Number *
-            </label>
-            <input
-              type="tel"
-              name="contact"
-              value={formData.contact}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.contact ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="Enter 10-digit mobile number"
-              maxLength={10}
-            />
-            {errors.contact && (
-              <p className="text-red-500 text-sm mt-1">{errors.contact}</p>
-            )}
-          </div>
-
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onCancel}
-              disabled={loading}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 
-                       rounded-lg hover:bg-gray-50 transition-colors duration-200
-                       disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white 
-                       px-4 py-2 rounded-lg font-medium transition-colors duration-200
-                       disabled:bg-blue-400 disabled:cursor-not-allowed
-                       flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                    <circle 
-                      className="opacity-25" 
-                      cx="12" 
-                      cy="12" 
-                      r="10" 
-                      stroke="currentColor" 
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path 
-                      className="opacity-75" 
-                      fill="currentColor" 
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  Processing...
-                </>
-              ) : (
-                'Proceed to Payment'
-              )}
-            </button>
-          </div>
-        </form>
       </div>
     </div>
   );

@@ -94,7 +94,7 @@ export const Preview = () => {
 
   return (
     <Card className="mx-auto border-0 shadow-sm">
-      <div className="relative w-full max-h-[360px] overflow-hidden rounded-lg">
+      <div className="relative w-full h-[200px] sm:h-full sm:max-h-[360px] overflow-hidden rounded-lg">
         <video
           ref={videoRef}
           src={firstVideo.url}
